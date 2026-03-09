@@ -1,12 +1,11 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Menu } from "lucide-react";
+import { Menu, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import type { AppSessionValue } from "@/providers/SessionProvider";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
@@ -18,13 +17,6 @@ export function Navbar({
   session: AppSessionValue;
   onToggleSidebar: () => void;
 }) {
-  const initials = session.name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
   return (
     <motion.header
       initial={{ opacity: 0, y: 12 }}
@@ -32,7 +24,7 @@ export function Navbar({
       transition={{ duration: 0.35, ease: "easeOut" }}
       className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8"
     >
-      <div className="flex flex-1 items-center gap-4 max-w-3xl">
+      <div className="flex items-center gap-4 flex-1 max-w-3xl">
         <div className="lg:hidden flex items-center gap-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shrink-0">
             <Image
@@ -40,8 +32,9 @@ export function Navbar({
               alt="Movrr Icon"
               width={24}
               height={24}
-              priority
+              sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 100vw"
               quality={100}
+              priority
               aria-hidden="true"
             />
           </div>
@@ -63,11 +56,7 @@ export function Navbar({
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="hidden md:flex items-center">
-          <Badge variant="outline" className="text-xs font-medium capitalize">
-            {session.role} workspace
-          </Badge>
-        </div>
+        <div className="flex-1" />
 
         <ThemeToggle />
 
@@ -82,18 +71,25 @@ export function Navbar({
           <Menu className="h-5 w-5" />
         </Button>
 
-        <div className="hidden sm:flex items-center gap-3">
-          <div className="text-right">
-            <p className="text-sm font-medium">{session.name}</p>
-            <p className="text-xs text-muted-foreground">{session.email}</p>
+        <div className="hidden sm:flex items-center gap-3 text-sm px-3 py-2 rounded-lg hover:bg-muted cursor-pointer transition-colors">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+              <User className="h-4 w-4 text-primary" />
+            </div>
+            <div className="hidden lg:flex flex-col">
+              <span className="font-medium text-sm truncate max-w-40">
+                {session.email}
+              </span>
+              <div className="scale-75 origin-left">
+                <Badge
+                  variant="outline"
+                  className="capitalize text-[10px] font-medium"
+                >
+                  {session.role} workspace
+                </Badge>
+              </div>
+            </div>
           </div>
-          <Avatar>
-            <AvatarImage
-              src={session.avatarUrl ?? undefined}
-              alt={session.name}
-            />
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
         </div>
       </div>
     </motion.header>

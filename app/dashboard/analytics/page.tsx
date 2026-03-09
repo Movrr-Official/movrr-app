@@ -89,7 +89,7 @@ export default async function DashboardAnalyticsPage({
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4">
         <StatsCard
           title="Budget exposure"
           value={formatCurrency(dashboard.analytics.totalBudget)}

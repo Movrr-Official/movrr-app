@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
@@ -17,6 +17,7 @@ import {
   Trophy,
 } from "lucide-react";
 import Image from "next/image";
+
 import { cn } from "@/lib/utils";
 import type { ProductRole } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
@@ -79,6 +80,7 @@ export function Sidebar({
           />
         ) : null}
       </AnimatePresence>
+
       <motion.aside
         initial={false}
         animate={{
@@ -87,14 +89,15 @@ export function Sidebar({
         }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className={cn(
-          "z-50 flex h-full flex-col bg-background shadow-sm lg:shadow-none",
+          "flex h-full flex-col bg-background z-50",
           isMobile ? "fixed" : "relative",
+          "shadow-sm lg:shadow-none",
         )}
         aria-label="Main navigation"
       >
         <div
           className={cn(
-            "flex h-16 items-center border-b border-border p-4",
+            "h-16 flex items-center p-4 border-b border-border",
             sidebarOpen ? "justify-between" : "justify-center",
           )}
         >
@@ -105,24 +108,25 @@ export function Sidebar({
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
                 transition={{ duration: 0.15 }}
-                className="flex min-w-0 flex-1 items-center gap-2"
+                className="flex items-center gap-2 flex-1 min-w-0"
               >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
+                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shrink-0">
                   <Image
                     src="/movrr-icon.png"
                     alt="Movrr Icon"
                     width={24}
                     height={24}
-                    priority
+                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 100vw"
                     quality={100}
+                    priority
                     aria-hidden="true"
                   />
                 </div>
-                <div className="flex min-w-0 flex-col">
-                  <h2 className="truncate text-lg font-semibold uppercase">
+                <div className="flex flex-col min-w-0">
+                  <h2 className="text-lg uppercase font-semibold truncate">
                     Movrr
                   </h2>
-                  <span className="truncate text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground truncate">
                     {role === "rider"
                       ? "Rider Workspace"
                       : "Advertiser Workspace"}
@@ -131,67 +135,73 @@ export function Sidebar({
               </motion.div>
             ) : null}
           </AnimatePresence>
+
           <Button
             variant="ghost"
             size="sm"
             onClick={onToggle}
-            className="p-1 hover:bg-muted hover:text-black"
+            className="hover:bg-muted hover:text-black p-1"
             aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
           >
             {sidebarOpen ? (
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="w-4 h-4" />
             ) : (
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="w-4 h-4" />
             )}
           </Button>
         </div>
-        <nav className="flex-1 space-y-2 px-3 py-4">
-          {items.map((item) => {
-            const Icon = item.icon;
-            const isActive =
-              pathname === item.href ||
-              (item.href !== "/dashboard" &&
-                pathname.startsWith(`${item.href}/`));
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex h-9 items-center gap-3 rounded-md px-4 py-2 text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  !sidebarOpen && "justify-center",
-                )}
-                aria-current={isActive ? "page" : undefined}
-                onClick={() => {
-                  if (isMobile) onCloseMobile();
-                }}
-              >
-                <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
-                <AnimatePresence mode="wait">
-                  {sidebarOpen ? (
-                    <motion.span
-                      initial={{ opacity: 0, width: 0 }}
-                      animate={{ opacity: 1, width: "auto" }}
-                      exit={{ opacity: 0, width: 0 }}
-                      transition={{ duration: 0.15, ease: "easeOut" }}
-                      className="truncate"
-                    >
-                      {item.label}
-                    </motion.span>
-                  ) : null}
-                </AnimatePresence>
-              </Link>
-            );
-          })}
-        </nav>
-        <div className="border-t border-border p-3">
+
+        <div className="flex-1 px-3 py-4 overflow-y-auto">
+          <nav className="space-y-2">
+            {items.map((item) => {
+              const Icon = item.icon;
+              const isActive =
+                pathname === item.href ||
+                (item.href !== "/dashboard" &&
+                  pathname.startsWith(`${item.href}/`));
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 h-9 px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                    isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                    !sidebarOpen && "justify-center",
+                  )}
+                  aria-current={isActive ? "page" : undefined}
+                  onClick={() => {
+                    if (isMobile) onCloseMobile();
+                  }}
+                >
+                  <Icon className="w-5 h-5 shrink-0" aria-hidden="true" />
+                  <AnimatePresence mode="wait">
+                    {sidebarOpen ? (
+                      <motion.span
+                        initial={{ opacity: 0, width: 0 }}
+                        animate={{ opacity: 1, width: "auto" }}
+                        exit={{ opacity: 0, width: 0 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        className="flex items-center justify-between flex-1 min-w-0"
+                      >
+                        <span className="truncate">{item.label}</span>
+                      </motion.span>
+                    ) : null}
+                  </AnimatePresence>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        <div className="p-3 border-t border-border">
           <Button
             asChild
             variant="ghost"
             className={cn(
-              "w-full justify-start gap-3 text-red-600 hover:bg-red-50 hover:text-red-700",
+              "w-full justify-start gap-3 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer",
               !sidebarOpen && "justify-center",
             )}
           >

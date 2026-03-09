@@ -59,7 +59,7 @@ export default async function DashboardRouteDetailPage({
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4">
         <StatsCard
           title="Route progress"
           value={`${route.routeProgress}%`}

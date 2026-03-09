@@ -1,35 +1,106 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+interface PageHeaderAction {
+  type?: "button" | "select";
+  label: string;
+  href?: string;
+  icon?: ReactNode;
+  onClick?: () => void;
+  asChild?: boolean;
+  variant?: "default" | "secondary" | "outline" | "ghost" | "link";
+  options?: Array<{ label: string; value: string }>;
+  value?: string;
+  onValueChange?: (value: string) => void;
+  placeholder?: string;
+}
 
 interface PageHeaderProps {
   title?: string;
   description?: string;
-  action?: {
-    label: string;
-    href?: string;
-    icon?: ReactNode;
-    variant?: "default" | "secondary" | "outline" | "ghost" | "link";
-  };
+  action?: PageHeaderAction;
+  actions?: PageHeaderAction[];
 }
 
-export function PageHeader({ title, description, action }: PageHeaderProps) {
+export function PageHeader({
+  title,
+  description,
+  action,
+  actions,
+}: PageHeaderProps) {
+  const resolvedActions = actions ?? (action ? [action] : []);
+
   return (
-    <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
       <div>
-        <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground">{title}</h1>
-        {description ? <p className="max-w-2xl text-muted-foreground">{description}</p> : null}
+        <h1 className="text-3xl font-bold text-foreground tracking-tight mb-2">
+          {title}
+        </h1>
+        {description && (
+          <p className="text-muted-foreground max-w-2xl">{description}</p>
+        )}
       </div>
-      {action ? (
-        <div className="mt-4 md:mt-0">
-          <Button asChild variant={action.variant ?? "default"} className={action.variant ? undefined : "bg-primary text-primary-foreground hover:bg-primary/90"}>
-            <Link href={action.href ?? "#"}>
-              {action.icon ? <span className="mr-2 h-4 w-4">{action.icon}</span> : null}
-              {action.label}
-            </Link>
-          </Button>
+
+      {resolvedActions.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2 md:mt-0">
+          {resolvedActions.map((item) =>
+            item.type === "select" ? (
+              <Select
+                key={item.label}
+                value={item.value}
+                onValueChange={item.onValueChange}
+              >
+                <SelectTrigger className="h-9">
+                  <SelectValue placeholder={item.placeholder ?? item.label} />
+                </SelectTrigger>
+                <SelectContent>
+                  {(item.options ?? []).map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Button
+                key={item.label}
+                asChild={item.asChild || Boolean(item.href)}
+                onClick={item.onClick}
+                variant={item.variant ?? "default"}
+                className={
+                  item.variant
+                    ? undefined
+                    : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                }
+              >
+                {item.href ? (
+                  <Link href={item.href}>
+                    {item.icon && (
+                      <span className="mr-2 h-4 w-4">{item.icon}</span>
+                    )}
+                    {item.label}
+                  </Link>
+                ) : (
+                  <>
+                    {item.icon && (
+                      <span className="mr-2 h-4 w-4">{item.icon}</span>
+                    )}
+                    {item.label}
+                  </>
+                )}
+              </Button>
+            ),
+          )}
         </div>
-      ) : null}
+      )}
     </div>
   );
 }

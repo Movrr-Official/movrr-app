@@ -1,17 +1,26 @@
-﻿"use client";
+"use client";
 
 import { Facebook, Heart, Linkedin, Twitter } from "lucide-react";
 import { motion } from "framer-motion";
+
 import { Badge } from "@/components/ui/badge";
 
 const socialLinks = [
-  { name: "Twitter", href: "https://twitter.com/movrr", icon: Twitter },
+  {
+    name: "Twitter",
+    href: "https://twitter.com/movrr",
+    icon: Twitter,
+  },
   {
     name: "LinkedIn",
     href: "https://linkedin.com/company/movrr",
     icon: Linkedin,
   },
-  { name: "Facebook", href: "https://facebook.com/movrr", icon: Facebook },
+  {
+    name: "Facebook",
+    href: "https://facebook.com/movrr",
+    icon: Facebook,
+  },
 ];
 
 const containerVariants = {
@@ -39,11 +48,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <motion.footer
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
+    <motion.footer variants={containerVariants} initial="hidden" animate="visible">
       <div className="w-full gradient-bg px-10 pb-3 mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <motion.div
@@ -62,10 +67,7 @@ export function Footer() {
           </motion.div>
 
           <div className="flex flex-col sm:flex-row items-center gap-6">
-            <motion.div
-              variants={itemVariants}
-              className="flex items-center gap-4"
-            >
+            <motion.div variants={itemVariants} className="flex items-center gap-4">
               <span className="text-sm text-muted-foreground hidden sm:inline">
                 Follow us:
               </span>
@@ -85,7 +87,7 @@ export function Footer() {
                       },
                     }}
                     whileTap={{ scale: 0.95 }}
-                    className="p-2 text-muted-foreground transition-colors hover:text-foreground"
+                    className="p-2 text-muted-foreground hover:text-foreground transition-colors"
                     aria-label={social.name}
                   >
                     <social.icon className="w-5 h-5" />
@@ -94,17 +96,17 @@ export function Footer() {
               </div>
             </motion.div>
 
-            <motion.div
-              variants={itemVariants}
-              className="flex items-center gap-3"
-            >
+            <motion.div variants={itemVariants} className="flex items-center gap-3">
               <Badge variant="outline" className="text-xs font-mono">
                 v1.0.0
               </Badge>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <motion.div
                   className="w-2 h-2 rounded-full bg-success"
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.8, 1, 0.8] }}
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.8, 1, 0.8],
+                  }}
                   transition={{
                     duration: 1.5,
                     repeat: Infinity,

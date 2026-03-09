@@ -1,0 +1,26 @@
+import { updatePassword } from "@/app/actions/auth";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+
+export default function ResetPasswordPage() {
+  return (
+    <main className="gradient-bg flex min-h-screen items-center justify-center px-4 py-16">
+      <Card className="glass-card w-full max-w-md border-border/60 shadow-xl">
+        <CardHeader>
+          <CardTitle>Reset password</CardTitle>
+          <CardDescription>Set a new password for your MOVRR product account.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form action={updatePassword} className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium">New password</label>
+              <Input id="password" name="password" type="password" required minLength={8} />
+            </div>
+            <Button className="w-full" type="submit">Save password</Button>
+          </form>
+        </CardContent>
+      </Card>
+    </main>
+  );
+}

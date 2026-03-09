@@ -1,5 +1,5 @@
 import { EmptyState } from "@/components/shared/EmptyState";
-import { StatsCard } from "@/components/shared/StatsCard";
+import { StatsCard } from "@/components/stats/StatsCard";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,

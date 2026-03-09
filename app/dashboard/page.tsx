@@ -1,5 +1,5 @@
 ﻿import { EmptyState } from "@/components/shared/EmptyState";
-import { StatsCard } from "@/components/shared/StatsCard";
+import { StatsCard } from "@/components/stats/StatsCard";
 import { RiderOverview } from "@/components/rider/Overview";
 import { AdvertiserCampaignList } from "@/components/advertiser/CampaignList";
 import { getCurrentProductSession } from "@/lib/appUser";

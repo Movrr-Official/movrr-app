@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import type { AppSessionValue } from "@/providers/SessionProvider";
 import { Badge } from "@/components/ui/badge";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Navbar({
   session,

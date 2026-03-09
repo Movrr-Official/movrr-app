@@ -1,4 +1,4 @@
-﻿import { SectionSkeleton } from "@/components/shared/SectionSkeleton";
+﻿import { SectionSkeleton } from "@/components/skeleton/SectionSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function RouteLoading({ withCards = true }: { withCards?: boolean }) {

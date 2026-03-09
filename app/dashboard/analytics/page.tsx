@@ -2,7 +2,7 @@ import { AdvertiserPerformanceChart } from "@/components/advertiser/PerformanceC
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Select } from "@/components/ui/select";
-import { StatsCard } from "@/components/shared/StatsCard";
+import { StatsCard } from "@/components/stats/StatsCard";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -46,128 +46,128 @@ export default async function DashboardAnalyticsPage({
     <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
       <div className="space-y-6 md:space-y-8">
         <PageHeader
-        title="Analytics"
-        description="Advertiser campaign performance, zone concentration, and engagement trends scoped to the authenticated advertiser workspace."
-        action={{
-          label: "Export summary",
-          href: `/api/dashboard/analytics/export?range=${dashboard.analytics.range}`,
-        }}
-      />
-
-      <Card className="glass-card border-border/60">
-        <CardHeader>
-          <CardTitle>Analytics range</CardTitle>
-          <CardDescription>
-            Filter the reporting window for campaign performance and trend
-            series.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form
-            method="get"
-            className="flex flex-col gap-3 sm:flex-row sm:items-center"
-          >
-            <Select
-              name="range"
-              defaultValue={dashboard.analytics.range}
-              options={RANGE_OPTIONS.map((option) => ({
-                value: option.value,
-                label: option.label,
-              }))}
-              className="sm:max-w-xs"
-            />
-            <button
-              type="submit"
-              className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              Apply range
-            </button>
-            <p className="text-sm text-muted-foreground">
-              Last updated {formatRelativeDate(dashboard.analytics.lastUpdatedAt)}
-            </p>
-          </form>
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4">
-        <StatsCard
-          title="Budget exposure"
-          value={formatCurrency(dashboard.analytics.totalBudget)}
-          description="Campaign budgets included in the selected range"
-          icon={CircleDollarSign}
-        />
-        <StatsCard
-          title="Impressions"
-          value={formatCompactNumber(dashboard.analytics.totalImpressions)}
-          description="Attributed campaign impression volume"
-          icon={LineChart}
-        />
-        <StatsCard
-          title="QR scans"
-          value={formatCompactNumber(dashboard.analytics.totalQrScans)}
-          description="Attributed QR scan volume"
-          icon={ScanLine}
+          title="Analytics"
+          description="Advertiser campaign performance, zone concentration, and engagement trends scoped to the authenticated advertiser workspace."
+          action={{
+            label: "Export summary",
+            href: `/api/dashboard/analytics/export?range=${dashboard.analytics.range}`,
+          }}
         />
 
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <Card className="glass-card border-border/60">
           <CardHeader>
-            <CardTitle>Campaign performance</CardTitle>
+            <CardTitle>Analytics range</CardTitle>
             <CardDescription>
-              Trend series for impressions and QR scans in the
-              selected reporting window.
+              Filter the reporting window for campaign performance and trend
+              series.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {dashboard.analytics.campaignPerformance.length ? (
-              <AdvertiserPerformanceChart
-                data={dashboard.analytics.campaignPerformance}
+            <form
+              method="get"
+              className="flex flex-col gap-3 sm:flex-row sm:items-center"
+            >
+              <Select
+                name="range"
+                defaultValue={dashboard.analytics.range}
+                options={RANGE_OPTIONS.map((option) => ({
+                  value: option.value,
+                  label: option.label,
+                }))}
+                className="sm:max-w-xs"
               />
-            ) : (
-              <EmptyState
-                title="No analytics data in this range"
-                description="Adjust the reporting range or wait for published campaign delivery to accumulate more attributable activity."
-                iconName="dashboard"
-              />
-            )}
+              <button
+                type="submit"
+                className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                Apply range
+              </button>
+              <p className="text-sm text-muted-foreground">
+                Last updated{" "}
+                {formatRelativeDate(dashboard.analytics.lastUpdatedAt)}
+              </p>
+            </form>
           </CardContent>
         </Card>
 
-        <Card className="glass-card border-border/60">
-          <CardHeader>
-            <CardTitle>Zone concentration</CardTitle>
-            <CardDescription>
-              Campaign distribution across configured zones and hot-zone
-              groupings where current data exists.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {dashboard.analytics.zonePerformance.length ? (
-              dashboard.analytics.zonePerformance.map((zone) => (
-                <div
-                  key={zone.label}
-                  className="flex items-center justify-between rounded-xl border border-border/60 bg-background/70 p-4"
-                >
-                  <div>
-                    <p className="font-medium">{zone.label}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Campaigns visible in this geography bucket
-                    </p>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4">
+          <StatsCard
+            title="Budget exposure"
+            value={formatCurrency(dashboard.analytics.totalBudget)}
+            description="Campaign budgets included in the selected range"
+            icon={CircleDollarSign}
+          />
+          <StatsCard
+            title="Impressions"
+            value={formatCompactNumber(dashboard.analytics.totalImpressions)}
+            description="Attributed campaign impression volume"
+            icon={LineChart}
+          />
+          <StatsCard
+            title="QR scans"
+            value={formatCompactNumber(dashboard.analytics.totalQrScans)}
+            description="Attributed QR scan volume"
+            icon={ScanLine}
+          />
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+          <Card className="glass-card border-border/60">
+            <CardHeader>
+              <CardTitle>Campaign performance</CardTitle>
+              <CardDescription>
+                Trend series for impressions and QR scans in the selected
+                reporting window.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {dashboard.analytics.campaignPerformance.length ? (
+                <AdvertiserPerformanceChart
+                  data={dashboard.analytics.campaignPerformance}
+                />
+              ) : (
+                <EmptyState
+                  title="No analytics data in this range"
+                  description="Adjust the reporting range or wait for published campaign delivery to accumulate more attributable activity."
+                  iconName="dashboard"
+                />
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card border-border/60">
+            <CardHeader>
+              <CardTitle>Zone concentration</CardTitle>
+              <CardDescription>
+                Campaign distribution across configured zones and hot-zone
+                groupings where current data exists.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {dashboard.analytics.zonePerformance.length ? (
+                dashboard.analytics.zonePerformance.map((zone) => (
+                  <div
+                    key={zone.label}
+                    className="flex items-center justify-between rounded-xl border border-border/60 bg-background/70 p-4"
+                  >
+                    <div>
+                      <p className="font-medium">{zone.label}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Campaigns visible in this geography bucket
+                      </p>
+                    </div>
+                    <Badge variant="outline">{zone.campaignCount}</Badge>
                   </div>
-                  <Badge variant="outline">{zone.campaignCount}</Badge>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                Zone-level performance data is not available yet for the
-                selected reporting range.
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Zone-level performance data is not available yet for the
+                  selected reporting range.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         <Card className="glass-card border-border/60">
           <CardHeader>
@@ -190,7 +190,6 @@ export default async function DashboardAnalyticsPage({
                   <p className="text-sm text-muted-foreground">
                     QR scans {formatCompactNumber(point.qrScans)}
                   </p>
-
                 </div>
               ))
             ) : (

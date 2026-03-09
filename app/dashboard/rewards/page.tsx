@@ -1,4 +1,4 @@
-import { EmptyState } from "@/components/shared/EmptyState";
+﻿import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatsCard } from "@/components/stats/StatsCard";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +30,7 @@ export default async function DashboardRewardsPage() {
           action={{
             label: "Export statement",
             href: "/api/dashboard/rewards/export",
+            method: "post",
           }}
         />
 
@@ -156,3 +157,6 @@ export default async function DashboardRewardsPage() {
     </div>
   );
 }
+
+
+

@@ -1,7 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { requireProductSession } from "@/lib/appUser";
+import { isTrustedSameOriginRequest } from "@/lib/requestProtection";
 import type { AdvertiserAnalyticsRange } from "@/schemas";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 function escapeCsv(value: string | number) {
   const stringValue = String(value ?? "");
@@ -11,10 +15,16 @@ function escapeCsv(value: string | number) {
   return stringValue;
 }
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
+  if (!isTrustedSameOriginRequest(request)) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403, headers: { "cache-control": "no-store" } });
+  }
+
   await requireProductSession(["advertiser"]);
-  const rangeParam = request.nextUrl.searchParams.get("range");
-  const range: AdvertiserAnalyticsRange = rangeParam === "30d" || rangeParam === "12m" ? rangeParam : "90d";
+  const formData = await request.formData();
+  const rangeParam = formData.get("range");
+  const range: AdvertiserAnalyticsRange =
+    rangeParam === "30d" || rangeParam === "12m" ? rangeParam : "90d";
   const dashboard = await getAdvertiserDashboardData(range);
 
   const header = ["label", "impressions", "qr_scans"];
@@ -32,6 +42,15 @@ export async function GET(request: NextRequest) {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
       "Content-Disposition": `attachment; filename="movrr-advertiser-analytics-${range}.csv"`,
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff",
     },
+  });
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: { Allow: "POST, OPTIONS" },
   });
 }

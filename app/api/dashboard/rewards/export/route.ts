@@ -1,6 +1,10 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { requireProductSession } from "@/lib/appUser";
+import { isTrustedSameOriginRequest } from "@/lib/requestProtection";
 import { getRiderDashboardData } from "@/services/rider";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 function escapeCsv(value: string | number) {
   const stringValue = String(value ?? "");
@@ -10,7 +14,11 @@ function escapeCsv(value: string | number) {
   return stringValue;
 }
 
-export async function GET() {
+export async function POST(request: Request) {
+  if (!isTrustedSameOriginRequest(request)) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403, headers: { "cache-control": "no-store" } });
+  }
+
   await requireProductSession(["rider"]);
   const dashboard = await getRiderDashboardData();
 
@@ -31,6 +39,15 @@ export async function GET() {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
       "Content-Disposition": 'attachment; filename="movrr-rider-rewards-statement.csv"',
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff",
     },
+  });
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: { Allow: "POST, OPTIONS" },
   });
 }

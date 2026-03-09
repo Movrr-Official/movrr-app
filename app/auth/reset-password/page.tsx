@@ -2,8 +2,22 @@ import { updatePassword } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function ResetPasswordPage() {
+export default async function ResetPasswordPage() {
+  const cookieStore = await cookies();
+  const recoveryAllowed = cookieStore.get("movrr-password-recovery")?.value === "1";
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!recoveryAllowed || !user) {
+    redirect("/auth/signin");
+  }
+
   return (
     <main className="gradient-bg flex min-h-screen items-center justify-center px-4 py-16">
       <Card className="glass-card w-full max-w-md border-border/60 shadow-xl">

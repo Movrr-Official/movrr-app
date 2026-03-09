@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
@@ -197,15 +197,15 @@ export function Sidebar({
         </div>
 
         <div className="p-3 border-t border-border">
-          <Button
-            asChild
-            variant="ghost"
-            className={cn(
-              "w-full justify-start gap-3 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer",
-              !sidebarOpen && "justify-center",
-            )}
-          >
-            <Link href="/api/auth/signout">
+          <form action="/api/auth/signout" method="post">
+            <Button
+              type="submit"
+              variant="ghost"
+              className={cn(
+                "w-full justify-start gap-3 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer",
+                !sidebarOpen && "justify-center",
+              )}
+            >
               <LogOut className="h-5 w-5 shrink-0" aria-hidden="true" />
               <AnimatePresence mode="wait">
                 {sidebarOpen ? (
@@ -219,10 +219,11 @@ export function Sidebar({
                   </motion.span>
                 ) : null}
               </AnimatePresence>
-            </Link>
-          </Button>
+            </Button>
+          </form>
         </div>
       </motion.aside>
     </>
   );
 }
+

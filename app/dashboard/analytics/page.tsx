@@ -1,4 +1,4 @@
-import { AdvertiserPerformanceChart } from "@/components/advertiser/PerformanceChart";
+﻿import { AdvertiserPerformanceChart } from "@/components/advertiser/PerformanceChart";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Select } from "@/components/ui/select";
@@ -50,7 +50,9 @@ export default async function DashboardAnalyticsPage({
           description="Advertiser campaign performance, zone concentration, and engagement trends scoped to the authenticated advertiser workspace."
           action={{
             label: "Export summary",
-            href: `/api/dashboard/analytics/export?range=${dashboard.analytics.range}`,
+            href: "/api/dashboard/analytics/export",
+            method: "post",
+            fields: { range: dashboard.analytics.range },
           }}
         />
 
@@ -207,3 +209,6 @@ export default async function DashboardAnalyticsPage({
     </div>
   );
 }
+
+
+

@@ -26,5 +26,18 @@ export async function GET(request: NextRequest) {
   });
 
   await supabase.auth.exchangeCodeForSession(code);
+
+  if (next === "/auth/reset-password") {
+    response.cookies.set({
+      name: "movrr-password-recovery",
+      value: "1",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: APP_URL.startsWith("https://"),
+      path: "/auth/reset-password",
+      maxAge: 60 * 15,
+    });
+  }
+
   return response;
 }

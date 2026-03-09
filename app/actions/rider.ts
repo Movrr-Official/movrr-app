@@ -43,7 +43,7 @@ export async function updateRiderNotificationPreferencesAction(formData: FormDat
   "use server";
 
   const session = await requireProductSession(["rider"]);
-  const notifications = String(formData.get("productNotifications") ?? "") === "on";
+  const notifications = String(formData.get("productNotifications") ?? "false") === "true";
 
   await persistNotificationsPreference(session.appUser.id, notifications);
   revalidateRoleNotificationPaths("rider");

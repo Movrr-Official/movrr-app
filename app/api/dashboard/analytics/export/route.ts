@@ -17,12 +17,11 @@ export async function GET(request: NextRequest) {
   const range: AdvertiserAnalyticsRange = rangeParam === "30d" || rangeParam === "12m" ? rangeParam : "90d";
   const dashboard = await getAdvertiserDashboardData(range);
 
-  const header = ["label", "impressions", "qr_scans", "conversions"];
+  const header = ["label", "impressions", "qr_scans"];
   const rows = dashboard.analytics.trendSeries.map((point) => [
     point.label,
     point.impressions,
     point.qrScans,
-    point.conversions,
   ]);
 
   const csv = [header, ...rows]

@@ -14,12 +14,12 @@ export async function GET() {
   await requireProductSession(["rider"]);
   const dashboard = await getRiderDashboardData();
 
-  const header = ["description", "type", "category", "points", "created_at"];
+  const header = ["description", "type", "category", "statement_points", "created_at"];
   const rows = dashboard.rewards.map((reward) => [
     reward.description,
     reward.type,
     reward.category,
-    reward.points,
+    reward.type === "redeemed" ? -Math.abs(reward.points) : reward.points,
     reward.createdAt,
   ]);
 

@@ -7,7 +7,7 @@ import { Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AppSessionValue } from "@/providers/SessionProvider";
 import { Badge } from "@/components/ui/badge";
-import { Breadcrumb } from "@/components/shared/Breadcrumb";
+import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 export function Navbar({

@@ -24,10 +24,10 @@ export async function updateAdvertiserSettingsAction(formData: FormData) {
     industry: String(formData.get("industry") ?? "").trim() || null,
     language: String(formData.get("language") ?? "").trim() || "en",
     timezone: String(formData.get("timezone") ?? "").trim() || "UTC",
-    email_notifications: String(formData.get("emailNotifications") ?? "") === "on",
-    campaign_updates: String(formData.get("campaignUpdates") ?? "") === "on",
+    email_notifications: String(formData.get("emailNotifications") ?? "false") === "true",
+    campaign_updates: String(formData.get("campaignUpdates") ?? "false") === "true",
   };
-  const productNotifications = String(formData.get("productNotifications") ?? "") === "on";
+  const productNotifications = String(formData.get("productNotifications") ?? "false") === "true";
 
   const [userResult, advertiserResult, preferencesResult] = await Promise.all([
     admin.from("user").update({ name: payload.name, phone: payload.phone, organization: payload.company_name, language_preference: payload.language }).eq("id", session.appUser.id),
@@ -48,7 +48,7 @@ export async function updateAdvertiserNotificationPreferencesAction(formData: Fo
   "use server";
 
   const session = await requireProductSession(["advertiser"]);
-  const notifications = String(formData.get("productNotifications") ?? "") === "on";
+  const notifications = String(formData.get("productNotifications") ?? "false") === "true";
 
   await persistNotificationsPreference(session.appUser.id, notifications);
   revalidateRoleNotificationPaths("advertiser");

@@ -20,7 +20,6 @@ export const advertiserCampaignSchema = z.object({
   targetZones: z.array(z.string()).default([]),
   impressions: z.number().default(0),
   qrScans: z.number().default(0),
-  conversions: z.number().default(0),
   maxRiders: z.number().default(0),
   ridersAssigned: z.number().default(0),
 });
@@ -69,7 +68,6 @@ export const advertiserAnalyticsSchema = z.object({
   totalBudget: z.number(),
   totalImpressions: z.number(),
   totalQrScans: z.number(),
-  totalConversions: z.number(),
   activeCampaigns: z.number(),
   lastUpdatedAt: z.string().nullable(),
   campaignPerformance: z.array(
@@ -77,7 +75,6 @@ export const advertiserAnalyticsSchema = z.object({
       label: z.string(),
       impressions: z.number(),
       scans: z.number(),
-      conversions: z.number(),
     }),
   ),
   trendSeries: z.array(
@@ -85,7 +82,6 @@ export const advertiserAnalyticsSchema = z.object({
       label: z.string(),
       impressions: z.number(),
       qrScans: z.number(),
-      conversions: z.number(),
     }),
   ),
   zonePerformance: z.array(

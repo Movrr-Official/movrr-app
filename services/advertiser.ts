@@ -61,7 +61,6 @@ export async function getAdvertiserDashboardData(range: AdvertiserAnalyticsRange
         totalBudget: 0,
         totalImpressions: 0,
         totalQrScans: 0,
-        totalConversions: 0,
         activeCampaigns: 0,
         lastUpdatedAt: null,
         campaignPerformance: [],
@@ -93,7 +92,7 @@ export async function getAdvertiserDashboardData(range: AdvertiserAnalyticsRange
 
   const { data: campaigns } = await admin
     .from("campaign")
-    .select("id, name, description, lifecycle_status, budget, start_date, end_date, campaign_type, target_zones, impressions, qr_scans, conversions, max_riders, created_at, updated_at")
+    .select("id, name, description, lifecycle_status, budget, start_date, end_date, campaign_type, target_zones, impressions, qr_scans, max_riders, created_at, updated_at")
     .eq("advertiser_id", advertiserId)
     .order("created_at", { ascending: false });
 
@@ -128,7 +127,6 @@ export async function getAdvertiserDashboardData(range: AdvertiserAnalyticsRange
     targetZones: campaign.target_zones ?? [],
     impressions: Number(campaign.impressions ?? 0),
     qrScans: Number(campaign.qr_scans ?? 0),
-    conversions: Number(campaign.conversions ?? 0),
     maxRiders: Number(campaign.max_riders ?? 0),
     ridersAssigned: assignedCounts.get(campaign.id) ?? 0,
     createdAt: campaign.created_at,
@@ -142,15 +140,14 @@ export async function getAdvertiserDashboardData(range: AdvertiserAnalyticsRange
   });
   const analyticsSource = campaignsForAnalytics.length ? campaignsForAnalytics : mappedCampaigns;
 
-  const trendMap = new Map<string, { label: string; impressions: number; qrScans: number; conversions: number }>();
+  const trendMap = new Map<string, { label: string; impressions: number; qrScans: number }>();
   analyticsSource.forEach((campaign: any) => {
     const date = new Date(campaign.startDate ?? campaign.createdAt ?? campaign.endDate ?? Date.now());
     const label = bucketLabel(date, range);
-    if (!trendMap.has(label)) trendMap.set(label, { label, impressions: 0, qrScans: 0, conversions: 0 });
+    if (!trendMap.has(label)) trendMap.set(label, { label, impressions: 0, qrScans: 0 });
     const bucket = trendMap.get(label)!;
     bucket.impressions += campaign.impressions;
     bucket.qrScans += campaign.qrScans;
-    bucket.conversions += campaign.conversions;
   });
 
   const analytics = {
@@ -158,14 +155,12 @@ export async function getAdvertiserDashboardData(range: AdvertiserAnalyticsRange
     totalBudget: analyticsSource.reduce((sum: number, campaign: any) => sum + campaign.budget, 0),
     totalImpressions: analyticsSource.reduce((sum: number, campaign: any) => sum + campaign.impressions, 0),
     totalQrScans: analyticsSource.reduce((sum: number, campaign: any) => sum + campaign.qrScans, 0),
-    totalConversions: analyticsSource.reduce((sum: number, campaign: any) => sum + campaign.conversions, 0),
     activeCampaigns: analyticsSource.filter((campaign: any) => campaign.lifecycleStatus === "active").length,
     lastUpdatedAt: resolveLatestTimestamp(analyticsSource.flatMap((campaign: any) => [campaign.updatedAt, campaign.createdAt, campaign.endDate])),
     campaignPerformance: analyticsSource.slice(0, 8).map((campaign: any) => ({
       label: campaign.name,
       impressions: campaign.impressions,
       scans: campaign.qrScans,
-      conversions: campaign.conversions,
     })),
     trendSeries: [...trendMap.values()],
     zonePerformance: [...zoneCounts.entries()].slice(0, 8).map(([label, campaignCount]) => ({ label, campaignCount })),
@@ -223,7 +218,7 @@ export async function getAdvertiserCampaignDetail(campaignId: string) {
 
   const { data: campaign } = await admin
     .from("campaign")
-    .select("id, name, description, lifecycle_status, budget, start_date, end_date, campaign_type, target_zones, impressions, qr_scans, conversions, max_riders, vehicle_type_required, created_at, updated_at")
+    .select("id, name, description, lifecycle_status, budget, start_date, end_date, campaign_type, target_zones, impressions, qr_scans, max_riders, vehicle_type_required, created_at, updated_at")
     .eq("advertiser_id", advertiserId)
     .eq("id", campaignId)
     .maybeSingle();
@@ -275,7 +270,6 @@ export async function getAdvertiserCampaignDetail(campaignId: string) {
     targetZones: campaign.target_zones ?? [],
     impressions: Number(campaign.impressions ?? 0),
     qrScans: Number(campaign.qr_scans ?? 0),
-    conversions: Number(campaign.conversions ?? 0),
     maxRiders: Number(campaign.max_riders ?? 0),
     vehicleTypeRequired: campaign.vehicle_type_required ?? "bike",
     riders: ridersWithUsers,

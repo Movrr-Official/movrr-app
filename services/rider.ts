@@ -27,17 +27,47 @@ function mapRewardCategory(source?: string | null): RiderRewardTransaction["cate
   return "other";
 }
 
+type RiderProfileRow = {
+  id: string;
+  city?: string | null;
+  country?: string | null;
+  vehicle_type?: string | null;
+  is_certified?: boolean | null;
+  emergency_contact?: string | null;
+  emergency_phone?: string | null;
+};
+
+async function getRiderProfileRows(admin: ReturnType<typeof createSupabaseAdminClient>, userId: string) {
+  const { data } = await admin
+    .from("rider")
+    .select(
+      "id, city, country, vehicle_type, is_certified, emergency_contact, emergency_phone, created_at",
+    )
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  return ((data ?? []) as RiderProfileRow[]).filter((row) => Boolean(row.id));
+}
+
 export async function getRiderDashboardData(): Promise<RiderDashboard> {
   const session = await requireProductSession(["rider"]);
   const admin = createSupabaseAdminClient();
-  const riderId = session.riderProfile?.id;
   const { data: userPreferences } = await admin
     .from("user_preferences")
     .select("notifications")
     .eq("user_id", session.appUser.id)
     .maybeSingle();
 
-  if (!riderId) {
+  const riderRows = await getRiderProfileRows(admin, session.appUser.id);
+  const riderIds = Array.from(new Set(riderRows.map((row) => row.id)));
+  const resolvedProfile =
+    riderRows.find((row) => row.id === session.riderProfile?.id) ??
+    riderRows[0] ??
+    session.riderProfile ??
+    null;
+  const riderId = resolvedProfile?.id ?? "";
+
+  if (!riderIds.length) {
     return {
       riderId: "",
       pointsBalance: 0,
@@ -86,32 +116,25 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
     await Promise.all([
       admin
         .from("campaign_assignment")
-        .select(
-          "campaign_id, campaign:campaign_id (id, name, description, lifecycle_status, campaign_type, start_date, end_date, target_zones, impressions, qr_scans, conversions)",
-        )
-        .eq("rider_id", riderId),
+        .select("rider_id, campaign_id")
+        .in("rider_id", riderIds),
       admin
         .from("campaign_signup")
-        .select(
-          "campaign_id, campaign:campaign_id (id, name, description, lifecycle_status, campaign_type, start_date, end_date, target_zones, impressions, qr_scans, conversions)",
-        )
-        .eq("rider_id", riderId),
+        .select("rider_id, campaign_id, status")
+        .in("rider_id", riderIds),
       admin
         .from("rider_route")
-        .select(
-          "id, route_id, status, assigned_at, started_at, completed_at, updated_at, route_progress, route:route_id (id, name, city, start_location, end_location, estimated_duration_minutes, coverage_km, campaign_id)",
-        )
-        .eq("rider_id", riderId)
+        .select("id, rider_id, route_id, campaign_id, status, assigned_at, started_at, completed_at, updated_at, progress")
+        .in("rider_id", riderIds)
         .order("assigned_at", { ascending: false }),
       admin
         .from("rider_reward_balance")
-        .select("points_balance, lifetime_points_earned")
-        .eq("rider_id", riderId)
-        .maybeSingle(),
+        .select("rider_id, points_balance, lifetime_points_earned")
+        .in("rider_id", riderIds),
       admin
         .from("reward_transactions")
         .select("id, points_earned, source, metadata, created_at")
-        .eq("rider_id", riderId)
+        .in("rider_id", riderIds)
         .order("created_at", { ascending: false })
         .limit(25),
       admin
@@ -127,10 +150,10 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
   const { data: trackingRows } = routeIds.length
     ? await admin
         .from("route_tracking")
-        .select("id, route_id, verified_minutes, distance_km, started_at, ended_at")
-        .eq("rider_id", riderId)
+        .select("id, route_id, start_time, end_time, total_distance, route_compliance, impressions_earned")
+        .in("rider_id", riderIds)
         .in("route_id", routeIds)
-        .order("started_at", { ascending: false })
+        .order("start_time", { ascending: false })
     : { data: [] };
 
   const trackingByRoute = new Map<string, any[]>();
@@ -140,22 +163,55 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
     trackingByRoute.get(key)?.push(row);
   });
 
-  const campaignMap = new Map<string, any>();
-  [...(assignmentsRes.data ?? []), ...(signupsRes.data ?? [])].forEach((row) => {
-    const campaign = Array.isArray(row.campaign) ? row.campaign[0] : row.campaign;
-    if (campaign?.id) campaignMap.set(campaign.id, campaign);
-  });
+  const { data: routeDetails } = routeIds.length
+    ? await admin
+        .from("route")
+        .select(
+          "id, name, city, start_lat, start_lng, end_lat, end_lng, estimated_duration_minutes, coverage_km, campaign_id",
+        )
+        .in("id", routeIds)
+    : { data: [] as any[] };
+
+  const campaignIds = Array.from(
+    new Set(
+      [
+        ...(assignmentsRes.data ?? []).map((row: any) => row.campaign_id),
+        ...(signupsRes.data ?? []).map((row: any) => row.campaign_id),
+        ...(routeRows ?? []).map((row: any) => row.campaign_id),
+        ...(routeDetails ?? []).map((route: any) => route.campaign_id),
+      ].filter(Boolean),
+    ),
+  );
+
+  const { data: campaignRows, error: campaignRowsError } = campaignIds.length
+    ? await admin
+        .from("campaign")
+        .select("*")
+        .in("id", campaignIds)
+    : { data: [] as any[], error: null };
+
+  if (campaignRowsError) {
+    throw campaignRowsError;
+  }
+
+  const campaignMap = new Map((campaignRows ?? []).map((campaign: any) => [campaign.id, campaign]));
+  const routeById = new Map((routeDetails ?? []).map((route: any) => [route.id, route]));
+
+  const formatCoordinate = (lat?: number | null, lng?: number | null) => {
+    if (typeof lat !== "number" || typeof lng !== "number") return undefined;
+    return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  };
 
   const routes: RiderRoute[] = routeRows.map((row: any) => {
-    const route = Array.isArray(row.route) ? row.route[0] : row.route;
+    const route = routeById.get(row.route_id);
     const tracking = trackingByRoute.get(route?.id ?? row.route_id) ?? [];
-    const progress = Number(row.route_progress ?? calculateRouteProgress(row.status));
+    const progress = Number(row.progress ?? calculateRouteProgress(row.status));
     const lastSyncedAt = resolveLatestTimestamp([
       row.updated_at,
       row.completed_at,
       row.started_at,
       row.assigned_at,
-      ...tracking.flatMap((item: any) => [item.ended_at, item.started_at]),
+      ...tracking.flatMap((item: any) => [item.end_time, item.start_time]),
     ]);
 
     const timelineCandidates: RiderTimelineEvent[] = [
@@ -187,9 +243,9 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
       riderRouteId: row.id,
       name: route?.name ?? "Assigned route",
       status: row.status ?? "assigned",
-      city: route?.city ?? session.riderProfile?.city ?? undefined,
-      startLocation: route?.start_location ?? undefined,
-      endLocation: route?.end_location ?? undefined,
+      city: route?.city ?? resolvedProfile?.city ?? undefined,
+      startLocation: formatCoordinate(route?.start_lat, route?.start_lng),
+      endLocation: formatCoordinate(route?.end_lat, route?.end_lng),
       startedAt: row.started_at,
       completedAt: row.completed_at,
       routeProgress: progress,
@@ -201,6 +257,10 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
       timeline: timelineCandidates.filter((event) => Boolean(event.occurredAt)),
     };
   });
+
+  const balanceRows = balanceRes.data ?? [];
+  const totalPointsBalance = balanceRows.reduce((sum: number, row: any) => sum + Number(row.points_balance ?? 0), 0);
+  const totalLifetimePointsEarned = balanceRows.reduce((sum: number, row: any) => sum + Number(row.lifetime_points_earned ?? 0), 0);
 
   const rewards: RiderRewardTransaction[] = (rewardsRes.data ?? []).map((row: any) => ({
     id: row.id,
@@ -227,7 +287,10 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
     createdAt: row.created_at,
   }));
 
-  const campaigns = [...campaignMap.values()].map((campaign: any) => ({
+  const campaigns = campaignIds
+    .map((campaignId) => campaignMap.get(campaignId))
+    .filter(Boolean)
+    .map((campaign: any) => ({
     id: campaign.id,
     name: campaign.name,
     description: campaign.description ?? undefined,
@@ -240,16 +303,14 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
     impressions: Number(campaign.impressions ?? 0),
   }));
 
-  const activeCampaigns = campaigns.filter((campaign) => ["active", "paused"].includes(campaign.status)).length;
-  const activeRoutes = routes.filter((route) => ["assigned", "in-progress"].includes(route.status)).length;
+  const activeCampaigns = campaigns.length;
+  const activeRoutes = routes.length;
   const awardedPoints = rewards
-    .filter((reward) => reward.points > 0 && reward.category !== "adjustment")
+    .filter((reward) => reward.points > 0 && reward.category !== "adjustment" && reward.category !== "redemption")
     .reduce((sum, reward) => sum + reward.points, 0);
-  const redeemedPoints = Math.abs(
-    rewards
-      .filter((reward) => reward.points < 0 || reward.category === "redemption")
-      .reduce((sum, reward) => sum + reward.points, 0),
-  );
+  const redeemedPoints = rewards
+    .filter((reward) => reward.category === "redemption")
+    .reduce((sum, reward) => sum + Math.abs(reward.points), 0);
   const adjustmentPoints = rewards
     .filter((reward) => reward.category === "adjustment")
     .reduce((sum, reward) => sum + reward.points, 0);
@@ -259,8 +320,8 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
 
   return {
     riderId,
-    pointsBalance: Number(balanceRes.data?.points_balance ?? 0),
-    lifetimePointsEarned: Number(balanceRes.data?.lifetime_points_earned ?? 0),
+    pointsBalance: totalPointsBalance,
+    lifetimePointsEarned: totalLifetimePointsEarned,
     activeCampaigns,
     activeRoutes,
     currentCompliance,
@@ -271,8 +332,8 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
     routes,
     rewards,
     rewardsSummary: {
-      availablePoints: Number(balanceRes.data?.points_balance ?? 0),
-      lifetimePointsEarned: Number(balanceRes.data?.lifetime_points_earned ?? 0),
+      availablePoints: totalPointsBalance,
+      lifetimePointsEarned: totalLifetimePointsEarned,
       awardedPoints,
       redeemedPoints,
       adjustmentPoints,
@@ -284,13 +345,13 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
     profile: {
       riderId,
       email: session.appUser.email,
-      city: session.riderProfile?.city ?? null,
-      country: session.riderProfile?.country ?? null,
-      isCertified: Boolean(session.riderProfile?.is_certified),
+      city: resolvedProfile?.city ?? null,
+      country: resolvedProfile?.country ?? null,
+      isCertified: Boolean(resolvedProfile?.is_certified),
       accountNotes: null,
-      vehicleType: session.riderProfile?.vehicle_type ?? null,
-      emergencyContact: session.riderProfile?.emergency_contact ?? null,
-      emergencyPhone: session.riderProfile?.emergency_phone ?? null,
+      vehicleType: resolvedProfile?.vehicle_type ?? null,
+      emergencyContact: resolvedProfile?.emergency_contact ?? null,
+      emergencyPhone: resolvedProfile?.emergency_phone ?? null,
       languagePreference: session.appUser.languagePreference,
       timezone: "Europe/Amsterdam",
     },
@@ -304,27 +365,35 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
 export async function getRiderRouteDetail(routeId: string) {
   const session = await requireProductSession(["rider"]);
   const admin = createSupabaseAdminClient();
-  const riderId = session.riderProfile?.id;
-  if (!riderId) return null;
+  const riderRows = await getRiderProfileRows(admin, session.appUser.id);
+  const riderIds = Array.from(new Set(riderRows.map((row) => row.id)));
+  if (!riderIds.length) return null;
 
-  const { data: assignment } = await admin
+  const { data: assignmentRows } = await admin
     .from("rider_route")
-    .select(
-      "id, status, assigned_at, started_at, completed_at, updated_at, route_progress, route:route_id (id, name, city, description, start_location, end_location, campaign_id, estimated_duration_minutes, coverage_km)",
-    )
-    .eq("rider_id", riderId)
+    .select("id, rider_id, route_id, campaign_id, status, assigned_at, started_at, completed_at, updated_at, progress")
+    .in("rider_id", riderIds)
     .eq("route_id", routeId)
-    .maybeSingle();
+    .order("updated_at", { ascending: false })
+    .limit(1);
+
+  const assignment = assignmentRows?.[0] ?? null;
 
   if (!assignment) return null;
 
-  const route = Array.isArray(assignment.route) ? assignment.route[0] : assignment.route;
+  const { data: route } = await admin
+    .from("route")
+    .select(
+      "id, name, city, description, start_lat, start_lng, end_lat, end_lng, campaign_id, estimated_duration_minutes, coverage_km",
+    )
+    .eq("id", routeId)
+    .maybeSingle();
   const { data: tracking } = await admin
     .from("route_tracking")
-    .select("id, verified_minutes, distance_km, started_at, ended_at")
+    .select("id, start_time, end_time, total_distance, route_compliance, impressions_earned")
     .eq("route_id", routeId)
-    .eq("rider_id", riderId)
-    .order("started_at", { ascending: false })
+    .in("rider_id", riderIds)
+    .order("start_time", { ascending: false })
     .limit(10);
 
   const trackingIds = (tracking ?? []).map((row: any) => row.id);
@@ -341,13 +410,13 @@ export async function getRiderRouteDetail(routeId: string) {
         .eq("campaign_id", route.campaign_id)
     : { data: [] };
 
-  const progress = Number(assignment.route_progress ?? calculateRouteProgress(assignment.status));
+  const progress = Number(assignment.progress ?? calculateRouteProgress(assignment.status));
   const lastSyncedAt = resolveLatestTimestamp([
     assignment.updated_at,
     assignment.completed_at,
     assignment.started_at,
     assignment.assigned_at,
-    ...(tracking ?? []).flatMap((row: any) => [row.ended_at, row.started_at]),
+    ...(tracking ?? []).flatMap((row: any) => [row.end_time, row.start_time]),
   ]);
 
   const timelineCandidates: RiderTimelineEvent[] = [
@@ -375,8 +444,8 @@ export async function getRiderRouteDetail(routeId: string) {
     ...((tracking ?? []).map((row: any) => ({
       id: row.id,
       label: "Tracking sync",
-      detail: `Verified minutes ${Number(row.verified_minutes ?? 0)} - Distance ${Number(row.distance_km ?? 0).toFixed(1)} km`,
-      occurredAt: row.ended_at ?? row.started_at ?? null,
+      detail: `Telemetry distance ${Number(row.total_distance ?? 0).toFixed(1)} km - Compliance ${Number(row.route_compliance ?? 0)}%`,
+      occurredAt: row.end_time ?? row.start_time ?? null,
       tone: "default" as const,
     }))),
   ];
@@ -387,8 +456,8 @@ export async function getRiderRouteDetail(routeId: string) {
     name: route?.name ?? "Route",
     description: route?.description ?? null,
     city: route?.city ?? null,
-    startLocation: route?.start_location ?? null,
-    endLocation: route?.end_location ?? null,
+    startLocation: route ? `${Number(route.start_lat).toFixed(5)}, ${Number(route.start_lng).toFixed(5)}` : null,
+    endLocation: route ? `${Number(route.end_lat).toFixed(5)}, ${Number(route.end_lng).toFixed(5)}` : null,
     status: assignment.status ?? "assigned",
     startedAt: assignment.started_at,
     completedAt: assignment.completed_at,
@@ -400,15 +469,12 @@ export async function getRiderRouteDetail(routeId: string) {
     syncSource: "movrr-mobile",
     timeline: timelineCandidates.filter((event) => Boolean(event.occurredAt)),
     estimatedDurationMinutes: Number(route?.estimated_duration_minutes ?? 0),
-    verifiedMinutes: (tracking ?? []).reduce(
-      (sum: number, row: any) => sum + Number(row.verified_minutes ?? 0),
-      0,
-    ),
+    verifiedMinutes: 0,
     distanceKm: (tracking ?? []).reduce(
-      (sum: number, row: any) => sum + Number(row.distance_km ?? 0),
+      (sum: number, row: any) => sum + Number(row.total_distance ?? 0),
       0,
     ),
-    impressions: (impressions ?? []).length,
+    impressions: (tracking ?? []).reduce((sum: number, row: any) => sum + Number(row.impressions_earned ?? 0), 0) || (impressions ?? []).length,
     campaignZones: campaignZones ?? [],
     hotZones: hotZones ?? [],
     tracking: tracking ?? [],

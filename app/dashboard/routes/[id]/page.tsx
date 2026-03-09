@@ -67,9 +67,9 @@ export default async function DashboardRouteDetailPage({
           icon={Route}
         />
         <StatsCard
-          title="Verified minutes"
-          value={String(route.verifiedMinutes)}
-          description="Tracked time captured from rider execution telemetry"
+          title="Telemetry sessions"
+          value={String(route.tracking.length)}
+          description="Recent tracking sessions synced from MOVRR Mobile"
           icon={Clock3}
         />
         <StatsCard
@@ -231,10 +231,11 @@ export default async function DashboardRouteDetailPage({
                 route.tracking.map(
                   (tracking: {
                     id: string;
-                    verified_minutes?: number | null;
-                    distance_km?: number | null;
-                    started_at?: string | null;
-                    ended_at?: string | null;
+                    total_distance?: number | null;
+                    route_compliance?: number | null;
+                    impressions_earned?: number | null;
+                    start_time?: string | null;
+                    end_time?: string | null;
                   }) => (
                     <div
                       key={tracking.id}
@@ -242,14 +243,14 @@ export default async function DashboardRouteDetailPage({
                     >
                       <p className="font-medium">Tracking session</p>
                       <p className="mt-1 text-muted-foreground">
-                        Verified minutes {Number(tracking.verified_minutes ?? 0)}
+                        Compliance {Number(tracking.route_compliance ?? 0)}%
                       </p>
                       <p className="text-muted-foreground">
-                        Distance {Number(tracking.distance_km ?? 0).toFixed(1)} km
+                        Distance {Number(tracking.total_distance ?? 0).toFixed(1)} km
                       </p>
                       <p className="mt-2 text-xs text-muted-foreground">
                         {formatRelativeDate(
-                          tracking.ended_at ?? tracking.started_at ?? null,
+                          tracking.end_time ?? tracking.start_time ?? null,
                         )}
                       </p>
                     </div>

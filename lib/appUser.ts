@@ -92,15 +92,44 @@ export async function getRiderProductSession(identity?: ProductIdentity): Promis
   if (!resolvedIdentity || resolvedIdentity.appUser.role !== "rider") return null;
 
   const admin = createSupabaseAdminClient();
-  const riderProfile = await admin
+  const {
+    data: riderRows,
+    error: riderProfileError,
+  } = await admin
     .from("rider")
-    .select("id, city, country, vehicle_type, is_certified, emergency_contact, emergency_phone")
+    .select(
+      "id, city, country, vehicle_type, is_certified, emergency_contact, emergency_phone, created_at",
+    )
     .eq("user_id", resolvedIdentity.authUser.id)
-    .maybeSingle();
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  if (riderProfileError) {
+    logger.error("Failed to resolve rider product session", riderProfileError.message);
+  }
+
+  if ((riderRows?.length ?? 0) > 1) {
+    logger.warn(
+      "Multiple rider profiles detected for product user; using the newest profile for session defaults",
+      resolvedIdentity.authUser.id,
+    );
+  }
+
+  const latestRider = riderRows?.[0] ?? null;
 
   return {
     ...resolvedIdentity,
-    riderProfile: riderProfile.data,
+    riderProfile: latestRider
+      ? {
+          id: latestRider.id,
+          city: latestRider.city,
+          country: latestRider.country,
+          vehicle_type: latestRider.vehicle_type,
+          is_certified: latestRider.is_certified,
+          emergency_contact: latestRider.emergency_contact,
+          emergency_phone: latestRider.emergency_phone,
+        }
+      : null,
     advertiserProfile: null,
   };
 }

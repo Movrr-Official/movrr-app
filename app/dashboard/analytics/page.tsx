@@ -20,7 +20,7 @@ import {
 import type { AdvertiserAnalyticsRange } from "@/schemas";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
 import { redirect } from "next/navigation";
-import { CircleDollarSign, LineChart, ScanLine, Users } from "lucide-react";
+import { CircleDollarSign, LineChart, ScanLine } from "lucide-react";
 
 const RANGE_OPTIONS = [
   { value: "30d", label: "Last 30 days" },
@@ -108,12 +108,7 @@ export default async function DashboardAnalyticsPage({
           description="Attributed QR scan volume"
           icon={ScanLine}
         />
-        <StatsCard
-          title="Conversions"
-          value={formatCompactNumber(dashboard.analytics.totalConversions)}
-          description="Tracked conversions where attribution currently exists"
-          icon={Users}
-        />
+
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
@@ -121,7 +116,7 @@ export default async function DashboardAnalyticsPage({
           <CardHeader>
             <CardTitle>Campaign performance</CardTitle>
             <CardDescription>
-              Trend series for impressions, scans, and conversions in the
+              Trend series for impressions and QR scans in the
               selected reporting window.
             </CardDescription>
           </CardHeader>
@@ -195,9 +190,7 @@ export default async function DashboardAnalyticsPage({
                   <p className="text-sm text-muted-foreground">
                     QR scans {formatCompactNumber(point.qrScans)}
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    Conversions {formatCompactNumber(point.conversions)}
-                  </p>
+
                 </div>
               ))
             ) : (

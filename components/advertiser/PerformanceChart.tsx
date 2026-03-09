@@ -2,7 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-export function AdvertiserPerformanceChart({ data }: { data: Array<{ label: string; impressions: number; scans: number; conversions: number }> }) {
+export function AdvertiserPerformanceChart({ data }: { data: Array<{ label: string; impressions: number; scans: number }> }) {
   return (
     <div className="h-80 w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -13,7 +13,6 @@ export function AdvertiserPerformanceChart({ data }: { data: Array<{ label: stri
           <Tooltip />
           <Bar dataKey="impressions" fill="var(--color-chart-1)" radius={[6, 6, 0, 0]} />
           <Bar dataKey="scans" fill="var(--color-chart-2)" radius={[6, 6, 0, 0]} />
-          <Bar dataKey="conversions" fill="var(--color-chart-3)" radius={[6, 6, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

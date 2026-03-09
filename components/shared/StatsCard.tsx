@@ -1,5 +1,4 @@
-﻿
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+﻿import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -90,8 +89,6 @@ export function StatsCard({
   value,
   description,
   icon: Icon,
-  iconColor = "blue",
-  iconBgColor,
   trend,
   badges,
   metrics,
@@ -122,7 +119,6 @@ export function StatsCard({
           ? "xl"
           : "lg");
 
-  const TrendIcon = trend?.icon;
   const hasContent = Boolean(
     description ||
     progress ||
@@ -352,4 +348,3 @@ export function StatsCard({
     </Card>
   );
 }
-

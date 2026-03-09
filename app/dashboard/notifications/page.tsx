@@ -8,6 +8,7 @@ import {
   markRiderNotificationsReadAction,
   updateRiderNotificationPreferencesAction,
 } from "@/app/actions/rider";
+import { CheckboxField } from "@/components/form/CheckboxField";
 import { StatusToast } from "@/components/form/StatusToast";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { SubmitButton } from "@/components/form/SubmitButton";
@@ -51,14 +52,11 @@ export default async function DashboardNotificationsPage({
         : dashboard.notifications.filter((item) => item.category === filter);
 
     return (
-      <div className="space-y-6">
-        <StatusToast success={success} error={error} />
-        <PageHeader
-          title="Notifications"
-          description="Campaign, billing, and account updates visible to your advertiser workspace."
-        />
+      <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+        <div className="space-y-6 md:space-y-8">
+          <StatusToast success={success} error={error} />
 
-        <Card className="glass-card border-border/60">
+          <Card className="glass-card border-border/60">
           <CardHeader>
             <CardTitle>Advertiser notification preferences</CardTitle>
             <CardDescription>
@@ -71,14 +69,11 @@ export default async function DashboardNotificationsPage({
               action={updateAdvertiserNotificationPreferencesAction}
               className="flex items-center gap-3 text-sm font-medium"
             >
-              <label className="flex items-center gap-3 text-sm font-medium">
-                <input
-                  name="productNotifications"
-                  type="checkbox"
-                  defaultChecked={dashboard.settings.productNotifications}
-                />
-                Enable advertiser workspace notifications
-              </label>
+              <CheckboxField
+                name="productNotifications"
+                defaultChecked={dashboard.settings.productNotifications}
+                label="Enable advertiser workspace notifications"
+              />
               <SubmitButton
                 type="submit"
                 variant="outline"
@@ -185,16 +180,17 @@ export default async function DashboardNotificationsPage({
           />
         )}
 
-        <Card className="glass-card border-border/60">
-          <CardHeader>
-            <CardTitle>Need support?</CardTitle>
-            <CardDescription>
-              Contact {dashboard.support.helpLabel.toLowerCase()} at{" "}
-              {dashboard.support.supportEmail} for billing, campaign, or account
-              visibility questions.
-            </CardDescription>
-          </CardHeader>
-        </Card>
+          <Card className="glass-card border-border/60">
+            <CardHeader>
+              <CardTitle>Need support?</CardTitle>
+              <CardDescription>
+                Contact {dashboard.support.helpLabel.toLowerCase()} at{" "}
+                {dashboard.support.supportEmail} for billing, campaign, or account
+                visibility questions.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -209,14 +205,11 @@ export default async function DashboardNotificationsPage({
       : dashboard.notifications.filter((item) => item.category === filter);
 
   return (
-    <div className="space-y-6">
-      <StatusToast success={success} error={error} />
-      <PageHeader
-        title="Notifications"
-        description="Product-side updates for your rider account. Live ride execution remains managed in MOVRR Mobile."
-      />
+    <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+      <div className="space-y-6 md:space-y-8">
+        <StatusToast success={success} error={error} />
 
-      <Card className="glass-card border-border/60">
+        <Card className="glass-card border-border/60">
         <CardHeader>
           <CardTitle>Rider notification preferences</CardTitle>
           <CardDescription>
@@ -229,14 +222,11 @@ export default async function DashboardNotificationsPage({
             action={updateRiderNotificationPreferencesAction}
             className="flex items-center gap-3 text-sm font-medium"
           >
-            <label className="flex items-center gap-3 text-sm font-medium">
-              <input
-                name="productNotifications"
-                type="checkbox"
-                defaultChecked={dashboard.preferences.productNotifications}
-              />
-              Enable rider workspace notifications
-            </label>
+            <CheckboxField
+              name="productNotifications"
+              defaultChecked={dashboard.preferences.productNotifications}
+              label="Enable rider workspace notifications"
+            />
             <SubmitButton
               type="submit"
               variant="outline"
@@ -341,16 +331,17 @@ export default async function DashboardNotificationsPage({
         />
       )}
 
-      <Card className="glass-card border-border/60">
-        <CardHeader>
-          <CardTitle>Need support?</CardTitle>
-          <CardDescription>
-            Contact {dashboard.support.helpLabel.toLowerCase()} at{" "}
-            {dashboard.support.supportEmail} if you need help with route
-            visibility, rewards statements, or account preferences.
-          </CardDescription>
-        </CardHeader>
-      </Card>
+        <Card className="glass-card border-border/60">
+          <CardHeader>
+            <CardTitle>Need support?</CardTitle>
+            <CardDescription>
+              Contact {dashboard.support.helpLabel.toLowerCase()} at{" "}
+              {dashboard.support.supportEmail} if you need help with route
+              visibility, rewards statements, or account preferences.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
     </div>
   );
 }

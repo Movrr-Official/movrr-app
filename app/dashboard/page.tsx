@@ -1,12 +1,20 @@
 ﻿import { EmptyState } from "@/components/shared/EmptyState";
-import { PageHeader } from "@/components/shared/PageHeader";
-import { StatCard } from "@/components/shared/StatCard";
+import { StatsCard } from "@/components/shared/StatsCard";
 import { RiderOverview } from "@/components/rider/Overview";
 import { AdvertiserCampaignList } from "@/components/advertiser/CampaignList";
 import { getCurrentProductSession } from "@/lib/appUser";
 import { formatCurrency, formatRelativeDate } from "@/lib/format";
 import { getRiderDashboardData } from "@/services/rider";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
+import {
+  Bell,
+  CircleDollarSign,
+  LineChart,
+  MapPinned,
+  Megaphone,
+  Trophy,
+  Users,
+} from "lucide-react";
 
 export default async function DashboardPage() {
   const session = await getCurrentProductSession();
@@ -14,39 +22,35 @@ export default async function DashboardPage() {
   if (session?.appUser.role === "advertiser") {
     const dashboard = await getAdvertiserDashboardData();
     return (
-      <div className="min-h-full px-0">
+      <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
         <div className="space-y-6 md:space-y-8">
-          <PageHeader
-            title="Advertiser Overview"
-            description="Monitor campaign visibility, rider participation, spend posture, and engagement analytics from the authenticated advertiser product surface."
-          />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
-            <StatCard
+            <StatsCard
               title="Active campaigns"
               value={dashboard.analytics.activeCampaigns}
-              detail="Campaigns currently delivering in market"
-              iconName="megaphone"
+              description="Campaigns currently delivering in market"
+              icon={Megaphone}
             />
-            <StatCard
+            <StatsCard
               title="Budget exposure"
               value={formatCurrency(dashboard.analytics.totalBudget)}
-              detail="Total configured campaign budget"
-              iconName="budget"
+              description="Total configured campaign budget"
+              icon={CircleDollarSign}
             />
-            <StatCard
+            <StatsCard
               title="Impressions"
               value={dashboard.analytics.totalImpressions}
-              detail="Recorded campaign impression volume"
-              iconName="impressions"
+              description="Recorded campaign impression volume"
+              icon={LineChart}
             />
-            <StatCard
+            <StatsCard
               title="Rider visibility"
               value={dashboard.campaigns.reduce(
                 (sum, campaign) => sum + campaign.ridersAssigned,
                 0,
               )}
-              detail="Participants visible across your campaigns"
-              iconName="users"
+              description="Participants visible across your campaigns"
+              icon={Users}
             />
           </div>
           {dashboard.campaigns.length ? (
@@ -67,36 +71,32 @@ export default async function DashboardPage() {
 
   const dashboard = await getRiderDashboardData();
   return (
-    <div className="min-h-full px-0">
+    <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
       <div className="space-y-6 md:space-y-8">
-        <PageHeader
-          title="Rider Overview"
-          description="Review assigned campaigns, route posture, notifications, and rewards from the web while live execution remains mobile-first in MOVRR Mobile."
-        />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
-          <StatCard
+          <StatsCard
             title="Active campaigns"
             value={dashboard.activeCampaigns}
-            detail="Campaigns currently assigned to you"
-            iconName="megaphone"
+            description="Campaigns currently assigned to you"
+            icon={Megaphone}
           />
-          <StatCard
+          <StatsCard
             title="Active routes"
             value={dashboard.activeRoutes}
-            detail="Route posture synced from your mobile operational flow"
-            iconName="routes"
+            description="Route posture synced from your mobile operational flow"
+            icon={MapPinned}
           />
-          <StatCard
+          <StatsCard
             title="Rewards balance"
             value={dashboard.pointsBalance}
-            detail="Available points ready for redemption"
-            iconName="rewards"
+            description="Available points ready for redemption"
+            icon={Trophy}
           />
-          <StatCard
+          <StatsCard
             title="Last active"
             value={formatRelativeDate(dashboard.lastActive)}
-            detail="Derived from your latest authenticated product activity"
-            iconName="bell"
+            description="Derived from your latest authenticated product activity"
+            icon={Bell}
           />
         </div>
         {dashboard.campaigns.length || dashboard.routes.length ? (

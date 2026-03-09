@@ -1,4 +1,4 @@
-﻿import { EmptyState } from "@/components/shared/EmptyState";
+import { EmptyState } from "@/components/shared/EmptyState";
 import { AdvertiserCampaignList } from "@/components/advertiser/CampaignList";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
 import { getRiderDashboardData } from "@/services/rider";
@@ -15,24 +15,31 @@ export default async function DashboardCampaignsPage() {
     const dashboard = await getAdvertiserDashboardData();
     if (!dashboard.campaigns.length) {
       return (
-        <EmptyState
-          title="No campaign visibility yet"
-          description="Campaigns assigned to your advertiser account will appear here after internal MOVRR operations publishes them."
-        />
+        <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+          <div className="space-y-6 md:space-y-8">
+            <EmptyState
+              title="No campaign visibility yet"
+              description="Campaigns assigned to your advertiser account will appear here after internal MOVRR operations publishes them."
+            />
+          </div>
+        </div>
       );
     }
-    return <AdvertiserCampaignList campaigns={dashboard.campaigns} />;
+    return (
+      <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+        <div className="space-y-6 md:space-y-8">
+          <AdvertiserCampaignList campaigns={dashboard.campaigns} />
+        </div>
+      </div>
+    );
   }
 
   const dashboard = await getRiderDashboardData();
   const campaigns = dashboard.campaigns;
   return (
-    <div className="space-y-6 md:space-y-8">
-      <PageHeader
-        title="Assigned Campaigns"
-        description="Visibility into the campaigns currently assigned to your rider account. Live execution remains managed in MOVRR Mobile."
-      />
-      {campaigns.length ? (
+    <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+      <div className="space-y-6 md:space-y-8">
+        {campaigns.length ? (
         <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
           {campaigns.map((campaign) => (
             <Card key={campaign.id} className="glass-card border-0">
@@ -87,7 +94,8 @@ export default async function DashboardCampaignsPage() {
           description="Campaign assignments will appear here when operations assigns them to you."
           iconName="megaphone"
         />
-      )}
+        )}
+      </div>
     </div>
   );
 }

@@ -1,11 +1,18 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { StatCard } from "@/components/shared/StatCard";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { StatsCard } from "@/components/shared/StatsCard";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { getCurrentProductSession } from "@/lib/appUser";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
 import { redirect } from "next/navigation";
+import { CircleDollarSign, CreditCard, FileText, ShieldCheck } from "lucide-react";
 
 export default async function DashboardBillingPage() {
   const session = await getCurrentProductSession();
@@ -15,29 +22,51 @@ export default async function DashboardBillingPage() {
   const billing = dashboard.billing;
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Billing"
-        description="Read-only billing posture for the authenticated advertiser workspace. Finance handoff is used until a live provider contract is connected."
-      />
-
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard title="Connection state" value={billing.connectionState.replace(/_/g, " ")} detail="Current billing runtime connectivity status" iconName="dashboard" />
-        <StatCard title="Plan" value={billing.planName} detail={billing.planStatus} iconName="budget" />
-        <StatCard title="Invoice contact" value={billing.invoiceContact} detail="Current billing contact used for invoicing" iconName="file" />
-        <StatCard title="Entitlements" value={billing.entitlements.length} detail="Visible billing and product entitlements" iconName="users" />
+    <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+      <div className="space-y-6 md:space-y-8">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <StatsCard
+          title="Connection state"
+          value={billing.connectionState.replace(/_/g, " ")}
+          description="Current billing runtime connectivity status"
+          icon={ShieldCheck}
+        />
+        <StatsCard
+          title="Plan"
+          value={billing.planName}
+          description={billing.planStatus}
+          icon={CircleDollarSign}
+        />
+        <StatsCard
+          title="Invoice contact"
+          value={billing.invoiceContact}
+          description="Current billing contact used for invoicing"
+          icon={FileText}
+        />
+        <StatsCard
+          title="Entitlements"
+          value={billing.entitlements.length}
+          description="Visible billing and product entitlements"
+          icon={CreditCard}
+        />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <Card className="glass-card border-border/60">
           <CardHeader>
             <CardTitle>Usage summary</CardTitle>
-            <CardDescription>Read-only usage and entitlement posture for this advertiser workspace.</CardDescription>
+            <CardDescription>
+              Read-only usage and entitlement posture for this advertiser
+              workspace.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {billing.usageSummary.length ? (
               billing.usageSummary.map((item) => (
-                <div key={item.label} className="flex items-center justify-between rounded-xl border border-border/60 bg-background/70 p-4">
+                <div
+                  key={item.label}
+                  className="flex items-center justify-between rounded-xl border border-border/60 bg-background/70 p-4"
+                >
                   <p className="font-medium">{item.label}</p>
                   <p className="text-sm text-muted-foreground">{item.value}</p>
                 </div>
@@ -55,7 +84,10 @@ export default async function DashboardBillingPage() {
         <Card className="glass-card border-border/60">
           <CardHeader>
             <CardTitle>Billing handoff</CardTitle>
-            <CardDescription>Portal access or finance support handoff for billing questions and invoice requests.</CardDescription>
+            <CardDescription>
+              Portal access or finance support handoff for billing questions and
+              invoice requests.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="rounded-xl border border-border/60 bg-background/70 p-4 text-sm text-muted-foreground">
@@ -76,12 +108,16 @@ export default async function DashboardBillingPage() {
               </ul>
             </div>
             {billing.portalUrl ? (
-              <Link href={billing.portalUrl} className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+              <Link
+                href={billing.portalUrl}
+                className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              >
                 Open billing portal
               </Link>
             ) : null}
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import {
   updateRiderNotificationPreferencesAction,
   updateRiderProfileAction,
 } from "@/app/actions/rider";
+import { CheckboxField } from "@/components/form/CheckboxField";
 import { StatusToast } from "@/components/form/StatusToast";
 import { SubmitButton } from "@/components/form/SubmitButton";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -54,14 +55,11 @@ export default async function DashboardSettingsPage({
     const settings = dashboard.settings;
 
     return (
-      <div className="space-y-6">
-        <StatusToast success={success} error={error} />
-        <PageHeader
-          title="Settings"
-          description="Manage your advertiser organization profile, notification preferences, and account visibility settings."
-        />
+      <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+        <div className="space-y-6 md:space-y-8">
+          <StatusToast success={success} error={error} />
 
-        <Card className="glass-card border-border/60">
+          <Card className="glass-card border-border/60">
           <CardHeader>
             <CardTitle>Company profile</CardTitle>
             <CardDescription>
@@ -118,22 +116,16 @@ export default async function DashboardSettingsPage({
                 defaultValue={settings.timezone}
                 options={TIMEZONE_OPTIONS}
               />
-              <label className="flex items-center gap-3 text-sm font-medium">
-                <input
-                  name="emailNotifications"
-                  type="checkbox"
-                  defaultChecked={settings.emailNotifications}
-                />
-                Email notifications
-              </label>
-              <label className="flex items-center gap-3 text-sm font-medium">
-                <input
-                  name="campaignUpdates"
-                  type="checkbox"
-                  defaultChecked={settings.campaignUpdates}
-                />
-                Campaign updates
-              </label>
+              <CheckboxField
+                name="emailNotifications"
+                defaultChecked={settings.emailNotifications}
+                label="Email notifications"
+              />
+              <CheckboxField
+                name="campaignUpdates"
+                defaultChecked={settings.campaignUpdates}
+                label="Campaign updates"
+              />
               <div className="md:col-span-2">
                 <SubmitButton type="submit" pendingLabel="Saving settings">
                   Save company profile
@@ -156,14 +148,11 @@ export default async function DashboardSettingsPage({
               action={updateAdvertiserNotificationPreferencesAction}
               className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
             >
-              <label className="flex items-center gap-3 text-sm font-medium">
-                <input
-                  name="productNotifications"
-                  type="checkbox"
-                  defaultChecked={settings.productNotifications}
-                />
-                Enable product notifications
-              </label>
+              <CheckboxField
+                name="productNotifications"
+                defaultChecked={settings.productNotifications}
+                label="Enable product notifications"
+              />
               <SubmitButton
                 type="submit"
                 variant="outline"
@@ -175,29 +164,27 @@ export default async function DashboardSettingsPage({
           </CardContent>
         </Card>
 
-        <Card className="glass-card border-border/60">
-          <CardHeader>
-            <CardTitle>Support and billing handoff</CardTitle>
-            <CardDescription>
-              For billing disputes, campaign visibility clarifications, or
-              organization updates, contact {dashboard.support.supportEmail}.
-            </CardDescription>
-          </CardHeader>
-        </Card>
+          <Card className="glass-card border-border/60">
+            <CardHeader>
+              <CardTitle>Support and billing handoff</CardTitle>
+              <CardDescription>
+                For billing disputes, campaign visibility clarifications, or
+                organization updates, contact {dashboard.support.supportEmail}.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
       </div>
     );
   }
 
   const dashboard = await getRiderDashboardData();
   return (
-    <div className="space-y-6">
-      <StatusToast success={success} error={error} />
-      <PageHeader
-        title="Settings"
-        description="Manage rider account preferences, language and timezone visibility, and support handoff information."
-      />
+    <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+      <div className="space-y-6 md:space-y-8">
+        <StatusToast success={success} error={error} />
 
-      <Card className="glass-card border-border/60">
+        <Card className="glass-card border-border/60">
         <CardHeader>
           <CardTitle>Rider profile</CardTitle>
           <CardDescription>
@@ -287,14 +274,11 @@ export default async function DashboardSettingsPage({
             action={updateRiderNotificationPreferencesAction}
             className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
           >
-            <label className="flex items-center gap-3 text-sm font-medium">
-              <input
-                name="productNotifications"
-                type="checkbox"
-                defaultChecked={dashboard.preferences.productNotifications}
-              />
-              Enable product notifications
-            </label>
+            <CheckboxField
+              name="productNotifications"
+              defaultChecked={dashboard.preferences.productNotifications}
+              label="Enable product notifications"
+            />
             <SubmitButton
               type="submit"
               variant="outline"
@@ -306,16 +290,17 @@ export default async function DashboardSettingsPage({
         </CardContent>
       </Card>
 
-      <Card className="glass-card border-border/60">
-        <CardHeader>
-          <CardTitle>Security and support</CardTitle>
-          <CardDescription>
-            Password resets and account recovery remain managed through
-            authenticated MOVRR access flows. Contact{" "}
-            {dashboard.support.supportEmail} if you need account support.
-          </CardDescription>
-        </CardHeader>
-      </Card>
+        <Card className="glass-card border-border/60">
+          <CardHeader>
+            <CardTitle>Security and support</CardTitle>
+            <CardDescription>
+              Password resets and account recovery remain managed through
+              authenticated MOVRR access flows. Contact{" "}
+              {dashboard.support.supportEmail} if you need account support.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
     </div>
   );
 }

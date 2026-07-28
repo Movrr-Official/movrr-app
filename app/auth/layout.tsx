@@ -10,8 +10,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <motion.div
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.6 }}
-        className="hidden flex-col justify-between bg-gradient-to-br from-primary to-primary/80 p-12 text-white lg:flex lg:w-1/2"
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        className="hidden flex-col justify-between bg-movrr-bg-primary p-12 text-movrr-text-inverse lg:flex lg:w-1/2"
       >
         <div>
           <div className="mb-8 flex items-center space-x-1">
@@ -26,7 +26,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
         <div className="mb-16 space-y-8">
           <div className="flex items-center space-x-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-movrr-text-inverse/10">
               <span className="text-lg font-semibold">R</span>
             </div>
             <div>
@@ -35,7 +35,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-movrr-text-inverse/10">
               <span className="text-lg font-semibold">A</span>
             </div>
             <div>
@@ -44,7 +44,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-movrr-text-inverse/10">
               <span className="text-lg font-semibold">S</span>
             </div>
             <div>
@@ -58,8 +58,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <motion.div
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="flex flex-1 items-center justify-center bg-muted/50 p-8"
+        transition={{ duration: 0.45, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        className="flex flex-1 items-center justify-center bg-background p-8"
       >
         <div className="w-full max-w-md">{children}</div>
       </motion.div>

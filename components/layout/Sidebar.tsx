@@ -198,8 +198,8 @@ export function Sidebar({
           </nav>
         </div>
 
-        <div className="p-3 border-t border-border">
-          <form action="/api/auth/signout" method="post">
+        <div className="flex h-16 shrink-0 items-center border-t border-border px-3">
+          <form action="/api/auth/signout" method="post" className="w-full">
             <Button
               type="submit"
               variant="ghost"

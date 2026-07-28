@@ -61,7 +61,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         transition={{ duration: 0.45, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
         className="flex flex-1 items-center justify-center bg-movrr-bg-soft p-8"
       >
-        <div className="w-full max-w-md rounded-xl border border-movrr-border-soft bg-movrr-bg-surface text-movrr-text-heading shadow-sm">
+        <div className="w-full max-w-md rounded-xl border border-movrr-border-soft bg-movrr-bg-surface text-movrr-text-heading shadow-none">
           {children}
         </div>
       </motion.div>

@@ -19,7 +19,7 @@ export default async function ResetPasswordPage() {
   }
 
   return (
-    <Card className="border-border shadow-sm">
+    <Card className="border-border shadow-none">
       <CardHeader>
         <CardTitle>Reset password</CardTitle>
         <CardDescription>Set a new password for your MOVRR product account.</CardDescription>

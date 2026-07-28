@@ -87,7 +87,7 @@ export function SigninForm() {
                       {...field}
                       placeholder="Enter your email"
                       disabled={isPending}
-                      className="border border-border-input bg-background"
+                      className="border border-input bg-background"
                       onKeyDown={(event) => {
                         if (event.key === "Enter" && emailValue.trim()) {
                           event.preventDefault();
@@ -106,7 +106,7 @@ export function SigninForm() {
           </>
         ) : (
           <>
-            <div className="flex h-9 items-center justify-between rounded-md border border-border-input px-4 py-2 text-sm dark:border-input dark:bg-input/30">
+            <div className="flex h-9 items-center justify-between rounded-md border border-input px-4 py-2 text-sm dark:border-input dark:bg-input/30">
               <p className="text-sm font-medium">{getValues("email")}</p>
               <button type="button" className="cursor-pointer font-semibold text-primary transition-colors hover:text-primary/80" onClick={() => setEmailSubmitted(false)}>
                 <Badge variant="outline" className="hover:bg-muted">Change</Badge>
@@ -125,7 +125,7 @@ export function SigninForm() {
                         {...field}
                         placeholder="Enter your password"
                         disabled={isPending}
-                        className="border border-border-input bg-background"
+                        className="border border-input bg-background"
                       />
                       <Button
                         type="button"

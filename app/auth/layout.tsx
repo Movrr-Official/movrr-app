@@ -20,13 +20,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </div>
             <span className="text-2xl font-bold uppercase">Movrr</span>
           </div>
-          <h1 className="mb-4 text-4xl font-bold">MOVRR Product Workspace</h1>
-          <p className="text-xl opacity-90">Secure rider and advertiser access to campaign visibility, rewards, notifications, performance, and account settings across the MOVRR product family.</p>
+          <h1 className="mb-4 text-3xl font-semibold tracking-tight md:text-4xl">MOVRR Product Workspace</h1>
+          <p className="text-base opacity-90 md:text-lg">Secure rider and advertiser access to campaign visibility, rewards, notifications, performance, and account settings across the MOVRR product family.</p>
         </div>
 
         <div className="mb-16 space-y-8">
           <div className="flex items-center space-x-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-movrr-text-inverse/10">
+            <div className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-movrr-text-inverse/10">
               <span className="text-lg font-semibold">R</span>
             </div>
             <div>
@@ -35,7 +35,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-movrr-text-inverse/10">
+            <div className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-movrr-text-inverse/10">
               <span className="text-lg font-semibold">A</span>
             </div>
             <div>
@@ -44,7 +44,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-movrr-text-inverse/10">
+            <div className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-movrr-text-inverse/10">
               <span className="text-lg font-semibold">S</span>
             </div>
             <div>

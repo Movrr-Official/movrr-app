@@ -1,9 +1,9 @@
-﻿import { SectionSkeleton } from "@/components/skeleton/SectionSkeleton";
+import { SectionSkeleton } from "@/components/skeleton/SectionSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function RouteLoading({ withCards = true }: { withCards?: boolean }) {
   return (
-    <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+    <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
         <div className="space-y-3">
           <Skeleton className="h-10 w-64 rounded-xl" />

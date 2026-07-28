@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect } from "react";
 import { AlertTriangle, RotateCcw } from "lucide-react";
@@ -27,12 +27,12 @@ export function RouteError({
   }, [error]);
 
   return (
-    <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+    <div className="page-canvas">
       <Card className="border-border">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <AlertTriangle className="h-5 w-5 text-destructive" />
-            We couldn’t load this dashboard view
+            We couldn�t load this dashboard view
           </CardTitle>
           <CardDescription>
             The request failed before the product surface could render. You can

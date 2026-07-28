@@ -27,7 +27,7 @@ export default async function DashboardBillingPage() {
   const billing = dashboard.billing;
 
   return (
-    <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+    <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4">
           <StatsCard

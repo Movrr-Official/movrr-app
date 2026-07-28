@@ -75,7 +75,7 @@ export function Navbar({
               <div className="scale-75 origin-left">
                 <Badge
                   variant="outline"
-                  className="capitalize text-[10px] font-medium"
+                  className="text-xs font-medium capitalize"
                 >
                   {session.role} workspace
                 </Badge>

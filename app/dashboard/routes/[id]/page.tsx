@@ -26,7 +26,7 @@ export default async function DashboardRouteDetailPage({
   if (!route) notFound();
 
   return (
-    <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+    <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>

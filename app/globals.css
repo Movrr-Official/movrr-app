@@ -40,7 +40,6 @@
   --movrr-bg-section-divider: oklch(0.945 0.003 106.45);
   --movrr-bg-panel: oklch(0.975 0.002 106.45);
   --movrr-bg-panel-strong: oklch(0.952 0.006 106.45);
-  --movrr-bg-glass: oklch(0.985 0 0);
 
   --movrr-border-muted: oklch(0.8452 0 89.88);
   --movrr-border-strong: oklch(0.7008 0.1944 149.24);
@@ -220,7 +219,6 @@
   --color-movrr-bg-section-divider: var(--movrr-bg-section-divider);
   --color-movrr-bg-panel: var(--movrr-bg-panel);
   --color-movrr-bg-panel-strong: var(--movrr-bg-panel-strong);
-  --color-movrr-bg-glass: var(--movrr-bg-glass);
 
   --color-movrr-border-muted: var(--movrr-border-muted);
   --color-movrr-border-strong: var(--movrr-border-strong);
@@ -323,46 +321,12 @@
     @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
   }
 
-  .animate-float {
-    animation: float 6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  }
-
-  .animate-pulse-slow {
-    animation: pulse 4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  }
-
   .animate-slide-up {
-    animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-
-  .animate-fade-in {
-    animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-
-  .animate-scale-in {
-    animation: scaleIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: slideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
 
   .focus-ring {
     @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background;
-  }
-
-  .section-padding {
-    @apply py-16 md:py-24 lg:py-32;
-  }
-
-  .container-padding {
-    @apply px-4 md:px-6 lg:px-8;
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-12px);
   }
 }
 
@@ -374,25 +338,5 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
   }
 }

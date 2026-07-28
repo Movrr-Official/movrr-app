@@ -51,7 +51,6 @@ export interface StatsCardProps {
   animationDelay?: string;
   valueSize?: "xs" | "sm" | "md" | "lg" | "xl";
   size?: "mini" | "compact" | "default" | "large";
-  variant?: "default" | "linear";
   formatValue?: (value: string | number) => string;
   onClick?: () => void;
 }
@@ -95,11 +94,9 @@ export function StatsCard({
   animationDelay,
   valueSize,
   size = "default",
-  variant = "default",
   formatValue,
   onClick,
 }: StatsCardProps) {
-  const isGradient = variant === "linear";
   const formattedValue = formatValue
     ? formatValue(value)
     : typeof value === "number"
@@ -117,9 +114,9 @@ export function StatsCard({
 
   const hasContent = Boolean(
     description ||
-    progress ||
-    (metrics && metrics.length > 0) ||
-    (badges && badges.length > 0),
+      progress ||
+      (metrics && metrics.length > 0) ||
+      (badges && badges.length > 0),
   );
 
   const cardSizeClasses = {
@@ -137,17 +134,17 @@ export function StatsCard({
   };
 
   const titleSizeClasses = {
-    mini: "text-[14px]",
+    mini: "text-sm",
     compact: "text-xs",
     default: "text-sm",
     large: "text-sm",
   };
 
   const iconWrapperSizeClasses = {
-    mini: "p-2.5 rounded-lg",
-    compact: "p-2 rounded-lg",
+    mini: "p-2.5 rounded-[14px]",
+    compact: "p-2 rounded-[14px]",
     default: "p-3 rounded-[14px]",
-    large: "p-4 rounded-2xl",
+    large: "p-4 rounded-[14px]",
   };
 
   const iconSizeClasses = {
@@ -167,25 +164,20 @@ export function StatsCard({
   return (
     <Card
       className={cn(
-        "transition-all duration-300 group animate-slide-up overflow-hidden relative",
-        isGradient
-          ? "border-0 bg-linear-to-br from-primary to-primary/70 text-primary-foreground shadow-md"
-          : "border border-border bg-card",
-        onClick && "cursor-pointer hover:shadow-lg",
+        "relative overflow-hidden border border-border bg-card transition-shadow duration-200",
+        onClick && "cursor-pointer hover:shadow-sm",
         cardSizeClasses[size],
         className,
       )}
       style={animationDelay ? { animationDelay } : undefined}
       onClick={onClick}
     >
-      <CardHeader className={cn("relative z-10", headerSizeClasses[size])}>
+      <CardHeader className={cn(headerSizeClasses[size])}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <CardTitle
               className={cn(
-                isGradient
-                  ? "font-semibold text-primary-foreground/80"
-                  : "font-semibold text-muted-foreground",
+                "font-semibold text-muted-foreground",
                 titleSizeClasses[size],
               )}
             >
@@ -194,9 +186,7 @@ export function StatsCard({
             <div className="flex items-baseline gap-2">
               <div
                 className={cn(
-                  isGradient
-                    ? "font-bold text-primary-foreground"
-                    : "font-bold text-foreground",
+                  "font-semibold tracking-tight text-foreground",
                   valueSizeClasses[effectiveValueSize],
                 )}
               >
@@ -220,47 +210,28 @@ export function StatsCard({
           {Icon && (
             <div
               className={cn(
-                "transition-all duration-300",
-                isGradient
-                  ? "bg-primary-foreground/15"
-                  : iconBgClasses[iconBgColor],
+                iconBgClasses[iconBgColor],
                 iconWrapperSizeClasses[size],
               )}
             >
               <Icon
-                className={cn(
-                  iconSizeClasses[size],
-                  isGradient
-                    ? "text-primary-foreground"
-                    : iconColorClasses[iconColor],
-                )}
+                className={cn(iconSizeClasses[size], iconColorClasses[iconColor])}
               />
             </div>
           )}
         </div>
       </CardHeader>
       {hasContent && (
-        <CardContent
-          className={cn("relative z-10", contentPaddingClasses[size])}
-        >
+        <CardContent className={cn(contentPaddingClasses[size])}>
           {description && (
-            <p
-              className={cn(
-                "text-xs mb-1",
-                isGradient
-                  ? "text-primary-foreground/80"
-                  : "text-muted-foreground",
-              )}
-            >
-              {description}
-            </p>
+            <p className="mb-1 text-xs text-muted-foreground">{description}</p>
           )}
 
           {progress && (
             <div className="mb-2">
-              <div className="w-full bg-muted rounded-full h-2 overflow-hidden mb-2">
+              <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-muted">
                 <div
-                  className="bg-linear-to-r from-primary to-primary/80 h-2 rounded-full transition-all duration-1000 ease-out"
+                  className="h-2 rounded-full bg-primary transition-all duration-500 ease-out"
                   style={{
                     width: `${Math.min(100, Math.max(0, progress.value))}%`,
                   }}
@@ -268,7 +239,7 @@ export function StatsCard({
               </div>
               {progress.showLabel && progress.label && (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-primary font-semibold">
+                  <span className="text-xs font-semibold text-primary">
                     {progress.label}
                   </span>
                 </div>
@@ -277,7 +248,7 @@ export function StatsCard({
           )}
 
           {metrics && metrics.length > 0 && (
-            <div className="space-y-3 mb-2">
+            <div className="mb-2 space-y-3">
               {metrics.map((metric, index) => {
                 const MetricIcon = metric.icon;
                 const metricAccent = metric.iconColor ?? "primary";
@@ -299,7 +270,7 @@ export function StatsCard({
                         {metric.label}
                       </span>
                     </div>
-                    <span className="text-lg font-bold text-foreground">
+                    <span className="text-lg font-semibold text-foreground">
                       {typeof metric.value === "number"
                         ? metric.value.toLocaleString()
                         : metric.value}
@@ -311,17 +282,12 @@ export function StatsCard({
           )}
 
           {badges && badges.length > 0 && (
-            <div className="flex gap-1.5 flex-wrap">
+            <div className="flex flex-wrap gap-1.5">
               {badges.map((badge, index) => (
                 <Badge
                   key={index}
                   variant={badge.variant || "outline"}
-                  className={cn(
-                    "text-xs font-medium",
-                    isGradient &&
-                      "bg-primary-foreground/15 text-primary-foreground border-primary-foreground/20",
-                    badge.className,
-                  )}
+                  className={cn("text-xs font-medium", badge.className)}
                 >
                   {badge.label}
                 </Badge>

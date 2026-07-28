@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import "./globals.css";
 import QueryClientProvider from "@/providers/QueryClientProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import { ReducedMotionProvider } from "@/components/motion/ReducedMotionProvider";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -33,10 +34,12 @@ export default function RootLayout({
     >
       <body className="min-h-screen bg-background text-foreground">
         <ThemeProvider>
-          <QueryClientProvider>
-            {children}
-            <Toaster richColors position="top-right" />
-          </QueryClientProvider>
+          <ReducedMotionProvider>
+            <QueryClientProvider>
+              {children}
+              <Toaster richColors position="top-right" />
+            </QueryClientProvider>
+          </ReducedMotionProvider>
         </ThemeProvider>
       </body>
     </html>

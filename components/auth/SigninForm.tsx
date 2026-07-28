@@ -87,7 +87,6 @@ export function SigninForm() {
                       {...field}
                       placeholder="Enter your email"
                       disabled={isPending}
-                      className="border border-input bg-background"
                       onKeyDown={(event) => {
                         if (event.key === "Enter" && emailValue.trim()) {
                           event.preventDefault();
@@ -125,7 +124,6 @@ export function SigninForm() {
                         {...field}
                         placeholder="Enter your password"
                         disabled={isPending}
-                        className="border border-input bg-background"
                       />
                       <Button
                         type="button"

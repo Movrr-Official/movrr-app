@@ -55,7 +55,7 @@ export default async function DashboardSettingsPage({
     const settings = dashboard.settings;
 
     return (
-      <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+      <div className="page-canvas">
         <div className="space-y-6 md:space-y-8">
           <StatusToast success={success} error={error} />
 
@@ -180,7 +180,7 @@ export default async function DashboardSettingsPage({
 
   const dashboard = await getRiderDashboardData();
   return (
-    <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+    <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
         <StatusToast success={success} error={error} />
 

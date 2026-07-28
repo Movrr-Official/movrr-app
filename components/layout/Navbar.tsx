@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { Menu, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -18,15 +17,10 @@ export function Navbar({
   onToggleSidebar: () => void;
 }) {
   return (
-    <motion.header
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8"
-    >
+    <header className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 border-b border-border bg-background">
       <div className="flex items-center gap-4 flex-1 max-w-3xl">
         <div className="lg:hidden flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 bg-movrr-bg-primary rounded-[10px] flex items-center justify-center shrink-0">
             <Image
               src="/movrr-icon.png"
               alt="Movrr Icon"
@@ -39,7 +33,7 @@ export function Navbar({
             />
           </div>
           <div className="flex flex-col">
-            <h2 className="text-lg uppercase font-semibold leading-none">
+            <h2 className="text-sm font-semibold tracking-[-0.03em] leading-none">
               Movrr
             </h2>
             <span className="text-xs text-muted-foreground leading-none">
@@ -56,8 +50,6 @@ export function Navbar({
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="flex-1" />
-
         <ThemeToggle />
 
         <Button
@@ -73,8 +65,8 @@ export function Navbar({
 
         <div className="hidden sm:flex items-center gap-3 text-sm px-3 py-2 rounded-lg hover:bg-muted cursor-pointer transition-colors">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-              <User className="h-4 w-4 text-primary" />
+            <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+              <User className="h-4 w-4 text-muted-foreground" />
             </div>
             <div className="hidden lg:flex flex-col">
               <span className="font-medium text-sm truncate max-w-40">
@@ -92,6 +84,6 @@ export function Navbar({
           </div>
         </div>
       </div>
-    </motion.header>
+    </header>
   );
 }

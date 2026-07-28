@@ -22,6 +22,8 @@ import { cn } from "@/lib/utils";
 import type { ProductRole } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 
+const movrrEase = [0.22, 1, 0.36, 1] as const;
+
 const navigation = {
   rider: [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -73,7 +75,7 @@ export function Sidebar({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+            transition={{ duration: 0.2, ease: movrrEase }}
             className="fixed inset-0 z-40 bg-black/50 lg:hidden"
             onClick={onCloseMobile}
             aria-hidden="true"
@@ -87,7 +89,7 @@ export function Sidebar({
           width: sidebarWidth,
           x: isMobile && !sidebarOpen ? -sidebarWidth : 0,
         }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+        transition={{ duration: 0.3, ease: movrrEase }}
         className={cn(
           "flex h-full flex-col bg-background z-50",
           isMobile ? "fixed" : "relative",
@@ -107,10 +109,10 @@ export function Sidebar({
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.15 }}
+                transition={{ duration: 0.2, ease: movrrEase }}
                 className="flex items-center gap-2 flex-1 min-w-0"
               >
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 bg-movrr-bg-primary rounded-[10px] flex items-center justify-center shrink-0">
                   <Image
                     src="/movrr-icon.png"
                     alt="Movrr Icon"
@@ -123,7 +125,7 @@ export function Sidebar({
                   />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <h2 className="text-lg uppercase font-semibold truncate">
+                  <h2 className="text-sm font-semibold tracking-[-0.03em] truncate">
                     Movrr
                   </h2>
                   <span className="text-xs text-muted-foreground truncate">
@@ -140,7 +142,7 @@ export function Sidebar({
             variant="ghost"
             size="sm"
             onClick={onToggle}
-            className="hover:bg-muted hover:text-black p-1"
+            className="hover:bg-muted hover:text-foreground p-1"
             aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
           >
             {sidebarOpen ? (
@@ -183,7 +185,7 @@ export function Sidebar({
                         initial={{ opacity: 0, width: 0 }}
                         animate={{ opacity: 1, width: "auto" }}
                         exit={{ opacity: 0, width: 0 }}
-                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        transition={{ duration: 0.2, ease: movrrEase }}
                         className="flex items-center justify-between flex-1 min-w-0"
                       >
                         <span className="truncate">{item.label}</span>
@@ -202,7 +204,7 @@ export function Sidebar({
               type="submit"
               variant="ghost"
               className={cn(
-                "w-full justify-start gap-3 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer",
+                "w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer",
                 !sidebarOpen && "justify-center",
               )}
             >
@@ -213,7 +215,7 @@ export function Sidebar({
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    transition={{ duration: 0.2, ease: movrrEase }}
                   >
                     Sign Out
                   </motion.span>
@@ -226,4 +228,3 @@ export function Sidebar({
     </>
   );
 }
-

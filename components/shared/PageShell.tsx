@@ -45,7 +45,7 @@ export function PageShell({
             session={session}
             onToggleSidebar={() => setSidebarOpen((value: boolean) => !value)}
           />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 bg-background">{children}</main>
           <Footer />
         </div>
       </div>

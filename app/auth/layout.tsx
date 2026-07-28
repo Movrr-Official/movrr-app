@@ -16,7 +16,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div>
           <div className="mb-8 flex items-center space-x-1">
             <div className="flex items-center justify-center p-1.5">
-              <Image src="/movrr-icon.png" alt="Movrr Icon" width={50} height={50} priority quality={100} aria-hidden="true" />
+              <Image src="/movrr-icon-mark.png" alt="Movrr Icon" width={50} height={50} priority quality={100} aria-hidden="true" />
             </div>
             <span className="text-2xl font-bold uppercase">Movrr</span>
           </div>

@@ -114,7 +114,7 @@ export function Sidebar({
               >
                 <div className="w-8 h-8 bg-movrr-bg-primary rounded-[10px] flex items-center justify-center shrink-0">
                   <Image
-                    src="/movrr-icon.png"
+                    src="/movrr-icon-mark.png"
                     alt="Movrr Icon"
                     width={24}
                     height={24}

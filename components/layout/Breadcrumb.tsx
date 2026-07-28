@@ -138,7 +138,7 @@ export function Breadcrumb() {
                 <Link
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors duration-200",
+                    "flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors duration-200 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 rounded-sm",
                     item.isActive && "text-foreground",
                   )}
                   aria-label="Home"
@@ -164,7 +164,7 @@ export function Breadcrumb() {
                     <Link
                       href={item.href}
                       className={cn(
-                        "text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium",
+                        "text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50 rounded-sm",
                         "truncate max-w-50 sm:max-w-none",
                       )}
                       title={`Go to ${item.label}`}

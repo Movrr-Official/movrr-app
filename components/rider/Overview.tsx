@@ -8,7 +8,7 @@ export function RiderOverview({ data }: { data: RiderDashboard }) {
 
   return (
     <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-      <Card className="glass-card border-border/60">
+      <Card className="border-border">
         <CardHeader>
           <CardTitle>Current rider posture</CardTitle>
           <CardDescription>
@@ -73,7 +73,7 @@ export function RiderOverview({ data }: { data: RiderDashboard }) {
         </CardContent>
       </Card>
 
-      <Card className="glass-card border-border/60">
+      <Card className="border-border">
         <CardHeader>
           <CardTitle>Rewards statement</CardTitle>
           <CardDescription>

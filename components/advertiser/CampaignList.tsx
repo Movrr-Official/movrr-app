@@ -6,7 +6,7 @@ import { formatCurrency, formatDateTime } from "@/lib/format";
 
 export function AdvertiserCampaignList({ campaigns }: { campaigns: AdvertiserCampaign[] }) {
   return (
-    <Card className="glass-card border-border/60">
+    <Card className="border-border">
       <CardHeader>
         <CardTitle>Campaign portfolio</CardTitle>
         <CardDescription>

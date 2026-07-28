@@ -11,8 +11,8 @@ export function AdvertiserPerformanceChart({ data }: { data: Array<{ label: stri
           <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={12} />
           <YAxis tickLine={false} axisLine={false} fontSize={12} />
           <Tooltip />
-          <Bar dataKey="impressions" fill="var(--color-chart-1)" radius={[6, 6, 0, 0]} />
-          <Bar dataKey="scans" fill="var(--color-chart-2)" radius={[6, 6, 0, 0]} />
+          <Bar dataKey="impressions" fill="var(--chart-1)" radius={[6, 6, 0, 0]} />
+          <Bar dataKey="scans" fill="var(--chart-2)" radius={[6, 6, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

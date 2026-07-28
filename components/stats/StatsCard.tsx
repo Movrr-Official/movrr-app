@@ -3,6 +3,13 @@ import { Badge } from "@/components/ui/badge";
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+export type StatsCardAccent =
+  | "primary"
+  | "success"
+  | "warning"
+  | "destructive"
+  | "muted";
+
 export interface StatBadge {
   label: string;
   variant?: "default" | "outline" | "secondary" | "destructive";
@@ -20,7 +27,7 @@ export interface StatMetric {
   label: string;
   value: string | number;
   icon?: LucideIcon;
-  iconColor?: string;
+  iconColor?: StatsCardAccent;
 }
 
 export interface StatProgress {
@@ -34,8 +41,8 @@ export interface StatsCardProps {
   value: string | number;
   description?: string;
   icon?: LucideIcon;
-  iconColor?: "blue" | "green" | "purple" | "amber" | "primary" | "red";
-  iconBgColor?: "blue" | "green" | "purple" | "amber" | "primary" | "red";
+  iconColor?: StatsCardAccent;
+  iconBgColor?: StatsCardAccent;
   trend?: StatTrend;
   badges?: StatBadge[];
   metrics?: StatMetric[];
@@ -50,31 +57,20 @@ export interface StatsCardProps {
 }
 
 const iconColorClasses = {
-  blue: "text-blue-600 dark:text-blue-400",
-  green: "text-green-600 dark:text-green-400",
-  purple: "text-purple-600 dark:text-purple-400",
-  amber: "text-amber-600 dark:text-amber-400",
   primary: "text-primary",
-  red: "text-red-600 dark:text-red-400",
-};
+  success: "text-success",
+  warning: "text-warning",
+  destructive: "text-destructive",
+  muted: "text-muted-foreground",
+} as const;
 
 const iconBgClasses = {
-  blue: "bg-blue-100 dark:bg-blue-950",
-  green: "bg-green-100 dark:bg-green-950",
-  purple: "bg-purple-100 dark:bg-purple-950",
-  amber: "bg-amber-100 dark:bg-amber-950",
   primary: "bg-primary/10",
-  red: "bg-red-100 dark:bg-red-950",
-};
-
-const gradientClasses = {
-  blue: "from-blue-500/5",
-  green: "from-green-500/5",
-  purple: "from-purple-500/5",
-  amber: "from-amber-500/5",
-  primary: "from-primary/5",
-  red: "from-red-500/5",
-};
+  success: "bg-success/10",
+  warning: "bg-warning/15",
+  destructive: "bg-destructive/10",
+  muted: "bg-muted",
+} as const;
 
 const valueSizeClasses = {
   xs: "text-lg md:text-xl",
@@ -89,6 +85,8 @@ export function StatsCard({
   value,
   description,
   icon: Icon,
+  iconColor = "primary",
+  iconBgColor = "primary",
   trend,
   badges,
   metrics,
@@ -101,8 +99,6 @@ export function StatsCard({
   formatValue,
   onClick,
 }: StatsCardProps) {
-  const effectiveIconBg = "primary";
-  const effectiveIconColor = "primary";
   const isGradient = variant === "linear";
   const formattedValue = formatValue
     ? formatValue(value)
@@ -150,7 +146,7 @@ export function StatsCard({
   const iconWrapperSizeClasses = {
     mini: "p-2.5 rounded-lg",
     compact: "p-2 rounded-lg",
-    default: "p-3 rounded-xl",
+    default: "p-3 rounded-[14px]",
     large: "p-4 rounded-2xl",
   };
 
@@ -171,10 +167,10 @@ export function StatsCard({
   return (
     <Card
       className={cn(
-        "border-0 transition-all duration-300 group animate-slide-up overflow-hidden relative",
+        "transition-all duration-300 group animate-slide-up overflow-hidden relative",
         isGradient
-          ? "bg-linear-to-br from-primary to-primary/70 text-primary-foreground shadow-md"
-          : "glass-card",
+          ? "border-0 bg-linear-to-br from-primary to-primary/70 text-primary-foreground shadow-md"
+          : "border border-border bg-card",
         onClick && "cursor-pointer hover:shadow-lg",
         cardSizeClasses[size],
         className,
@@ -182,14 +178,6 @@ export function StatsCard({
       style={animationDelay ? { animationDelay } : undefined}
       onClick={onClick}
     >
-      {!isGradient && (
-        <div
-          className={cn(
-            "absolute inset-0 bg-linear-to-br to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-            gradientClasses[effectiveIconBg],
-          )}
-        />
-      )}
       <CardHeader className={cn("relative z-10", headerSizeClasses[size])}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
@@ -219,8 +207,8 @@ export function StatsCard({
                   className={cn(
                     "text-xs font-semibold",
                     trend.type === "increase"
-                      ? "text-emerald-600 dark:text-emerald-400"
-                      : "text-red-600 dark:text-red-400",
+                      ? "text-success"
+                      : "text-destructive",
                   )}
                 >
                   {trend.type === "increase" ? "+" : "-"}
@@ -235,7 +223,7 @@ export function StatsCard({
                 "transition-all duration-300",
                 isGradient
                   ? "bg-primary-foreground/15"
-                  : iconBgClasses[effectiveIconBg],
+                  : iconBgClasses[iconBgColor],
                 iconWrapperSizeClasses[size],
               )}
             >
@@ -244,7 +232,7 @@ export function StatsCard({
                   iconSizeClasses[size],
                   isGradient
                     ? "text-primary-foreground"
-                    : iconColorClasses[effectiveIconColor],
+                    : iconColorClasses[iconColor],
                 )}
               />
             </div>
@@ -255,7 +243,6 @@ export function StatsCard({
         <CardContent
           className={cn("relative z-10", contentPaddingClasses[size])}
         >
-          {/* Description */}
           {description && (
             <p
               className={cn(
@@ -269,7 +256,6 @@ export function StatsCard({
             </p>
           )}
 
-          {/* Progress Bar */}
           {progress && (
             <div className="mb-2">
               <div className="w-full bg-muted rounded-full h-2 overflow-hidden mb-2">
@@ -290,11 +276,11 @@ export function StatsCard({
             </div>
           )}
 
-          {/* Multiple Metrics */}
           {metrics && metrics.length > 0 && (
             <div className="space-y-3 mb-2">
               {metrics.map((metric, index) => {
                 const MetricIcon = metric.icon;
+                const metricAccent = metric.iconColor ?? "primary";
                 return (
                   <div
                     key={index}
@@ -305,7 +291,7 @@ export function StatsCard({
                         <MetricIcon
                           className={cn(
                             "h-4 w-4",
-                            metric.iconColor || "text-primary",
+                            iconColorClasses[metricAccent],
                           )}
                         />
                       )}
@@ -324,7 +310,6 @@ export function StatsCard({
             </div>
           )}
 
-          {/* Badges */}
           {badges && badges.length > 0 && (
             <div className="flex gap-1.5 flex-wrap">
               {badges.map((badge, index) => (

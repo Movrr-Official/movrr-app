@@ -21,6 +21,13 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Movrr - Rider and Advertiser Workspace",
   description: "Authenticated rider and advertiser product surfaces for MOVRR.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/apple-icon", type: "image/png", sizes: "180x180" }],
+  },
 };
 
 export default function RootLayout({

@@ -123,9 +123,10 @@
 }
 
 @theme inline {
-  /* Enhanced typography with Inter font family for modern readability */
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* Enhanced typography with Manrope font family for modern readability */
+  --font-sans: var(--font-manrope), "Manrope Fallback", system-ui, sans-serif;
+  --font-display: var(--font-manrope), "Manrope Fallback", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 
   /* Extended color palette with energy orange and refined tokens */
   --color-background: var(--background);

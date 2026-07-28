@@ -32,7 +32,7 @@ export function RouteError({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <AlertTriangle className="h-5 w-5 text-destructive" />
-            We couldn’t load this dashboard view
+            We couldn{"'"}t load this dashboard view
           </CardTitle>
           <CardDescription>
             The request failed before the product surface could render. You can

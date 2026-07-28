@@ -91,7 +91,7 @@ export function Sidebar({
         }}
         transition={{ duration: 0.3, ease: movrrEase }}
         className={cn(
-          "flex h-full flex-col bg-background z-50",
+          "flex h-full flex-col border-r border-border bg-background z-50",
           isMobile ? "fixed" : "relative",
           "shadow-sm lg:shadow-none",
         )}

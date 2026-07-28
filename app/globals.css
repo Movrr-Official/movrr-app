@@ -266,6 +266,43 @@
   .container {
     @apply max-w-[1400px]! mx-auto px-4 sm:px-6 lg:px-8;
   }
+
+  /* Auth entry: light brand surfaces even when html has .dark */
+  .auth-shell {
+    --background: var(--movrr-bg-canvas);
+    --foreground: var(--movrr-text-heading);
+    --card: var(--movrr-bg-surface);
+    --card-foreground: var(--movrr-text-heading);
+    --popover: var(--movrr-bg-surface);
+    --popover-foreground: var(--movrr-text-heading);
+    --primary: var(--movrr-green-text);
+    --primary-foreground: var(--movrr-white);
+    --secondary: var(--movrr-bg-soft);
+    --secondary-foreground: var(--movrr-green);
+    --muted: var(--movrr-bg-soft);
+    --muted-foreground: var(--movrr-text-secondary);
+    --accent: color-mix(in oklab, var(--movrr-success) 12%, var(--movrr-bg-soft));
+    --accent-foreground: var(--movrr-text-brand);
+    --border: var(--movrr-border-soft);
+    --input: var(--movrr-border-soft);
+    --ring: var(--movrr-green-light);
+    --color-background: var(--movrr-bg-canvas);
+    --color-foreground: var(--movrr-text-heading);
+    --color-card: var(--movrr-bg-surface);
+    --color-card-foreground: var(--movrr-text-heading);
+    --color-primary: var(--movrr-green-text);
+    --color-primary-foreground: var(--movrr-white);
+    --color-secondary: var(--movrr-bg-soft);
+    --color-secondary-foreground: var(--movrr-green);
+    --color-muted: var(--movrr-bg-soft);
+    --color-muted-foreground: var(--movrr-text-secondary);
+    --color-accent: color-mix(in oklab, var(--movrr-success) 12%, var(--movrr-bg-soft));
+    --color-accent-foreground: var(--movrr-text-brand);
+    --color-border: var(--movrr-border-soft);
+    --color-input: var(--movrr-border-soft);
+    --color-ring: var(--movrr-green-light);
+    color-scheme: light;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

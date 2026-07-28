@@ -10,12 +10,12 @@ import { SigninForm } from "@/components/auth/SigninForm";
 
 export default function SignInPage() {
   return (
-    <Card className="border-0">
+    <Card className="border-0 bg-transparent shadow-none">
       <CardHeader className="pb-6 text-center">
-        <CardTitle className="text-3xl font-bold tracking-tight">
+        <CardTitle className="text-2xl font-semibold tracking-tight text-movrr-text-heading md:text-3xl">
           Welcome Back
         </CardTitle>
-        <CardDescription className="text-lg">
+        <CardDescription className="text-base text-movrr-text-secondary">
           Sign in to access your MOVRR rider or advertiser workspace.
         </CardDescription>
       </CardHeader>

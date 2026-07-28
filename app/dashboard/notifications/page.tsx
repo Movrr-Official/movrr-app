@@ -52,11 +52,11 @@ export default async function DashboardNotificationsPage({
         : dashboard.notifications.filter((item) => item.category === filter);
 
     return (
-      <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+      <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
         <div className="space-y-6 md:space-y-8">
           <StatusToast success={success} error={error} />
 
-          <Card className="glass-card border-border/60">
+          <Card className="border-border">
           <CardHeader>
             <CardTitle>Advertiser notification preferences</CardTitle>
             <CardDescription>
@@ -94,7 +94,7 @@ export default async function DashboardNotificationsPage({
           </CardContent>
         </Card>
 
-        <Card className="glass-card border-border/60">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle>Inbox filters</CardTitle>
             <CardDescription>
@@ -119,7 +119,7 @@ export default async function DashboardNotificationsPage({
         </Card>
 
         {notifications.length ? (
-          <Card className="glass-card border-border/60">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle>Advertiser inbox</CardTitle>
               <CardDescription>
@@ -180,7 +180,7 @@ export default async function DashboardNotificationsPage({
           />
         )}
 
-          <Card className="glass-card border-border/60">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle>Need support?</CardTitle>
               <CardDescription>
@@ -205,11 +205,11 @@ export default async function DashboardNotificationsPage({
       : dashboard.notifications.filter((item) => item.category === filter);
 
   return (
-    <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+    <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
       <div className="space-y-6 md:space-y-8">
         <StatusToast success={success} error={error} />
 
-        <Card className="glass-card border-border/60">
+        <Card className="border-border">
         <CardHeader>
           <CardTitle>Rider notification preferences</CardTitle>
           <CardDescription>
@@ -247,7 +247,7 @@ export default async function DashboardNotificationsPage({
         </CardContent>
       </Card>
 
-      <Card className="glass-card border-border/60">
+      <Card className="border-border">
         <CardHeader>
           <CardTitle>Inbox filters</CardTitle>
           <CardDescription>Filter rider messages by category.</CardDescription>
@@ -269,7 +269,7 @@ export default async function DashboardNotificationsPage({
       </Card>
 
       {notifications.length ? (
-        <Card className="glass-card border-border/60">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle>Rider inbox</CardTitle>
             <CardDescription>
@@ -331,7 +331,7 @@ export default async function DashboardNotificationsPage({
         />
       )}
 
-        <Card className="glass-card border-border/60">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle>Need support?</CardTitle>
             <CardDescription>

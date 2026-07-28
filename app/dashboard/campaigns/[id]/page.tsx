@@ -27,7 +27,7 @@ export default async function DashboardCampaignDetailPage({
   if (!campaign) notFound();
 
   return (
-    <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+    <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
       <div className="space-y-6 md:space-y-8">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -78,7 +78,7 @@ export default async function DashboardCampaignDetailPage({
 
         <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
           <div className="space-y-6">
-            <Card className="glass-card border-border/60">
+            <Card className="border-border">
               <CardHeader>
                 <CardTitle>Campaign metadata</CardTitle>
                 <CardDescription>
@@ -115,7 +115,7 @@ export default async function DashboardCampaignDetailPage({
               </CardContent>
             </Card>
 
-            <Card className="glass-card border-border/60">
+            <Card className="border-border">
               <CardHeader>
                 <CardTitle>Zones and hot zones</CardTitle>
                 <CardDescription>
@@ -159,7 +159,7 @@ export default async function DashboardCampaignDetailPage({
           </div>
 
           <div className="space-y-6">
-            <Card className="glass-card border-border/60">
+            <Card className="border-border">
               <CardHeader>
                 <CardTitle>Campaign timeline</CardTitle>
                 <CardDescription>
@@ -213,7 +213,7 @@ export default async function DashboardCampaignDetailPage({
               </CardContent>
             </Card>
 
-            <Card className="glass-card border-border/60">
+            <Card className="border-border">
               <CardHeader>
                 <CardTitle>Rider participation visibility</CardTitle>
                 <CardDescription>

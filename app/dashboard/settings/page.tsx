@@ -55,11 +55,11 @@ export default async function DashboardSettingsPage({
     const settings = dashboard.settings;
 
     return (
-      <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+      <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
         <div className="space-y-6 md:space-y-8">
           <StatusToast success={success} error={error} />
 
-          <Card className="glass-card border-border/60">
+          <Card className="border-border">
           <CardHeader>
             <CardTitle>Company profile</CardTitle>
             <CardDescription>
@@ -135,7 +135,7 @@ export default async function DashboardSettingsPage({
           </CardContent>
         </Card>
 
-        <Card className="glass-card border-border/60">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle>Product notifications</CardTitle>
             <CardDescription>
@@ -164,7 +164,7 @@ export default async function DashboardSettingsPage({
           </CardContent>
         </Card>
 
-          <Card className="glass-card border-border/60">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle>Support and billing handoff</CardTitle>
               <CardDescription>
@@ -180,11 +180,11 @@ export default async function DashboardSettingsPage({
 
   const dashboard = await getRiderDashboardData();
   return (
-    <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+    <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
       <div className="space-y-6 md:space-y-8">
         <StatusToast success={success} error={error} />
 
-        <Card className="glass-card border-border/60">
+        <Card className="border-border">
         <CardHeader>
           <CardTitle>Rider profile</CardTitle>
           <CardDescription>
@@ -261,7 +261,7 @@ export default async function DashboardSettingsPage({
         </CardContent>
       </Card>
 
-      <Card className="glass-card border-border/60">
+      <Card className="border-border">
         <CardHeader>
           <CardTitle>Notification preferences</CardTitle>
           <CardDescription>
@@ -290,7 +290,7 @@ export default async function DashboardSettingsPage({
         </CardContent>
       </Card>
 
-        <Card className="glass-card border-border/60">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle>Security and support</CardTitle>
             <CardDescription>

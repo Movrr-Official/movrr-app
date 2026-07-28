@@ -43,7 +43,7 @@ export default async function DashboardAnalyticsPage({
   const dashboard = await getAdvertiserDashboardData(range);
 
   return (
-    <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+    <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
       <div className="space-y-6 md:space-y-8">
         <PageHeader
           title="Analytics"
@@ -56,7 +56,7 @@ export default async function DashboardAnalyticsPage({
           }}
         />
 
-        <Card className="glass-card border-border/60">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle>Analytics range</CardTitle>
             <CardDescription>
@@ -114,7 +114,7 @@ export default async function DashboardAnalyticsPage({
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-          <Card className="glass-card border-border/60">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle>Campaign performance</CardTitle>
               <CardDescription>
@@ -137,7 +137,7 @@ export default async function DashboardAnalyticsPage({
             </CardContent>
           </Card>
 
-          <Card className="glass-card border-border/60">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle>Zone concentration</CardTitle>
               <CardDescription>
@@ -171,7 +171,7 @@ export default async function DashboardAnalyticsPage({
           </Card>
         </div>
 
-        <Card className="glass-card border-border/60">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle>Trend summary</CardTitle>
             <CardDescription>

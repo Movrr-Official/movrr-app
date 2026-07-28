@@ -15,7 +15,7 @@ export default async function DashboardCampaignsPage() {
     const dashboard = await getAdvertiserDashboardData();
     if (!dashboard.campaigns.length) {
       return (
-        <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+        <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
           <div className="space-y-6 md:space-y-8">
             <EmptyState
               title="No campaign visibility yet"
@@ -26,7 +26,7 @@ export default async function DashboardCampaignsPage() {
       );
     }
     return (
-      <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+      <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
         <div className="space-y-6 md:space-y-8">
           <AdvertiserCampaignList campaigns={dashboard.campaigns} />
         </div>
@@ -37,12 +37,12 @@ export default async function DashboardCampaignsPage() {
   const dashboard = await getRiderDashboardData();
   const campaigns = dashboard.campaigns;
   return (
-    <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+    <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
       <div className="space-y-6 md:space-y-8">
         {campaigns.length ? (
         <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
           {campaigns.map((campaign) => (
-            <Card key={campaign.id} className="glass-card border-0">
+            <Card key={campaign.id} className="border-border">
               <CardHeader className="space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>

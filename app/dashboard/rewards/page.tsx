@@ -22,7 +22,7 @@ export default async function DashboardRewardsPage() {
   const dashboard = await getRiderDashboardData();
 
   return (
-    <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+    <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
       <div className="space-y-6 md:space-y-8">
         <PageHeader
           title="Rewards"
@@ -61,7 +61,7 @@ export default async function DashboardRewardsPage() {
           />
         </div>
 
-        <Card className="glass-card border-border/60">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle>Statement breakdown</CardTitle>
             <CardDescription>
@@ -98,7 +98,7 @@ export default async function DashboardRewardsPage() {
         </Card>
 
         {dashboard.rewards.length ? (
-          <Card className="glass-card border-border/60">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle>Recent statement activity</CardTitle>
               <CardDescription>

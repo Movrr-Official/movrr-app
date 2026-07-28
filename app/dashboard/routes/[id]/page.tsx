@@ -26,7 +26,7 @@ export default async function DashboardRouteDetailPage({
   if (!route) notFound();
 
   return (
-    <div className="min-h-screen gradient-bg px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
+    <div className="page-canvas min-h-screen px-4 sm:px-6 py-8 md:py-12 lg:py-16 lg:pt-6">
       <div className="space-y-6 md:space-y-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
@@ -88,7 +88,7 @@ export default async function DashboardRouteDetailPage({
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <Card className="glass-card border-border/60">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle>Route geography</CardTitle>
               <CardDescription>
@@ -172,7 +172,7 @@ export default async function DashboardRouteDetailPage({
           </Card>
 
           <div className="space-y-6">
-            <Card className="glass-card border-border/60">
+            <Card className="border-border">
               <CardHeader>
                 <CardTitle>Route timeline</CardTitle>
                 <CardDescription>
@@ -220,7 +220,7 @@ export default async function DashboardRouteDetailPage({
               </CardContent>
             </Card>
 
-            <Card className="glass-card border-border/60">
+            <Card className="border-border">
               <CardHeader>
                 <CardTitle>Telemetry summary</CardTitle>
                 <CardDescription>

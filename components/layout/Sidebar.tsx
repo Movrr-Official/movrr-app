@@ -8,13 +8,17 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleDollarSign,
+  ClipboardList,
   LayoutDashboard,
   LineChart,
   LogOut,
   MapPinned,
   Megaphone,
+  Package,
+  QrCode,
   Settings,
   Trophy,
+  Users,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -38,6 +42,16 @@ const navigation = {
     { href: "/dashboard/campaigns", label: "Campaigns", icon: Megaphone },
     { href: "/dashboard/analytics", label: "Analytics", icon: LineChart },
     { href: "/dashboard/billing", label: "Billing", icon: CircleDollarSign },
+    { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  ],
+  partner: [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/dashboard/collections", label: "Collections", icon: ClipboardList },
+    { href: "/dashboard/validate", label: "Validate", icon: QrCode },
+    { href: "/dashboard/resources", label: "Resources", icon: Package },
+    { href: "/dashboard/rewards", label: "Rewards", icon: Trophy },
+    { href: "/dashboard/staff", label: "Staff", icon: Users },
+    { href: "/dashboard/analytics", label: "Analytics", icon: LineChart },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ],
 } as const;
@@ -131,7 +145,9 @@ export function Sidebar({
                   <span className="text-xs text-muted-foreground truncate">
                     {role === "rider"
                       ? "Rider Workspace"
-                      : "Advertiser Workspace"}
+                      : role === "partner"
+                        ? "Partner Workspace"
+                        : "Advertiser Workspace"}
                   </span>
                 </div>
               </motion.div>

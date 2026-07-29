@@ -19,6 +19,7 @@ import {
 } from "@/lib/format";
 import type { AdvertiserAnalyticsRange } from "@/schemas";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
+import { getPartnerAnalytics } from "@/services/partner";
 import { redirect } from "next/navigation";
 import { CircleDollarSign, LineChart, ScanLine } from "lucide-react";
 
@@ -28,13 +29,88 @@ const RANGE_OPTIONS = [
   { value: "12m", label: "Last 12 months" },
 ] as const;
 
+async function PartnerAnalyticsView() {
+  let analytics: Awaited<ReturnType<typeof getPartnerAnalytics>> = {
+    series: [],
+  };
+  let loadError: string | null = null;
+  try {
+    analytics = await getPartnerAnalytics();
+  } catch (error) {
+    loadError =
+      error instanceof Error ? error.message : "Failed to load analytics";
+  }
+
+  return (
+    <div className="page-canvas">
+      <div className="space-y-6 md:space-y-8">
+        <PageHeader
+          title="Analytics"
+          description="Partner analytics read models from Platform GET /api/v1/partners/analytics."
+        />
+        {loadError ? (
+          <p className="text-sm text-destructive">{loadError}</p>
+        ) : null}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
+          <StatsCard
+            title="Series points"
+            value={analytics.series.length}
+            description="Count of sink series entries returned by Platform"
+            icon={LineChart}
+          />
+        </div>
+        <Card className="border-border">
+          <CardHeader>
+            <CardTitle>Analytics series</CardTitle>
+            <CardDescription>
+              Presentation of Platform sink read models only — no local
+              aggregation rules.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {analytics.series.length ? (
+              analytics.series.map((point, index) => (
+                <div
+                  key={String(point.key ?? point.label ?? index)}
+                  className="flex items-center justify-between rounded-xl border border-border/60 p-4"
+                >
+                  <p className="font-medium">
+                    {String(point.label ?? point.key ?? `Series ${index + 1}`)}
+                  </p>
+                  <Badge variant="outline">
+                    {typeof point.value === "number"
+                      ? point.value.toLocaleString()
+                      : "—"}
+                  </Badge>
+                </div>
+              ))
+            ) : (
+              <EmptyState
+                title="No partner analytics yet"
+                description="Series will appear here when Platform returns analytics sink data for your organisation."
+                iconName="dashboard"
+              />
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 export default async function DashboardAnalyticsPage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const session = await getCurrentProductSession();
-  if (!session || session.appUser.role !== "advertiser") redirect("/dashboard");
+  if (!session) redirect("/auth/signin");
+
+  if (session.appUser.role === "partner") {
+    return <PartnerAnalyticsView />;
+  }
+
+  if (session.appUser.role !== "advertiser") redirect("/dashboard");
 
   const params = await searchParams;
   const range = (

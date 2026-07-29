@@ -2,6 +2,7 @@ import {
   updateAdvertiserNotificationPreferencesAction,
   updateAdvertiserSettingsAction,
 } from "@/app/actions/advertiser";
+import { updatePartnerSettingsAction } from "@/app/actions/partner";
 import {
   updateRiderNotificationPreferencesAction,
   updateRiderProfileAction,
@@ -22,6 +23,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { getCurrentProductSession } from "@/lib/appUser";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
+import { getPartnerSettings } from "@/services/partner";
 import { getRiderDashboardData } from "@/services/rider";
 import { redirect } from "next/navigation";
 
@@ -49,6 +51,87 @@ export default async function DashboardSettingsPage({
   const params = await searchParams;
   const success = typeof params.success === "string" ? params.success : null;
   const error = typeof params.error === "string" ? params.error : null;
+
+  if (session.appUser.role === "partner") {
+    let settings: Record<string, unknown> = {};
+    let loadError: string | null = null;
+    try {
+      settings = await getPartnerSettings();
+    } catch (err) {
+      loadError =
+        err instanceof Error ? err.message : "Failed to load partner settings";
+    }
+
+    return (
+      <div className="page-canvas">
+        <div className="space-y-6 md:space-y-8">
+          <StatusToast success={success} error={error ?? loadError} />
+          <PageHeader
+            title="Settings"
+            description="Partner organisation settings via Platform GET/PATCH /api/v1/partners/settings."
+          />
+          <Card className="border-border">
+            <CardHeader>
+              <CardTitle>Organisation settings</CardTitle>
+              <CardDescription>
+                Patches are forwarded to Platform. If PATCH is not yet enabled
+                server-side, the API error is shown here.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form
+                action={updatePartnerSettingsAction}
+                className="grid gap-4 md:grid-cols-2"
+              >
+                <Input
+                  name="displayName"
+                  placeholder="Display name"
+                  defaultValue={
+                    typeof settings.displayName === "string"
+                      ? settings.displayName
+                      : session.appUser.organization ?? session.appUser.name
+                  }
+                />
+                <Input
+                  name="supportEmail"
+                  type="email"
+                  placeholder="Support email"
+                  defaultValue={
+                    typeof settings.supportEmail === "string"
+                      ? settings.supportEmail
+                      : session.appUser.email
+                  }
+                />
+                <Textarea
+                  className="md:col-span-2"
+                  name="notes"
+                  placeholder="Notes"
+                  defaultValue={
+                    typeof settings.notes === "string" ? settings.notes : ""
+                  }
+                  rows={4}
+                />
+                <div className="md:col-span-2">
+                  <SubmitButton pendingLabel="Saving…">
+                    Save partner settings
+                  </SubmitButton>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+          <Card className="border-border">
+            <CardHeader>
+              <CardTitle>Membership</CardTitle>
+              <CardDescription>
+                Organisation {session.partnerContext?.organisationId} · role{" "}
+                {session.partnerContext?.membershipRole ?? "unknown"}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   if (session.appUser.role === "advertiser") {
     const dashboard = await getAdvertiserDashboardData();

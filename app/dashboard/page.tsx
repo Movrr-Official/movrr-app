@@ -2,10 +2,12 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { StatsCard } from "@/components/stats/StatsCard";
 import { RiderOverview } from "@/components/rider/Overview";
 import { AdvertiserCampaignList } from "@/components/advertiser/CampaignList";
+import { PartnerOverview } from "@/components/partner/PartnerOverview";
 import { getCurrentProductSession } from "@/lib/appUser";
 import { formatCurrency, formatRelativeDate } from "@/lib/format";
 import { getRiderDashboardData } from "@/services/rider";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
+import { getPartnerDashboard } from "@/services/partner";
 import {
   Bell,
   CircleDollarSign,
@@ -18,6 +20,15 @@ import {
 
 export default async function DashboardPage() {
   const session = await getCurrentProductSession();
+
+  if (session?.appUser.role === "partner") {
+    const dashboard = await getPartnerDashboard();
+    return (
+      <div className="page-canvas">
+        <PartnerOverview dashboard={dashboard} />
+      </div>
+    );
+  }
 
   if (session?.appUser.role === "advertiser") {
     const dashboard = await getAdvertiserDashboardData();

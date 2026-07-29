@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const productRoleSchema = z.enum(["rider", "advertiser"]);
+export const productRoleSchema = z.enum(["rider", "advertiser", "partner"]);
 export const userStatusSchema = z.enum(["active", "inactive", "pending"]);
 
 export const appUserSchema = z.object({

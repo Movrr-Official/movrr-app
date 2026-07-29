@@ -4,8 +4,21 @@ import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { PRODUCT_ROLES, type ProductRole } from "@/lib/constants";
 import { logger } from "@/lib/logger";
-import type { AppUser } from "@/schemas";
+import {
+  capabilitiesForMembershipRole,
+  isPartnerMembershipRole,
+} from "@/lib/platform/capabilities";
+import { platformFetch } from "@/lib/platform/client";
+import { PlatformApiError, type PartnerMeResponse } from "@/lib/platform/types";
+import type { AppUser, PartnerContext } from "@/schemas";
 
+/**
+ * Session shape decision (Plan 4):
+ * `partnerContext` is sourced from Platform `GET /api/v1/partners/me`.
+ * Organisation membership + role come from that endpoint — movrr-app does not
+ * duplicate org tables. Presentation capabilities are derived from the membership
+ * role for UI gating only; the Platform remains authoritative for mutations.
+ */
 export type ProductSession = {
   authUser: SupabaseAuthUser;
   appUser: AppUser;
@@ -29,6 +42,7 @@ export type ProductSession = {
     email_notifications?: boolean | null;
     campaign_updates?: boolean | null;
   } | null;
+  partnerContext?: PartnerContext | null;
 };
 
 type ProductIdentity = {
@@ -38,6 +52,48 @@ type ProductIdentity = {
 
 function isProductRole(role: string | null | undefined): role is ProductRole {
   return PRODUCT_ROLES.includes(role as ProductRole);
+}
+
+function toPartnerContext(me: PartnerMeResponse): PartnerContext {
+  const membershipRole = isPartnerMembershipRole(me.role) ? me.role : null;
+  return {
+    organisationId: me.organisationId,
+    membershipRole,
+    orgType: "reward_partner",
+    capabilities: capabilitiesForMembershipRole(membershipRole),
+  };
+}
+
+/**
+ * Attempts Platform partner membership discovery.
+ * Returns null when the user is not an organisation principal (or API unreachable).
+ */
+export async function fetchPartnerContext(): Promise<PartnerContext | null> {
+  try {
+    const me = await platformFetch<PartnerMeResponse>("/partners/me");
+    if (!me?.organisationId) return null;
+    return toPartnerContext(me);
+  } catch (error) {
+    if (error instanceof PlatformApiError) {
+      if (
+        error.status === 401 ||
+        error.status === 403 ||
+        error.kind === "unauthenticated" ||
+        error.kind === "permission_denied" ||
+        error.kind === "BusinessFailure" ||
+        error.kind === "unrecognised_principal"
+      ) {
+        return null;
+      }
+      logger.warn("Platform partners/me failed", error.message);
+      return null;
+    }
+    logger.warn(
+      "Platform partners/me unexpected error",
+      error instanceof Error ? error.message : String(error),
+    );
+    return null;
+  }
 }
 
 export async function getAuthenticatedAppUser(): Promise<ProductIdentity | null> {
@@ -66,8 +122,20 @@ export async function getAuthenticatedAppUser(): Promise<ProductIdentity | null>
     return null;
   }
 
-  if (!appUserRow || !isProductRole(appUserRow.role)) {
+  if (!appUserRow) {
     return null;
+  }
+
+  // Prefer declared product roles; allow active users through so /partners/me can
+  // discover organisation membership without requiring admin_users.
+  let role: ProductRole | null = isProductRole(appUserRow.role)
+    ? appUserRow.role
+    : null;
+
+  if (!role) {
+    const partnerContext = await fetchPartnerContext();
+    if (!partnerContext) return null;
+    role = "partner";
   }
 
   return {
@@ -77,7 +145,7 @@ export async function getAuthenticatedAppUser(): Promise<ProductIdentity | null>
       authUserId: authUser.id,
       email: appUserRow.email,
       name: appUserRow.name ?? appUserRow.email,
-      role: appUserRow.role,
+      role,
       status: appUserRow.status ?? "active",
       avatarUrl: appUserRow.avatar_url,
       phone: appUserRow.phone,
@@ -131,6 +199,7 @@ export async function getRiderProductSession(identity?: ProductIdentity): Promis
         }
       : null,
     advertiserProfile: null,
+    partnerContext: null,
   };
 }
 
@@ -149,12 +218,38 @@ export async function getAdvertiserProductSession(identity?: ProductIdentity): P
     ...resolvedIdentity,
     riderProfile: null,
     advertiserProfile: advertiserProfile.data,
+    partnerContext: null,
+  };
+}
+
+export async function getPartnerProductSession(
+  identity?: ProductIdentity,
+): Promise<ProductSession | null> {
+  const resolvedIdentity = identity ?? (await getAuthenticatedAppUser());
+  if (!resolvedIdentity) return null;
+
+  const partnerContext = await fetchPartnerContext();
+  if (!partnerContext) return null;
+
+  return {
+    authUser: resolvedIdentity.authUser,
+    appUser: {
+      ...resolvedIdentity.appUser,
+      role: "partner",
+    },
+    riderProfile: null,
+    advertiserProfile: null,
+    partnerContext,
   };
 }
 
 export async function getCurrentProductSession(): Promise<ProductSession | null> {
   const identity = await getAuthenticatedAppUser();
   if (!identity) return null;
+
+  // Prefer Platform partner membership when /partners/me succeeds.
+  const partnerSession = await getPartnerProductSession(identity);
+  if (partnerSession) return partnerSession;
 
   if (identity.appUser.role === "rider") {
     return getRiderProductSession(identity);
@@ -164,18 +259,40 @@ export async function getCurrentProductSession(): Promise<ProductSession | null>
     return getAdvertiserProductSession(identity);
   }
 
+  if (identity.appUser.role === "partner") {
+    // Declared partner role but no Platform membership → unauthorized surface.
+    return null;
+  }
+
   return null;
 }
 
 export async function requireProductSession(allowedRoles?: ProductRole[]) {
+  const identity = await getAuthenticatedAppUser();
+  if (!identity) {
+    redirect("/auth/signin");
+  }
+
   const session = await getCurrentProductSession();
   if (!session) {
-    redirect("/auth/signin");
+    redirect("/unauthorized");
   }
 
   if (allowedRoles && !allowedRoles.includes(session.appUser.role)) {
     redirect("/unauthorized");
   }
 
+  // Partner shell requires successful /partners/me (partnerContext present).
+  if (
+    session.appUser.role === "partner" &&
+    !session.partnerContext?.organisationId
+  ) {
+    redirect("/unauthorized");
+  }
+
   return session;
+}
+
+export async function requirePartnerSession() {
+  return requireProductSession(["partner"]);
 }

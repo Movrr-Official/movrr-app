@@ -39,7 +39,9 @@ export function Navbar({
             <span className="text-xs text-muted-foreground leading-none">
               {session.role === "rider"
                 ? "Rider Workspace"
-                : "Advertiser Workspace"}
+                : session.role === "partner"
+                  ? "Partner Workspace"
+                  : "Advertiser Workspace"}
             </span>
           </div>
         </div>

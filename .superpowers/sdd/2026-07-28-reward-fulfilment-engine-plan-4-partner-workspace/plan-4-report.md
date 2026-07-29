@@ -14,7 +14,7 @@
 5. `5474fc2` — feat(app): partner resources and rewards management UI  
 6. `af8e090` — feat(app): partner staff management via Organisation membership APIs  
 7. `ca7266d` — feat(app): partner analytics and settings  
-8. _(verification notes commit)_ — test(app): partner workspace end-to-end verification notes  
+8. `5255104` — test(app): partner workspace end-to-end verification notes  
 
 ## Delivered
 

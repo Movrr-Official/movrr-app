@@ -10,14 +10,121 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getCurrentProductSession } from "@/lib/appUser";
+import { hasPartnerCapability } from "@/lib/platform/capabilities";
 import { formatRelativeDate } from "@/lib/format";
 import { getRiderDashboardData } from "@/services/rider";
+import { listPartnerRewards } from "@/services/partner";
 import { redirect } from "next/navigation";
 import { CircleDollarSign, FileText, Trophy, Wallet } from "lucide-react";
 
+async function PartnerRewardsView() {
+  const session = await getCurrentProductSession();
+  if (!session?.partnerContext) redirect("/unauthorized");
+
+  const canRead = hasPartnerCapability(
+    session.partnerContext.capabilities,
+    "rewards.catalog.read",
+  );
+  const canManage = hasPartnerCapability(
+    session.partnerContext.capabilities,
+    "rewards.manage",
+  );
+
+  if (!canRead) {
+    return (
+      <div className="page-canvas">
+        <EmptyState
+          title="Rewards catalog unavailable"
+          description="Your membership role cannot read partner-scoped rewards."
+          iconName="rewards"
+        />
+      </div>
+    );
+  }
+
+  let rewards: Awaited<ReturnType<typeof listPartnerRewards>> = [];
+  let listError: string | null = null;
+  try {
+    rewards = await listPartnerRewards();
+  } catch (error) {
+    listError =
+      error instanceof Error ? error.message : "Failed to load rewards";
+  }
+
+  return (
+    <div className="page-canvas">
+      <div className="space-y-6 md:space-y-8">
+        <PageHeader
+          title="Rewards"
+          description={
+            canManage
+              ? "Partner-scoped reward catalog from Platform. Mutations stay on the API when available."
+              : "Read-only partner-scoped reward catalog from Platform."
+          }
+        />
+        {listError ? (
+          <p className="text-sm text-destructive">{listError}</p>
+        ) : null}
+        {rewards.length ? (
+          <Card className="border-border">
+            <CardHeader>
+              <CardTitle>Partner catalog</CardTitle>
+              <CardDescription>
+                GET /api/v1/partners/rewards — presentation only.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {rewards.map((reward) => (
+                <div
+                  key={reward.id}
+                  className="flex flex-col gap-2 rounded-xl border border-border/60 p-4 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <p className="text-sm font-semibold">
+                      {reward.name ?? reward.id}
+                    </p>
+                    <p className="text-xs text-muted-foreground break-all">
+                      {reward.id}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {reward.fulfilmentType ? (
+                      <Badge variant="outline">{reward.fulfilmentType}</Badge>
+                    ) : null}
+                    {reward.status ? (
+                      <Badge variant="secondary" className="capitalize">
+                        {reward.status}
+                      </Badge>
+                    ) : null}
+                    {typeof reward.pointsCost === "number" ? (
+                      <Badge>{reward.pointsCost} pts</Badge>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        ) : (
+          <EmptyState
+            title="No partner rewards yet"
+            description="Partner-scoped catalog items will appear here once Platform returns them."
+            iconName="rewards"
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default async function DashboardRewardsPage() {
   const session = await getCurrentProductSession();
-  if (!session || session.appUser.role !== "rider") redirect("/dashboard");
+  if (!session) redirect("/auth/signin");
+
+  if (session.appUser.role === "partner") {
+    return <PartnerRewardsView />;
+  }
+
+  if (session.appUser.role !== "rider") redirect("/dashboard");
 
   const dashboard = await getRiderDashboardData();
 
@@ -157,6 +264,3 @@ export default async function DashboardRewardsPage() {
     </div>
   );
 }
-
-
-

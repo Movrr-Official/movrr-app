@@ -16,7 +16,7 @@ export default function SignInPage() {
           Welcome Back
         </CardTitle>
         <CardDescription className="text-base text-movrr-text-secondary">
-          Sign in to access your MOVRR rider or advertiser workspace.
+          Sign in to MOVRR. We&apos;ll open the right workspace for your account.
         </CardDescription>
       </CardHeader>
       <CardContent>

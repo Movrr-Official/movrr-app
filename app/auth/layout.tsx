@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { BarChart3, Handshake, ShieldCheck } from "lucide-react";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -16,40 +17,79 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div>
           <div className="mb-8 flex items-center space-x-1">
             <div className="flex items-center justify-center p-1.5">
-              <Image src="/movrr-icon-mark.png" alt="Movrr Icon" width={50} height={50} priority quality={100} aria-hidden="true" />
+              <Image
+                src="/movrr-icon-mark.png"
+                alt="Movrr Icon"
+                width={50}
+                height={50}
+                priority
+                quality={100}
+                aria-hidden="true"
+              />
             </div>
             <span className="text-2xl font-bold uppercase">Movrr</span>
           </div>
-          <h1 className="mb-4 text-3xl font-semibold tracking-tight md:text-4xl">MOVRR Product Workspace</h1>
-          <p className="text-base opacity-90 md:text-lg">Secure rider and advertiser access to campaign visibility, rewards, notifications, performance, and account settings across the MOVRR product family.</p>
+          <h1 className="mb-4 text-3xl font-semibold tracking-tight md:text-4xl">
+            MOVRR Business Workspace
+          </h1>
+          <p className="text-base opacity-90 md:text-lg">
+            The secure workspace for organisations participating in the MOVRR
+            platform — reward partners, advertisers, and future enterprise
+            partners operating across fulfilment, campaigns, and account
+            controls.
+          </p>
         </div>
 
         <div className="mb-16 space-y-8">
           <div className="flex items-center space-x-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-movrr-text-inverse/10">
-              <span className="text-lg font-semibold">R</span>
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-[14px] bg-movrr-text-inverse/10">
+              <Handshake
+                className="size-5"
+                aria-hidden="true"
+                strokeWidth={1.75}
+              />
             </div>
             <div>
-              <h3 className="font-semibold">Rider Visibility</h3>
-              <p className="opacity-80">Review assigned campaigns, rewards, route posture, and product notifications from the web.</p>
+              <h3 className="font-semibold">Reward Partner Operations</h3>
+              <p className="opacity-80">
+                Validate redemptions, confirm collections, manage staff access,
+                and monitor fulfilment activity for your organisation.
+              </p>
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-movrr-text-inverse/10">
-              <span className="text-lg font-semibold">A</span>
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-[14px] bg-movrr-text-inverse/10">
+              <BarChart3
+                className="size-5"
+                aria-hidden="true"
+                strokeWidth={1.75}
+              />
             </div>
             <div>
-              <h3 className="font-semibold">Advertiser Insight</h3>
-              <p className="opacity-80">Monitor campaign visibility, rider participation, analytics, billing posture, and account settings.</p>
+              <h3 className="font-semibold">Advertiser Insights</h3>
+              <p className="opacity-80">
+                Track campaign performance, rider engagement, analytics, billing
+                posture, and organisation settings in one place.
+              </p>
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-movrr-text-inverse/10">
-              <span className="text-lg font-semibold">S</span>
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-[14px] bg-movrr-text-inverse/10">
+              <ShieldCheck
+                className="size-5"
+                aria-hidden="true"
+                strokeWidth={1.75}
+              />
             </div>
             <div>
-              <h3 className="font-semibold">Security-Scoped Sessions</h3>
-              <p className="opacity-80">Authentication and role-based routing ensure riders and advertisers only enter their intended product surface.</p>
+              <h3 className="font-semibold">
+                Enterprise Security &amp; Role-Based Access
+              </h3>
+              <p className="opacity-80">
+                After sign-in, access is scoped to your organisation membership
+                and permissions — so each team only enters the workspace they
+                are authorised to use.
+              </p>
             </div>
           </div>
         </div>

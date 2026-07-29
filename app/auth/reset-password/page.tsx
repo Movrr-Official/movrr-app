@@ -22,7 +22,7 @@ export default async function ResetPasswordPage() {
     <Card className="border-border shadow-none">
       <CardHeader>
         <CardTitle>Reset password</CardTitle>
-        <CardDescription>Set a new password for your MOVRR product account.</CardDescription>
+        <CardDescription>Set a new password for your MOVRR Business Workspace account.</CardDescription>
       </CardHeader>
       <CardContent>
         <form action={updatePassword} className="space-y-4">

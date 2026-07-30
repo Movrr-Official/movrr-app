@@ -11,6 +11,7 @@ export default async function DashboardLayout({
     "rider",
     "advertiser",
     "partner",
+    "government",
   ]);
   const shellSession = {
     authUserId: session.authUser.id,

@@ -11,6 +11,10 @@ import {
 } from "@/components/ui/card";
 import { getCurrentProductSession } from "@/lib/appUser";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
+import {
+  billingConnectionLabel,
+  type BillingConnectionState,
+} from "@/lib/platform/capabilityRegistry.types";
 import { redirect } from "next/navigation";
 import {
   CircleDollarSign,
@@ -25,15 +29,21 @@ export default async function DashboardBillingPage() {
 
   const dashboard = await getAdvertiserDashboardData();
   const billing = dashboard.billing;
+  const connectionState = billing.connectionState as BillingConnectionState;
+  const connectionLabel = billingConnectionLabel(connectionState);
 
   return (
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
+        <PageHeader
+          title="Billing"
+          description="Advertiser billing connection and entitlement posture."
+        />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4">
           <StatsCard
             title="Connection state"
-            value={billing.connectionState.replace(/_/g, " ")}
-            description="Current billing runtime connectivity status"
+            value={connectionLabel}
+            description="Canonical billing connection vocabulary"
             icon={ShieldCheck}
           />
           <StatsCard
@@ -99,8 +109,8 @@ export default async function DashboardBillingPage() {
             <CardContent className="space-y-4">
               <div className="rounded-xl border border-border/60 bg-background/70 p-4 text-sm text-muted-foreground">
                 {billing.connected
-                  ? "Billing is connected for this advertiser workspace. Use the portal link below for invoice and subscription access."
-                  : "Billing provider integration is not yet connected. Use the finance handoff contact below for invoice and plan support."}
+                  ? `Billing connection state: ${connectionLabel}. Use the portal link below for invoice and subscription access.`
+                  : `Billing connection state: ${connectionLabel}. Use the finance handoff contact below for invoice and plan support.`}
               </div>
               <div className="rounded-xl border border-border/60 bg-background/70 p-4">
                 <p className="text-sm text-muted-foreground">Finance handoff</p>

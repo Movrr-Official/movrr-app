@@ -55,8 +55,16 @@ export default async function DashboardRouteDetailPage({
             </Badge>
             <p className="max-w-sm text-sm text-muted-foreground lg:text-right">
               Route execution happens in MOVRR Mobile. This web view shows
-              assignment, timeline, and compliance state only.
+              assignment, verification status, timeline, and compliance state only.
             </p>
+            {(route.status === "assigned" || route.status === "in-progress") && (
+              <a
+                href={`movrrapp://routes/${route.id}`}
+                className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                Continue in MOVRR app
+              </a>
+            )}
           </div>
         </div>
 

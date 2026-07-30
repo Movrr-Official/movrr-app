@@ -1,6 +1,7 @@
 import type {
   PartnerCapability,
   PartnerMembershipRole,
+  GovernmentCapability,
 } from "@/lib/platform/types";
 
 /**
@@ -39,6 +40,27 @@ const BUNDLE_CAPABILITIES: Record<
   ],
   viewer: ["fulfilment.read", "analytics.view", "rewards.catalog.read"],
 };
+
+const GOVERNMENT_BUNDLE_CAPABILITIES: readonly GovernmentCapability[] = [
+  "programmes.read",
+  "compliance.read",
+  "impact.read",
+  "org.settings",
+  "analytics.view",
+];
+
+export function capabilitiesForGovernmentRole(
+  _role: string | null | undefined,
+): GovernmentCapability[] {
+  return [...GOVERNMENT_BUNDLE_CAPABILITIES];
+}
+
+export function hasGovernmentCapability(
+  capabilities: readonly GovernmentCapability[],
+  capability: GovernmentCapability,
+): boolean {
+  return capabilities.includes(capability);
+}
 
 export function isPartnerMembershipRole(
   value: string | null | undefined,

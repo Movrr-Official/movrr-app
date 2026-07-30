@@ -5,7 +5,7 @@ export function getBillingFallback(invoiceContact: string) {
 
   return {
     connected,
-    connectionState: connected ? "handoff" : "not_connected",
+    connectionState: connected ? ("handoff" as const) : ("not_connected" as const),
     planName: connected ? "External billing portal" : "Not connected",
     planStatus: connected ? "Portal handoff available" : "Awaiting provider integration",
     invoiceContact,

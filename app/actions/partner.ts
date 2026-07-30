@@ -237,3 +237,103 @@ export async function updatePartnerSettingsAction(formData: FormData) {
     success: "Partner settings updated.",
   });
 }
+
+export async function createRewardCatalogAction(formData: FormData) {
+  const session = await requirePartnerSession();
+  if (
+    !hasPartnerCapability(session.partnerContext!.capabilities, "rewards.manage")
+  ) {
+    redirectWithStatus("/dashboard/rewards", {
+      error: "Your role cannot manage rewards.",
+    });
+  }
+
+  const title = String(formData.get("title") ?? "").trim();
+  const pointsCost = Number(formData.get("pointsCost") ?? 0);
+  if (!title || pointsCost <= 0) {
+    redirectWithStatus("/dashboard/rewards/create", {
+      error: "Title and points cost are required.",
+    });
+  }
+
+  const { createPartnerCatalogItem } = await import(
+    "@/lib/platform/partnerCatalogPlatform"
+  );
+
+  try {
+    const item = await createPartnerCatalogItem({
+      title,
+      pointsCost,
+      description: String(formData.get("description") ?? "").trim() || undefined,
+      status:
+        String(formData.get("status") ?? "draft") === "active"
+          ? "active"
+          : "draft",
+      sku: String(formData.get("sku") ?? "").trim() || undefined,
+      category: String(formData.get("category") ?? "").trim() || undefined,
+      stockAvailable: Number(formData.get("stockAvailable") ?? 0) || undefined,
+    });
+    revalidatePath("/dashboard/rewards");
+    redirectWithStatus(`/dashboard/rewards/${item.id}/edit`, {
+      success: "Reward catalog item created.",
+    });
+  } catch (error) {
+    redirectWithStatus("/dashboard/rewards/create", {
+      error: mapPlatformError(error),
+    });
+  }
+}
+
+export async function updateRewardCatalogAction(formData: FormData) {
+  const session = await requirePartnerSession();
+  if (
+    !hasPartnerCapability(session.partnerContext!.capabilities, "rewards.manage")
+  ) {
+    redirectWithStatus("/dashboard/rewards", {
+      error: "Your role cannot manage rewards.",
+    });
+  }
+
+  const id = String(formData.get("catalogItemId") ?? "").trim();
+  if (!id) {
+    redirectWithStatus("/dashboard/rewards", { error: "Missing catalog item id." });
+  }
+
+  const { updatePartnerCatalogItem } = await import(
+    "@/lib/platform/partnerCatalogPlatform"
+  );
+
+  const statusRaw = String(formData.get("status") ?? "");
+  const status =
+    statusRaw === "draft" ||
+    statusRaw === "active" ||
+    statusRaw === "paused" ||
+    statusRaw === "archived"
+      ? statusRaw
+      : undefined;
+
+  try {
+    await updatePartnerCatalogItem(id, {
+      title: String(formData.get("title") ?? "").trim() || undefined,
+      description: String(formData.get("description") ?? "").trim() || undefined,
+      pointsCost: formData.get("pointsCost")
+        ? Number(formData.get("pointsCost"))
+        : undefined,
+      status,
+      sku: String(formData.get("sku") ?? "").trim() || undefined,
+      category: String(formData.get("category") ?? "").trim() || undefined,
+      stockAvailable: formData.get("stockAvailable")
+        ? Number(formData.get("stockAvailable"))
+        : undefined,
+    });
+  } catch (error) {
+    redirectWithStatus(`/dashboard/rewards/${id}/edit`, {
+      error: mapPlatformError(error),
+    });
+  }
+
+  revalidatePath("/dashboard/rewards");
+  redirectWithStatus(`/dashboard/rewards/${id}/edit`, {
+    success: "Reward catalog item updated.",
+  });
+}

@@ -2,3 +2,4 @@
 export * from "./rider";
 export * from "./advertiser";
 export * from "./partner";
+export * from "./government";

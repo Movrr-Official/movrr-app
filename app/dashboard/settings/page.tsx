@@ -10,7 +10,9 @@ import {
 import { CheckboxField } from "@/components/form/CheckboxField";
 import { StatusToast } from "@/components/form/StatusToast";
 import { SubmitButton } from "@/components/form/SubmitButton";
+import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -22,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { getCurrentProductSession } from "@/lib/appUser";
+import { getGovernmentMe } from "@/lib/platform/governmentPlatform";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
 import { getPartnerSettings } from "@/services/partner";
 import { getRiderDashboardData } from "@/services/rider";
@@ -51,6 +54,78 @@ export default async function DashboardSettingsPage({
   const params = await searchParams;
   const success = typeof params.success === "string" ? params.success : null;
   const error = typeof params.error === "string" ? params.error : null;
+
+  if (session.appUser.role === "government") {
+    let profile: Awaited<ReturnType<typeof getGovernmentMe>> | null = null;
+    let loadError: string | null = null;
+    try {
+      profile = await getGovernmentMe();
+    } catch (err) {
+      loadError =
+        err instanceof Error ? err.message : "Failed to load organisation settings";
+    }
+
+    const ctx = session.governmentContext;
+
+    return (
+      <div className="page-canvas">
+        <div className="space-y-6 md:space-y-8">
+          <StatusToast success={success} error={error ?? loadError} />
+          <PageHeader
+            title="Settings"
+            description="Read-only government organisation settings from Platform GET /government/me."
+          />
+          <Card className="border-border">
+            <CardHeader>
+              <CardTitle>Organisation profile</CardTitle>
+              <CardDescription>
+                Government org settings are read-only in the product portal.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-xl border border-border/60 p-4">
+                <p className="text-sm text-muted-foreground">Organisation</p>
+                <p className="mt-1 font-medium">
+                  {profile?.name ?? ctx?.name ?? session.appUser.organization ?? "—"}
+                </p>
+              </div>
+              <div className="rounded-xl border border-border/60 p-4">
+                <p className="text-sm text-muted-foreground">Organisation ID</p>
+                <p className="mt-1 font-medium break-all">
+                  {profile?.organisationId ?? ctx?.organisationId ?? "—"}
+                </p>
+              </div>
+              <div className="rounded-xl border border-border/60 p-4">
+                <p className="text-sm text-muted-foreground">Status</p>
+                <div className="mt-1">
+                  {profile?.status ?? ctx?.status ? (
+                    <Badge variant="outline" className="capitalize">
+                      {profile?.status ?? ctx?.status}
+                    </Badge>
+                  ) : (
+                    "—"
+                  )}
+                </div>
+              </div>
+              <div className="rounded-xl border border-border/60 p-4">
+                <p className="text-sm text-muted-foreground">Membership role</p>
+                <p className="mt-1 font-medium capitalize">
+                  {ctx?.membershipRole ?? profile?.role ?? "—"}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+          {!profile && !loadError ? (
+            <EmptyState
+              title="Organisation settings unavailable"
+              description="Platform did not return government organisation profile data."
+              iconName="file"
+            />
+          ) : null}
+        </div>
+      </div>
+    );
+  }
 
   if (session.appUser.role === "partner") {
     let settings: Record<string, unknown> = {};
@@ -260,6 +335,8 @@ export default async function DashboardSettingsPage({
       </div>
     );
   }
+
+  if (session.appUser.role !== "rider") redirect("/dashboard");
 
   const dashboard = await getRiderDashboardData();
   return (

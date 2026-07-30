@@ -41,6 +41,27 @@ export default async function DashboardNotificationsPage({
   const error = typeof params.error === "string" ? params.error : null;
   const filter = typeof params.filter === "string" ? params.filter : "all";
 
+  if (
+    session.appUser.role === "government" ||
+    session.appUser.role === "partner"
+  ) {
+    return (
+      <div className="page-canvas">
+        <div className="space-y-6 md:space-y-8">
+          <PageHeader
+            title="Notifications"
+            description={`${session.appUser.role === "government" ? "Government" : "Partner"} workspace notifications.`}
+          />
+          <EmptyState
+            title="No notifications yet"
+            description="Account and programme notifications will appear here when available."
+            iconName="bell"
+          />
+        </div>
+      </div>
+    );
+  }
+
   if (session.appUser.role === "advertiser") {
     const dashboard = await getAdvertiserDashboardData();
     const categories = Array.from(
@@ -194,6 +215,8 @@ export default async function DashboardNotificationsPage({
       </div>
     );
   }
+
+  if (session.appUser.role !== "rider") redirect("/dashboard");
 
   const dashboard = await getRiderDashboardData();
   const categories = Array.from(

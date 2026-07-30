@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { StatsCard } from "@/components/stats/StatsCard";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -11,9 +13,8 @@ import {
 import { getCurrentProductSession } from "@/lib/appUser";
 import { formatRelativeDate } from "@/lib/format";
 import { getRiderDashboardData } from "@/services/rider";
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bell, FileText, MapPinned, Route } from "lucide-react";
+import { Bell, FileText, MapPinned, Route, Smartphone } from "lucide-react";
 
 export default async function DashboardRoutesPage() {
   const session = await getCurrentProductSession();
@@ -56,51 +57,65 @@ export default async function DashboardRoutesPage() {
             <CardHeader>
               <CardTitle>Assigned routes</CardTitle>
               <CardDescription>
-                Route history, sync freshness, and compliance posture from the
-                latest rider execution data.
+                Route history, verification status, sync freshness, and compliance
+                posture from the latest rider execution data.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {dashboard.routes.map((route) => (
-                <Link
+                <div
                   key={route.id}
-                  href={`/dashboard/routes/${route.id}`}
-                  className="block rounded-xl border border-border/60 bg-background/70 p-4 transition-colors hover:border-primary/40"
+                  className="rounded-xl border border-border/60 bg-background/70 p-4"
                 >
                   <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <p className="font-semibold">{route.name}</p>
-                        <Badge
-                          variant={
-                            route.status === "completed"
-                              ? "success"
-                              : route.status === "in-progress"
-                                ? "secondary"
-                                : "outline"
-                          }
-                          className="capitalize"
+                    <div className="flex-1">
+                      <Link
+                        href={`/dashboard/routes/${route.id}`}
+                        className="block transition-colors hover:text-primary"
+                      >
+                        <div className="flex items-center gap-3">
+                          <p className="font-semibold">{route.name}</p>
+                          <Badge
+                            variant={
+                              route.status === "completed"
+                                ? "success"
+                                : route.status === "in-progress"
+                                  ? "secondary"
+                                  : "outline"
+                            }
+                            className="capitalize"
+                          >
+                            {route.status.replace(/_/g, " ")}
+                          </Badge>
+                          <Badge variant="outline" className="capitalize">
+                            {route.complianceStatus}
+                          </Badge>
+                        </div>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          {route.city || "City unavailable"}
+                        </p>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          Last synced {formatRelativeDate(route.lastSyncedAt)}
+                        </p>
+                      </Link>
+                      {(route.status === "assigned" ||
+                        route.status === "in-progress") && (
+                        <a
+                          href={`movrrapp://routes/${route.id}`}
+                          className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
                         >
-                          {route.status.replace(/_/g, " ")}
-                        </Badge>
-                        <Badge variant="outline" className="capitalize">
-                          {route.complianceStatus}
-                        </Badge>
-                      </div>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        {route.city || "City unavailable"}
-                      </p>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        Last synced {formatRelativeDate(route.lastSyncedAt)}
-                      </p>
+                          <Smartphone className="h-4 w-4" />
+                          Continue in MOVRR app
+                        </a>
+                      )}
                     </div>
                     <div className="grid gap-2 text-sm text-muted-foreground md:text-right">
                       <p>Progress {route.routeProgress}%</p>
                       <p>Coverage {route.coverageKm.toFixed(1)} km</p>
-                      <p>Source {route.syncSource}</p>
+                      <p>Verification {route.complianceStatus}</p>
                     </div>
                   </div>
-                </Link>
+                </div>
               ))}
             </CardContent>
           </Card>

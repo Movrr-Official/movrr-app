@@ -6,11 +6,16 @@ import { PRODUCT_ROLES, type ProductRole } from "@/lib/constants";
 import { logger } from "@/lib/logger";
 import {
   capabilitiesForMembershipRole,
+  capabilitiesForGovernmentRole,
   isPartnerMembershipRole,
 } from "@/lib/platform/capabilities";
 import { platformFetch } from "@/lib/platform/client";
-import { PlatformApiError, type PartnerMeResponse } from "@/lib/platform/types";
-import type { AppUser, PartnerContext } from "@/schemas";
+import {
+  PlatformApiError,
+  type PartnerMeResponse,
+  type GovernmentMeResponse,
+} from "@/lib/platform/types";
+import type { AppUser, PartnerContext, GovernmentContext } from "@/schemas";
 
 /**
  * Session shape decision (Plan 4):
@@ -43,6 +48,7 @@ export type ProductSession = {
     campaign_updates?: boolean | null;
   } | null;
   partnerContext?: PartnerContext | null;
+  governmentContext?: GovernmentContext | null;
 };
 
 type ProductIdentity = {
@@ -96,6 +102,50 @@ export async function fetchPartnerContext(): Promise<PartnerContext | null> {
   }
 }
 
+function toGovernmentContext(me: GovernmentMeResponse): GovernmentContext {
+  const membershipRole = isPartnerMembershipRole(me.role) ? me.role : null;
+  return {
+    organisationId: me.organisationId,
+    membershipRole,
+    orgType: "government",
+    name: me.name ?? null,
+    status: me.status ?? null,
+    capabilities: capabilitiesForGovernmentRole(membershipRole),
+  };
+}
+
+/**
+ * Attempts Platform government membership discovery.
+ * Returns null when the user is not a government org principal (or API unreachable).
+ */
+export async function fetchGovernmentContext(): Promise<GovernmentContext | null> {
+  try {
+    const me = await platformFetch<GovernmentMeResponse>("/government/me");
+    if (!me?.organisationId) return null;
+    return toGovernmentContext(me);
+  } catch (error) {
+    if (error instanceof PlatformApiError) {
+      if (
+        error.status === 401 ||
+        error.status === 403 ||
+        error.kind === "unauthenticated" ||
+        error.kind === "permission_denied" ||
+        error.kind === "BusinessFailure" ||
+        error.kind === "unrecognised_principal"
+      ) {
+        return null;
+      }
+      logger.warn("Platform government/me failed", error.message);
+      return null;
+    }
+    logger.warn(
+      "Platform government/me unexpected error",
+      error instanceof Error ? error.message : String(error),
+    );
+    return null;
+  }
+}
+
 export async function getAuthenticatedAppUser(): Promise<ProductIdentity | null> {
   const supabase = await createSupabaseServerClient();
   const {
@@ -134,9 +184,15 @@ export async function getAuthenticatedAppUser(): Promise<ProductIdentity | null>
 
   if (!role) {
     const partnerContext = await fetchPartnerContext();
-    if (!partnerContext) return null;
-    role = "partner";
+    if (partnerContext) {
+      role = "partner";
+    } else {
+      const governmentContext = await fetchGovernmentContext();
+      if (governmentContext) role = "government";
+    }
   }
+
+  if (!role) return null;
 
   return {
     authUser,
@@ -200,6 +256,7 @@ export async function getRiderProductSession(identity?: ProductIdentity): Promis
       : null,
     advertiserProfile: null,
     partnerContext: null,
+    governmentContext: null,
   };
 }
 
@@ -219,6 +276,29 @@ export async function getAdvertiserProductSession(identity?: ProductIdentity): P
     riderProfile: null,
     advertiserProfile: advertiserProfile.data,
     partnerContext: null,
+    governmentContext: null,
+  };
+}
+
+export async function getGovernmentProductSession(
+  identity?: ProductIdentity,
+): Promise<ProductSession | null> {
+  const resolvedIdentity = identity ?? (await getAuthenticatedAppUser());
+  if (!resolvedIdentity) return null;
+
+  const governmentContext = await fetchGovernmentContext();
+  if (!governmentContext) return null;
+
+  return {
+    authUser: resolvedIdentity.authUser,
+    appUser: {
+      ...resolvedIdentity.appUser,
+      role: "government",
+    },
+    riderProfile: null,
+    advertiserProfile: null,
+    partnerContext: null,
+    governmentContext,
   };
 }
 
@@ -240,6 +320,7 @@ export async function getPartnerProductSession(
     riderProfile: null,
     advertiserProfile: null,
     partnerContext,
+    governmentContext: null,
   };
 }
 
@@ -247,9 +328,12 @@ export async function getCurrentProductSession(): Promise<ProductSession | null>
   const identity = await getAuthenticatedAppUser();
   if (!identity) return null;
 
-  // Prefer Platform partner membership when /partners/me succeeds.
+  // Prefer Platform org membership: partner > government > declared role.
   const partnerSession = await getPartnerProductSession(identity);
   if (partnerSession) return partnerSession;
+
+  const governmentSession = await getGovernmentProductSession(identity);
+  if (governmentSession) return governmentSession;
 
   if (identity.appUser.role === "rider") {
     return getRiderProductSession(identity);
@@ -260,7 +344,10 @@ export async function getCurrentProductSession(): Promise<ProductSession | null>
   }
 
   if (identity.appUser.role === "partner") {
-    // Declared partner role but no Platform membership → unauthorized surface.
+    return null;
+  }
+
+  if (identity.appUser.role === "government") {
     return null;
   }
 
@@ -290,7 +377,18 @@ export async function requireProductSession(allowedRoles?: ProductRole[]) {
     redirect("/unauthorized");
   }
 
+  if (
+    session.appUser.role === "government" &&
+    !session.governmentContext?.organisationId
+  ) {
+    redirect("/unauthorized");
+  }
+
   return session;
+}
+
+export async function requireGovernmentSession() {
+  return requireProductSession(["government"]);
 }
 
 export async function requirePartnerSession() {

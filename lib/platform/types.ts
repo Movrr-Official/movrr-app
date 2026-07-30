@@ -58,3 +58,19 @@ export type PartnerMeResponse = {
   role: string | null;
   type: "reward_partner";
 };
+
+/** Raw GET /api/v1/government/me payload. */
+export type GovernmentMeResponse = {
+  organisationId: string;
+  name?: string | null;
+  type?: string | null;
+  status?: string | null;
+  role: string | null;
+};
+
+export type GovernmentCapability =
+  | "programmes.read"
+  | "compliance.read"
+  | "impact.read"
+  | "org.settings"
+  | "analytics.view";

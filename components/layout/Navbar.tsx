@@ -9,6 +9,13 @@ import { Badge } from "@/components/ui/badge";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
+const workspaceLabels: Record<AppSessionValue["role"], string> = {
+  rider: "Rider Workspace",
+  partner: "Partner Workspace",
+  advertiser: "Advertiser Workspace",
+  government: "Government Workspace",
+};
+
 export function Navbar({
   session,
   onToggleSidebar,
@@ -37,11 +44,7 @@ export function Navbar({
               Movrr
             </h2>
             <span className="text-xs text-muted-foreground leading-none">
-              {session.role === "rider"
-                ? "Rider Workspace"
-                : session.role === "partner"
-                  ? "Partner Workspace"
-                  : "Advertiser Workspace"}
+              {workspaceLabels[session.role]}
             </span>
           </div>
         </div>

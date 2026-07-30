@@ -3,11 +3,18 @@ import { StatsCard } from "@/components/stats/StatsCard";
 import { RiderOverview } from "@/components/rider/Overview";
 import { AdvertiserCampaignList } from "@/components/advertiser/CampaignList";
 import { PartnerOverview } from "@/components/partner/PartnerOverview";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { getCurrentProductSession } from "@/lib/appUser";
 import { formatCurrency, formatRelativeDate } from "@/lib/format";
 import { getRiderDashboardData } from "@/services/rider";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
 import { getPartnerDashboard } from "@/services/partner";
+import { getGovernmentProgrammes } from "@/lib/platform/governmentPlatform";
 import {
   Bell,
   CircleDollarSign,
@@ -26,6 +33,71 @@ export default async function DashboardPage() {
     return (
       <div className="page-canvas">
         <PartnerOverview dashboard={dashboard} />
+      </div>
+    );
+  }
+
+  if (session?.appUser.role === "government") {
+    let programmes: Awaited<ReturnType<typeof getGovernmentProgrammes>> | null = null;
+    try {
+      programmes = await getGovernmentProgrammes();
+    } catch {
+      programmes = null;
+    }
+
+    return (
+      <div className="page-canvas">
+        <div className="space-y-6 md:space-y-8">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
+            <StatsCard
+              title="Active campaigns"
+              value={programmes?.kpis.activeCampaigns ?? 0}
+              description="Campaigns in active programme delivery"
+              icon={Megaphone}
+            />
+            <StatsCard
+              title="Total impressions"
+              value={programmes?.kpis.totalImpressions ?? 0}
+              description="Recorded programme impression volume"
+              icon={LineChart}
+            />
+            <StatsCard
+              title="Verified rides"
+              value={programmes?.kpis.verifiedRides ?? 0}
+              description="Rides passing verification"
+              icon={Users}
+            />
+            <StatsCard
+              title="Pending verification"
+              value={programmes?.kpis.pendingVerification ?? 0}
+              description="Rides awaiting compliance review"
+              icon={Bell}
+            />
+          </div>
+          {programmes?.campaigns.length ? (
+            <Card className="border-border">
+              <CardHeader>
+                <CardTitle>Programme campaigns</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {programmes.campaigns.slice(0, 5).map((campaign) => (
+                  <div
+                    key={String(campaign.id)}
+                    className="rounded-xl border border-border/60 p-3 text-sm"
+                  >
+                    {String(campaign.name ?? campaign.id)}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          ) : (
+            <EmptyState
+              title="No programme data yet"
+              description="Government programme KPIs will appear when Platform returns programme data."
+              iconName="dashboard"
+            />
+          )}
+        </div>
       </div>
     );
   }

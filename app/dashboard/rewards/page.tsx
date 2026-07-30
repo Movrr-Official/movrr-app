@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatsCard } from "@/components/stats/StatsCard";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -54,14 +56,21 @@ async function PartnerRewardsView() {
   return (
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
-        <PageHeader
-          title="Rewards"
-          description={
-            canManage
-              ? "Partner-scoped reward catalog from Platform. Mutations stay on the API when available."
-              : "Read-only partner-scoped reward catalog from Platform."
-          }
-        />
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <PageHeader
+            title="Rewards"
+            description={
+              canManage
+                ? "Partner-scoped reward catalog from Platform. Manage items when rewards.manage is granted."
+                : "Read-only partner-scoped reward catalog from Platform."
+            }
+          />
+          {canManage ? (
+            <Button asChild size="sm">
+              <Link href="/dashboard/rewards/create">Add catalog item</Link>
+            </Button>
+          ) : null}
+        </div>
         {listError ? (
           <p className="text-sm text-destructive">{listError}</p>
         ) : null}
@@ -87,7 +96,7 @@ async function PartnerRewardsView() {
                       {reward.id}
                     </p>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     {reward.fulfilmentType ? (
                       <Badge variant="outline">{reward.fulfilmentType}</Badge>
                     ) : null}
@@ -98,6 +107,13 @@ async function PartnerRewardsView() {
                     ) : null}
                     {typeof reward.pointsCost === "number" ? (
                       <Badge>{reward.pointsCost} pts</Badge>
+                    ) : null}
+                    {canManage ? (
+                      <Button asChild size="sm" variant="outline">
+                        <Link href={`/dashboard/rewards/${reward.id}/edit`}>
+                          Manage
+                        </Link>
+                      </Button>
                     ) : null}
                   </div>
                 </div>
@@ -135,9 +151,8 @@ export default async function DashboardRewardsPage() {
           title="Rewards"
           description="Read-only rewards statement for your rider account, including balance, lifetime earnings, and recent adjustments."
           action={{
-            label: "Export statement",
-            href: "/api/dashboard/rewards/export",
-            method: "post",
+            label: "Rewards shop",
+            href: "/dashboard/rewards/shop",
           }}
         />
 

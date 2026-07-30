@@ -21,6 +21,15 @@ const routeLabels: Record<string, string> = {
   analytics: "Analytics",
   billing: "Billing",
   settings: "Settings",
+  community: "Community",
+  compliance: "Compliance",
+  impact: "Impact",
+  programmes: "Programmes",
+  reports: "Reports",
+  shop: "Rewards Shop",
+  create: "Create",
+  edit: "Edit",
+  orders: "Orders",
 };
 
 const formatRouteLabel = (

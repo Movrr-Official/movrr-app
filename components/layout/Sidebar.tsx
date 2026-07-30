@@ -25,6 +25,12 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import type { ProductRole } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const movrrEase = [0.22, 1, 0.36, 1] as const;
 
@@ -170,74 +176,111 @@ export function Sidebar({
         </div>
 
         <div className="flex-1 px-3 py-4 overflow-y-auto">
-          <nav className="space-y-2">
-            {items.map((item) => {
-              const Icon = item.icon;
-              const isActive =
-                pathname === item.href ||
-                (item.href !== "/dashboard" &&
-                  pathname.startsWith(`${item.href}/`));
+          <TooltipProvider delayDuration={0}>
+            <nav className="space-y-2">
+              {items.map((item) => {
+                const Icon = item.icon;
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== "/dashboard" &&
+                    pathname.startsWith(`${item.href}/`));
+                const showCollapsedTooltip = !sidebarOpen && !isMobile;
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 h-9 px-4 py-2 rounded-md text-sm font-medium transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted",
-                    !sidebarOpen && "justify-center",
-                  )}
-                  aria-current={isActive ? "page" : undefined}
-                  onClick={() => {
-                    if (isMobile) onCloseMobile();
-                  }}
-                >
-                  <Icon className="w-5 h-5 shrink-0" aria-hidden="true" />
-                  <AnimatePresence mode="wait">
-                    {sidebarOpen ? (
-                      <motion.span
-                        initial={{ opacity: 0, width: 0 }}
-                        animate={{ opacity: 1, width: "auto" }}
-                        exit={{ opacity: 0, width: 0 }}
-                        transition={{ duration: 0.2, ease: movrrEase }}
-                        className="flex items-center justify-between flex-1 min-w-0"
-                      >
-                        <span className="truncate">{item.label}</span>
-                      </motion.span>
-                    ) : null}
-                  </AnimatePresence>
-                </Link>
-              );
-            })}
-          </nav>
+                const link = (
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      "flex items-center gap-3 h-9 px-4 py-2 rounded-md text-sm font-medium transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                      !sidebarOpen && "justify-center",
+                    )}
+                    aria-current={isActive ? "page" : undefined}
+                    aria-label={showCollapsedTooltip ? item.label : undefined}
+                    onClick={() => {
+                      if (isMobile) onCloseMobile();
+                    }}
+                  >
+                    <Icon className="w-5 h-5 shrink-0" aria-hidden="true" />
+                    <AnimatePresence mode="wait">
+                      {sidebarOpen ? (
+                        <motion.span
+                          initial={{ opacity: 0, width: 0 }}
+                          animate={{ opacity: 1, width: "auto" }}
+                          exit={{ opacity: 0, width: 0 }}
+                          transition={{ duration: 0.2, ease: movrrEase }}
+                          className="flex items-center justify-between flex-1 min-w-0"
+                        >
+                          <span className="truncate">{item.label}</span>
+                        </motion.span>
+                      ) : null}
+                    </AnimatePresence>
+                  </Link>
+                );
+
+                return showCollapsedTooltip ? (
+                  <Tooltip key={item.href}>
+                    <TooltipTrigger asChild>{link}</TooltipTrigger>
+                    <TooltipContent side="right" align="center" sideOffset={8}>
+                      {item.label}
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <div key={item.href}>{link}</div>
+                );
+              })}
+            </nav>
+          </TooltipProvider>
         </div>
 
         <div className="flex h-16 shrink-0 items-center border-t border-border px-3">
           <form action="/api/auth/signout" method="post" className="w-full">
-            <Button
-              type="submit"
-              variant="ghost"
-              className={cn(
-                "w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer",
-                !sidebarOpen && "justify-center",
-              )}
-            >
-              <LogOut className="h-5 w-5 shrink-0" aria-hidden="true" />
-              <AnimatePresence mode="wait">
-                {sidebarOpen ? (
-                  <motion.span
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.2, ease: movrrEase }}
-                  >
+            {!sidebarOpen && !isMobile ? (
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="submit"
+                      variant="ghost"
+                      className={cn(
+                        "w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer",
+                        !sidebarOpen && "justify-center",
+                      )}
+                      aria-label="Sign Out"
+                    >
+                      <LogOut className="h-5 w-5 shrink-0" aria-hidden="true" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" align="center" sideOffset={8}>
                     Sign Out
-                  </motion.span>
-                ) : null}
-              </AnimatePresence>
-            </Button>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <Button
+                type="submit"
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer",
+                  !sidebarOpen && "justify-center",
+                )}
+              >
+                <LogOut className="h-5 w-5 shrink-0" aria-hidden="true" />
+                <AnimatePresence mode="wait">
+                  {sidebarOpen ? (
+                    <motion.span
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      transition={{ duration: 0.2, ease: movrrEase }}
+                    >
+                      Sign Out
+                    </motion.span>
+                  ) : null}
+                </AnimatePresence>
+              </Button>
+            )}
           </form>
         </div>
       </motion.aside>

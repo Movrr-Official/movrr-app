@@ -6,6 +6,12 @@ import { requirePartnerSession } from "@/lib/appUser";
 import { hasPartnerCapability } from "@/lib/platform/capabilities";
 import { PlatformApiError } from "@/lib/platform/types";
 import {
+  markSingleNotificationRead,
+  markUserNotificationsRead,
+  persistNotificationsPreference,
+  revalidateRoleNotificationPaths,
+} from "@/lib/notifications";
+import {
   confirmPartnerCollection,
   importPartnerResourceCodes,
   invitePartnerStaff,
@@ -336,4 +342,28 @@ export async function updateRewardCatalogAction(formData: FormData) {
   redirectWithStatus(`/dashboard/rewards/${id}/edit`, {
     success: "Reward catalog item updated.",
   });
+}
+
+export async function updatePartnerNotificationPreferencesAction(formData: FormData) {
+  const session = await requirePartnerSession();
+  const notifications = String(formData.get("productNotifications") ?? "false") === "true";
+
+  await persistNotificationsPreference(session.appUser.id, notifications);
+  revalidateRoleNotificationPaths("partner");
+  redirectWithStatus("/dashboard/notifications", { success: "Notification preference saved." });
+}
+
+export async function markPartnerNotificationsReadAction() {
+  const session = await requirePartnerSession();
+  await markUserNotificationsRead(session.appUser.id);
+  revalidatePath("/dashboard/notifications");
+  redirectWithStatus("/dashboard/notifications", { success: "Notifications marked as read." });
+}
+
+export async function markPartnerNotificationReadAction(formData: FormData) {
+  const session = await requirePartnerSession();
+  const notificationId = String(formData.get("notificationId") ?? "").trim();
+  await markSingleNotificationRead(session.appUser.id, notificationId);
+  revalidatePath("/dashboard/notifications");
+  redirectWithStatus("/dashboard/notifications", { success: "Notification updated." });
 }

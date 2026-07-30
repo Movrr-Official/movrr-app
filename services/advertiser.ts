@@ -3,6 +3,10 @@ import { getBillingFallback } from "@/lib/billing";
 import { requireProductSession } from "@/lib/appUser";
 import { resolveLatestTimestamp } from "@/lib/product-freshness";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
+import {
+  getAdvertiserCampaign,
+  listAdvertiserCampaigns,
+} from "@/lib/platform/advertiserCampaignPlatform";
 import type { AdvertiserAnalyticsRange, AdvertiserBilling, AdvertiserDashboard, AdvertiserTimelineEvent } from "@/schemas";
 
 function normalizeCampaignType(value?: string | null) {
@@ -90,13 +94,35 @@ export async function getAdvertiserDashboardData(range: AdvertiserAnalyticsRange
     };
   }
 
-  const { data: campaigns } = await admin
-    .from("campaign")
-    .select("id, name, description, lifecycle_status, budget, start_date, end_date, campaign_type, target_zones, impressions, qr_scans, max_riders, created_at, updated_at")
-    .eq("advertiser_id", advertiserId)
-    .order("created_at", { ascending: false });
+  let campaignsSource: Array<Record<string, unknown>> = [];
+  try {
+    const platformCampaigns = await listAdvertiserCampaigns();
+    campaignsSource = platformCampaigns.map((campaign) => ({
+      id: campaign.id,
+      name: campaign.name,
+      description: campaign.description ?? "",
+      lifecycle_status: campaign.lifecycleStatus,
+      budget: campaign.budget ?? 0,
+      start_date: campaign.startDate,
+      end_date: campaign.endDate,
+      campaign_type: campaign.campaignType,
+      target_zones: campaign.targetZones,
+      impressions: campaign.impressions ?? 0,
+      qr_scans: campaign.qrScans ?? 0,
+      max_riders: campaign.maxRiders ?? 0,
+      created_at: null,
+      updated_at: null,
+    }));
+  } catch {
+    const { data } = await admin
+      .from("campaign")
+      .select("id, name, description, lifecycle_status, budget, start_date, end_date, campaign_type, target_zones, impressions, qr_scans, max_riders, created_at, updated_at")
+      .eq("advertiser_id", advertiserId)
+      .order("created_at", { ascending: false });
+    campaignsSource = (data ?? []) as Array<Record<string, unknown>>;
+  }
 
-  const campaignIds = (campaigns ?? []).map((campaign: any) => campaign.id);
+  const campaignIds = campaignsSource.map((campaign) => String(campaign.id));
   const [assignmentsRes, zonesRes, hotZonesRes, notificationsRes] = await Promise.all([
     campaignIds.length ? admin.from("campaign_assignment").select("campaign_id, rider_id").in("campaign_id", campaignIds) : Promise.resolve({ data: [] as any[] }),
     campaignIds.length ? admin.from("campaign_zone").select("campaign_id, name").in("campaign_id", campaignIds) : Promise.resolve({ data: [] as any[] }),
@@ -115,22 +141,28 @@ export async function getAdvertiserDashboardData(range: AdvertiserAnalyticsRange
     zoneCounts.set(row.name, (zoneCounts.get(row.name) ?? 0) + 1);
   });
 
-  const mappedCampaigns = (campaigns ?? []).map((campaign: any) => ({
-    id: campaign.id,
-    name: campaign.name,
-    description: campaign.description ?? undefined,
-    lifecycleStatus: campaign.lifecycle_status ?? "draft",
+  const mappedCampaigns = campaignsSource.map((campaign) => ({
+    id: String(campaign.id),
+    name: String(campaign.name ?? "Campaign"),
+    description: typeof campaign.description === "string" ? campaign.description : undefined,
+    lifecycleStatus: String(campaign.lifecycle_status ?? "draft"),
     budget: Number(campaign.budget ?? 0),
-    startDate: campaign.start_date,
-    endDate: campaign.end_date,
-    campaignType: normalizeCampaignType(campaign.campaign_type),
-    targetZones: campaign.target_zones ?? [],
+    startDate: String(campaign.start_date ?? ""),
+    endDate: String(campaign.end_date ?? ""),
+    campaignType: normalizeCampaignType(
+      typeof campaign.campaign_type === "string" ? campaign.campaign_type : null,
+    ),
+    targetZones: Array.isArray(campaign.target_zones)
+      ? campaign.target_zones.filter((zone): zone is string => typeof zone === "string")
+      : [],
     impressions: Number(campaign.impressions ?? 0),
     qrScans: Number(campaign.qr_scans ?? 0),
     maxRiders: Number(campaign.max_riders ?? 0),
-    ridersAssigned: assignedCounts.get(campaign.id) ?? 0,
-    createdAt: campaign.created_at,
-    updatedAt: campaign.updated_at,
+    ridersAssigned: assignedCounts.get(String(campaign.id)) ?? 0,
+    createdAt:
+      typeof campaign.created_at === "string" ? campaign.created_at : undefined,
+    updatedAt:
+      typeof campaign.updated_at === "string" ? campaign.updated_at : undefined,
   }));
 
   const rangeStart = getRangeStart(range);
@@ -216,12 +248,41 @@ export async function getAdvertiserCampaignDetail(campaignId: string) {
   const advertiserId = session.advertiserProfile?.id;
   if (!advertiserId) return null;
 
-  const { data: campaign } = await admin
-    .from("campaign")
-    .select("id, name, description, lifecycle_status, budget, start_date, end_date, campaign_type, target_zones, impressions, qr_scans, max_riders, vehicle_type_required, created_at, updated_at")
-    .eq("advertiser_id", advertiserId)
-    .eq("id", campaignId)
-    .maybeSingle();
+  let campaign: Record<string, unknown> | null = null;
+  try {
+    const platformCampaign = await getAdvertiserCampaign(campaignId);
+    if (platformCampaign) {
+      campaign = {
+        id: platformCampaign.id,
+        name: platformCampaign.name,
+        description: platformCampaign.description ?? null,
+        lifecycle_status: platformCampaign.lifecycleStatus,
+        budget: platformCampaign.budget ?? 0,
+        start_date: platformCampaign.startDate,
+        end_date: platformCampaign.endDate,
+        campaign_type: platformCampaign.campaignType,
+        target_zones: platformCampaign.targetZones,
+        impressions: platformCampaign.impressions ?? 0,
+        qr_scans: platformCampaign.qrScans ?? 0,
+        max_riders: platformCampaign.maxRiders ?? 0,
+        vehicle_type_required: "bike",
+        created_at: null,
+        updated_at: null,
+      };
+    }
+  } catch {
+    campaign = null;
+  }
+
+  if (!campaign) {
+    const { data } = await admin
+      .from("campaign")
+      .select("id, name, description, lifecycle_status, budget, start_date, end_date, campaign_type, target_zones, impressions, qr_scans, max_riders, vehicle_type_required, created_at, updated_at")
+      .eq("advertiser_id", advertiserId)
+      .eq("id", campaignId)
+      .maybeSingle();
+    campaign = (data as Record<string, unknown> | null) ?? null;
+  }
 
   if (!campaign) return null;
 
@@ -246,32 +307,36 @@ export async function getAdvertiserCampaignDetail(campaignId: string) {
   }));
 
   const now = Date.now();
-  const start = campaign.start_date ? new Date(campaign.start_date).getTime() : null;
-  const end = campaign.end_date ? new Date(campaign.end_date).getTime() : null;
+  const start = campaign.start_date ? new Date(String(campaign.start_date)).getTime() : null;
+  const end = campaign.end_date ? new Date(String(campaign.end_date)).getTime() : null;
   const pacingHealth = start && end && now > start && now < end ? (Number(campaign.impressions ?? 0) > 0 ? "healthy" : "watch") : "default";
 
   const timelineCandidates: AdvertiserTimelineEvent[] = [
-    { id: `${campaign.id}-created`, label: "Created", detail: "Campaign record created and assigned to your advertiser account.", occurredAt: campaign.created_at ?? null, tone: "default" },
-    { id: `${campaign.id}-scheduled`, label: "Scheduled", detail: "Campaign start window configured.", occurredAt: campaign.start_date ?? null, tone: "info" },
-    { id: `${campaign.id}-active`, label: "Active delivery", detail: "Campaign is live or ready for rider participation visibility.", occurredAt: campaign.lifecycle_status === "active" ? campaign.start_date ?? null : null, tone: "success" },
-    { id: `${campaign.id}-closing`, label: "End window", detail: "Current configured campaign end date.", occurredAt: campaign.end_date ?? null, tone: "warning" },
+    { id: `${campaign.id}-created`, label: "Created", detail: "Campaign record created and assigned to your advertiser account.", occurredAt: (campaign.created_at as string | null) ?? null, tone: "default" },
+    { id: `${campaign.id}-scheduled`, label: "Scheduled", detail: "Campaign start window configured.", occurredAt: (campaign.start_date as string | null) ?? null, tone: "info" },
+    { id: `${campaign.id}-active`, label: "Active delivery", detail: "Campaign is live or ready for rider participation visibility.", occurredAt: campaign.lifecycle_status === "active" ? (campaign.start_date as string | null) ?? null : null, tone: "success" },
+    { id: `${campaign.id}-closing`, label: "End window", detail: "Current configured campaign end date.", occurredAt: (campaign.end_date as string | null) ?? null, tone: "warning" },
   ];
   const timeline = timelineCandidates.filter((event) => Boolean(event.occurredAt));
 
   return {
-    id: campaign.id,
-    name: campaign.name,
-    description: campaign.description ?? null,
-    lifecycleStatus: campaign.lifecycle_status ?? "draft",
+    id: String(campaign.id),
+    name: String(campaign.name ?? "Campaign"),
+    description: typeof campaign.description === "string" ? campaign.description : null,
+    lifecycleStatus: String(campaign.lifecycle_status ?? "draft"),
     budget: Number(campaign.budget ?? 0),
-    startDate: campaign.start_date,
-    endDate: campaign.end_date,
-    campaignType: normalizeCampaignType(campaign.campaign_type),
-    targetZones: campaign.target_zones ?? [],
+    startDate: campaign.start_date as string | undefined,
+    endDate: campaign.end_date as string | undefined,
+    campaignType: normalizeCampaignType(
+      typeof campaign.campaign_type === "string" ? campaign.campaign_type : null,
+    ),
+    targetZones: Array.isArray(campaign.target_zones)
+      ? campaign.target_zones.filter((zone): zone is string => typeof zone === "string")
+      : [],
     impressions: Number(campaign.impressions ?? 0),
     qrScans: Number(campaign.qr_scans ?? 0),
     maxRiders: Number(campaign.max_riders ?? 0),
-    vehicleTypeRequired: campaign.vehicle_type_required ?? "bike",
+    vehicleTypeRequired: String(campaign.vehicle_type_required ?? "bike"),
     riders: ridersWithUsers,
     zones: zones ?? [],
     hotZones: hotZones ?? [],
@@ -279,7 +344,11 @@ export async function getAdvertiserCampaignDetail(campaignId: string) {
       pacingHealth,
       zoneCount: (zones ?? []).length,
       hotZoneCount: (hotZones ?? []).length,
-      lastUpdatedAt: resolveLatestTimestamp([campaign.updated_at, campaign.created_at, campaign.end_date]),
+      lastUpdatedAt: resolveLatestTimestamp([
+        campaign.updated_at as string | undefined,
+        campaign.created_at as string | undefined,
+        campaign.end_date as string | undefined,
+      ]),
     },
     timeline,
   };

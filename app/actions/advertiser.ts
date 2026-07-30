@@ -191,7 +191,3 @@ export async function updateCampaignStatusAction(formData: FormData) {
     success: `Campaign status updated to ${status.replace(/_/g, " ")}.`,
   });
 }
-
-export async function redirectAdvertiserCampaignCreate() {
-  redirect("/dashboard/campaigns/create");
-}

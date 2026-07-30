@@ -2,6 +2,10 @@
 import { requireProductSession } from "@/lib/appUser";
 import { getComplianceStatus, resolveLatestTimestamp } from "@/lib/product-freshness";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
+import {
+  getWalletBalance,
+  listWalletTransactions,
+} from "@/lib/platform/riderPlatform";
 import type { RiderDashboard, RiderRewardTransaction, RiderRoute, RiderTimelineEvent } from "@/schemas";
 
 function calculateRouteProgress(status?: string | null) {
@@ -259,10 +263,10 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
   });
 
   const balanceRows = balanceRes.data ?? [];
-  const totalPointsBalance = balanceRows.reduce((sum: number, row: any) => sum + Number(row.points_balance ?? 0), 0);
-  const totalLifetimePointsEarned = balanceRows.reduce((sum: number, row: any) => sum + Number(row.lifetime_points_earned ?? 0), 0);
+  let totalPointsBalance = balanceRows.reduce((sum: number, row: any) => sum + Number(row.points_balance ?? 0), 0);
+  let totalLifetimePointsEarned = balanceRows.reduce((sum: number, row: any) => sum + Number(row.lifetime_points_earned ?? 0), 0);
 
-  const rewards: RiderRewardTransaction[] = (rewardsRes.data ?? []).map((row: any) => ({
+  let rewards: RiderRewardTransaction[] = (rewardsRes.data ?? []).map((row: any) => ({
     id: row.id,
     type: row.source === "adjustment" ? "adjusted" : row.source === "redemption" ? "redeemed" : "awarded",
     category: mapRewardCategory(row.source),
@@ -276,6 +280,30 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
           : "Points awarded"),
     createdAt: row.created_at,
   }));
+
+  try {
+    const [walletBalance, walletTransactions] = await Promise.all([
+      getWalletBalance(),
+      listWalletTransactions(),
+    ]);
+    totalPointsBalance = walletBalance.pointsBalance;
+    totalLifetimePointsEarned = walletBalance.lifetimePointsEarned;
+    rewards = walletTransactions.map((row) => ({
+      id: row.id,
+      type:
+        row.source === "adjustment"
+          ? "adjusted"
+          : row.source === "redemption"
+            ? "redeemed"
+            : "awarded",
+      category: mapRewardCategory(row.source),
+      points: row.points,
+      description: row.description ?? "Wallet transaction",
+      createdAt: row.createdAt ?? new Date().toISOString(),
+    }));
+  } catch {
+    // Supabase wallet rows remain the fallback source.
+  }
 
   const notifications = (notificationsRes.data ?? []).map((row: any) => ({
     id: row.id,

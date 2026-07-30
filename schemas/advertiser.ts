@@ -36,7 +36,7 @@ export const advertiserNotificationSchema = z.object({
 
 export const advertiserBillingSchema = z.object({
   connected: z.boolean(),
-  connectionState: z.enum(["connected", "handoff", "not_connected"]),
+  connectionState: z.enum(["connected", "handoff", "not_connected", "degraded"]),
   planName: z.string(),
   planStatus: z.string(),
   invoiceContact: z.string(),

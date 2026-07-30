@@ -1,4 +1,14 @@
 import {
+  markGovernmentNotificationReadAction,
+  markGovernmentNotificationsReadAction,
+  updateGovernmentNotificationPreferencesAction,
+} from "@/app/actions/government";
+import {
+  markPartnerNotificationReadAction,
+  markPartnerNotificationsReadAction,
+  updatePartnerNotificationPreferencesAction,
+} from "@/app/actions/partner";
+import {
   markAdvertiserNotificationReadAction,
   markAdvertiserNotificationsReadAction,
   updateAdvertiserNotificationPreferencesAction,
@@ -24,9 +34,168 @@ import {
 } from "@/components/ui/card";
 import { getCurrentProductSession } from "@/lib/appUser";
 import { formatRelativeDate } from "@/lib/format";
+import {
+  getUserNotificationPreferences,
+  listUserNotifications,
+  type ProductNotification,
+} from "@/lib/notifications";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
 import { getRiderDashboardData } from "@/services/rider";
 import { redirect } from "next/navigation";
+
+function RoleNotificationsInbox({
+  roleLabel,
+  notifications,
+  filter,
+  productNotifications,
+  updatePreferencesAction,
+  markAllReadAction,
+  markReadAction,
+  emptyTitle,
+  emptyDescription,
+}: {
+  roleLabel: string;
+  notifications: ProductNotification[];
+  filter: string;
+  productNotifications: boolean;
+  updatePreferencesAction: (formData: FormData) => Promise<void>;
+  markAllReadAction: () => Promise<void>;
+  markReadAction: (formData: FormData) => Promise<void>;
+  emptyTitle: string;
+  emptyDescription: string;
+}) {
+  const categories = Array.from(
+    new Set(notifications.map((item) => item.category)),
+  ).sort();
+  const filtered =
+    filter === "all"
+      ? notifications
+      : notifications.filter((item) => item.category === filter);
+
+  return (
+    <>
+      <Card className="border-border">
+        <CardHeader>
+          <CardTitle>{roleLabel} notification preferences</CardTitle>
+          <CardDescription>
+            Control in-product updates for your {roleLabel.toLowerCase()}{" "}
+            workspace.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <form
+            action={updatePreferencesAction}
+            className="flex items-center gap-3 text-sm font-medium"
+          >
+            <CheckboxField
+              name="productNotifications"
+              defaultChecked={productNotifications}
+              label={`Enable ${roleLabel.toLowerCase()} workspace notifications`}
+            />
+            <SubmitButton
+              type="submit"
+              variant="outline"
+              pendingLabel="Saving preference"
+            >
+              Save preference
+            </SubmitButton>
+          </form>
+          <form action={markAllReadAction}>
+            <SubmitButton type="submit" variant="secondary" pendingLabel="Updating">
+              Mark all as read
+            </SubmitButton>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card className="border-border">
+        <CardHeader>
+          <CardTitle>Inbox filters</CardTitle>
+          <CardDescription>
+            Filter account, programme, and fulfilment messages.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-2">
+          {["all", ...categories].map((value) => (
+            <Button
+              key={value}
+              asChild
+              variant={filter === value ? "default" : "outline"}
+              size="sm"
+            >
+              <a href={`/dashboard/notifications?filter=${value}`}>
+                {value === "all" ? "All" : value.replace(/_/g, " ")}
+              </a>
+            </Button>
+          ))}
+        </CardContent>
+      </Card>
+
+      {filtered.length ? (
+        <Card className="border-border">
+          <CardHeader>
+            <CardTitle>{roleLabel} inbox</CardTitle>
+            <CardDescription>
+              Messages scoped to the authenticated {roleLabel.toLowerCase()}{" "}
+              workspace.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {filtered.map((notification) => (
+              <div
+                key={notification.id}
+                className="rounded-xl border border-border/60 bg-background/70 p-4"
+              >
+                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <p className="font-medium">{notification.title}</p>
+                      <Badge variant="outline" className="capitalize">
+                        {notification.category}
+                      </Badge>
+                      {!notification.isRead ? (
+                        <Badge variant="secondary">Unread</Badge>
+                      ) : null}
+                    </div>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {notification.message}
+                    </p>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      {formatRelativeDate(notification.createdAt)}
+                    </p>
+                  </div>
+                  {!notification.isRead ? (
+                    <form action={markReadAction}>
+                      <input
+                        type="hidden"
+                        name="notificationId"
+                        value={notification.id}
+                      />
+                      <SubmitButton
+                        type="submit"
+                        variant="outline"
+                        size="sm"
+                        pendingLabel="Updating"
+                      >
+                        Mark as read
+                      </SubmitButton>
+                    </form>
+                  ) : null}
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      ) : (
+        <EmptyState
+          title={emptyTitle}
+          description={emptyDescription}
+          iconName="bell"
+        />
+      )}
+    </>
+  );
+}
 
 export default async function DashboardNotificationsPage({
   searchParams,
@@ -45,17 +214,46 @@ export default async function DashboardNotificationsPage({
     session.appUser.role === "government" ||
     session.appUser.role === "partner"
   ) {
+    const role = session.appUser.role;
+    const roleLabel = role === "government" ? "Government" : "Partner";
+    const notifications = await listUserNotifications(
+      session.appUser.id,
+      role,
+    );
+    const productNotifications = await getUserNotificationPreferences(
+      session.appUser.id,
+    );
+
     return (
       <div className="page-canvas">
         <div className="space-y-6 md:space-y-8">
+          <StatusToast success={success} error={error} />
           <PageHeader
             title="Notifications"
-            description={`${session.appUser.role === "government" ? "Government" : "Partner"} workspace notifications.`}
+            description={`${roleLabel} workspace notifications.`}
           />
-          <EmptyState
-            title="No notifications yet"
-            description="Account and programme notifications will appear here when available."
-            iconName="bell"
+          <RoleNotificationsInbox
+            roleLabel={roleLabel}
+            notifications={notifications}
+            filter={filter}
+            productNotifications={productNotifications}
+            updatePreferencesAction={
+              role === "government"
+                ? updateGovernmentNotificationPreferencesAction
+                : updatePartnerNotificationPreferencesAction
+            }
+            markAllReadAction={
+              role === "government"
+                ? markGovernmentNotificationsReadAction
+                : markPartnerNotificationsReadAction
+            }
+            markReadAction={
+              role === "government"
+                ? markGovernmentNotificationReadAction
+                : markPartnerNotificationReadAction
+            }
+            emptyTitle={`No ${roleLabel.toLowerCase()} notifications`}
+            emptyDescription="Account, programme, and fulfilment notices will appear here when MOVRR has updates for your workspace."
           />
         </div>
       </div>

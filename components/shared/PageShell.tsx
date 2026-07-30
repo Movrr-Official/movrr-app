@@ -7,6 +7,8 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import type { AppSessionValue } from "@/providers/SessionProvider";
 
+const SIDEBAR_OPEN_STORAGE_KEY = "movrr-product-sidebar-open";
+
 export function PageShell({
   session,
   children,
@@ -15,21 +17,29 @@ export function PageShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
+  // Default collapsed for first visit; restored preference applied after hydrate.
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarPreferenceReady, setSidebarPreferenceReady] = useState(false);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem("movrr-product-sidebar-open");
+    const stored = window.localStorage.getItem(SIDEBAR_OPEN_STORAGE_KEY);
     if (stored !== null) {
-      setSidebarOpen(JSON.parse(stored) as boolean);
+      try {
+        setSidebarOpen(JSON.parse(stored) === true);
+      } catch {
+        // Ignore corrupt values; keep default collapsed.
+      }
     }
+    setSidebarPreferenceReady(true);
   }, []);
 
   useEffect(() => {
+    if (!sidebarPreferenceReady) return;
     window.localStorage.setItem(
-      "movrr-product-sidebar-open",
+      SIDEBAR_OPEN_STORAGE_KEY,
       JSON.stringify(sidebarOpen),
     );
-  }, [sidebarOpen]);
+  }, [sidebarOpen, sidebarPreferenceReady]);
 
   return (
     <div className="flex h-screen">

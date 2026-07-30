@@ -20,7 +20,7 @@ export function PageShell({
       typeof window !== "undefined"
         ? window.localStorage.getItem("movrr-product-sidebar-open")
         : null;
-    return stored !== null ? JSON.parse(stored) : true;
+    return stored !== null ? JSON.parse(stored) : false;
   });
 
   useEffect(() => {

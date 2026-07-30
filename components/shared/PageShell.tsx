@@ -15,13 +15,14 @@ export function PageShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  const [sidebarOpen, setSidebarOpen] = useState(() => {
-    const stored =
-      typeof window !== "undefined"
-        ? window.localStorage.getItem("movrr-product-sidebar-open")
-        : null;
-    return stored !== null ? JSON.parse(stored) : false;
-  });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem("movrr-product-sidebar-open");
+    if (stored !== null) {
+      setSidebarOpen(JSON.parse(stored) as boolean);
+    }
+  }, []);
 
   useEffect(() => {
     window.localStorage.setItem(

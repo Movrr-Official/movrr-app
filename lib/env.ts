@@ -22,6 +22,8 @@ const serverEnvSchema = publicEnvSchema.extend({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, "SUPABASE_SERVICE_ROLE_KEY is required"),
   BILLING_PORTAL_URL: z.string().url("Invalid BILLING_PORTAL_URL").optional(),
   SUPPORT_EMAIL: z.string().email("Invalid SUPPORT_EMAIL").default("support@movrr.nl"),
+  RESEND_API_KEY: z.string().min(1, "Invalid RESEND_API_KEY").optional(),
+  SYSTEM_EMAIL: z.string().email("Invalid SYSTEM_EMAIL").optional(),
   /** Base URL ending with `/api` (same shape as movrr-mobile adminApiUrl). */
   PLATFORM_API_URL: z
     .string()
@@ -58,6 +60,8 @@ function parseEnv(): PublicEnv | ServerEnv {
       SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
       BILLING_PORTAL_URL: process.env.BILLING_PORTAL_URL,
       SUPPORT_EMAIL: process.env.SUPPORT_EMAIL,
+      RESEND_API_KEY: process.env.RESEND_API_KEY,
+      SYSTEM_EMAIL: process.env.SYSTEM_EMAIL,
       PLATFORM_API_URL: process.env.PLATFORM_API_URL,
     });
   } catch (error) {
@@ -85,6 +89,8 @@ export const SUPABASE_URL = serverEnv?.SUPABASE_URL ?? env.NEXT_PUBLIC_SUPABASE_
 export const SUPABASE_SERVICE_ROLE_KEY = serverEnv?.SUPABASE_SERVICE_ROLE_KEY ?? "";
 export const BILLING_PORTAL_URL = serverEnv?.BILLING_PORTAL_URL ?? "";
 export const SUPPORT_EMAIL = serverEnv?.SUPPORT_EMAIL ?? "support@movrr.nl";
+export const RESEND_API_KEY = serverEnv?.RESEND_API_KEY ?? "";
+export const SYSTEM_EMAIL = serverEnv?.SYSTEM_EMAIL ?? "system@movrr.nl";
 export const PLATFORM_API_URL =
   serverEnv?.PLATFORM_API_URL ?? "http://localhost:3000/api";
 export const NODE_ENV = env.NODE_ENV;

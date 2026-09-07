@@ -18,9 +18,11 @@ const workspaceLabels: Record<AppSessionValue["role"], string> = {
 
 export function Navbar({
   session,
+  sidebarOpen,
   onToggleSidebar,
 }: {
   session: AppSessionValue;
+  sidebarOpen: boolean;
   onToggleSidebar: () => void;
 }) {
   return (
@@ -30,7 +32,7 @@ export function Navbar({
           <div className="w-8 h-8 bg-movrr-bg-primary rounded-[10px] flex items-center justify-center shrink-0">
             <Image
               src="/movrr-icon-mark.png"
-              alt="Movrr Icon"
+              alt="MOVRR Icon"
               width={24}
               height={24}
               sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 100vw"
@@ -40,8 +42,8 @@ export function Navbar({
             />
           </div>
           <div className="flex flex-col">
-            <h2 className="text-sm font-semibold tracking-[-0.03em] leading-none">
-              Movrr
+            <h2 className="text-lg font-semibold uppercase leading-none">
+              MOVRR
             </h2>
             <span className="text-xs text-muted-foreground leading-none">
               {workspaceLabels[session.role]}
@@ -64,6 +66,8 @@ export function Navbar({
           onClick={onToggleSidebar}
           className="lg:hidden p-2 hover:bg-muted"
           aria-label="Toggle sidebar"
+          aria-expanded={sidebarOpen}
+          aria-controls="product-navigation"
         >
           <Menu className="h-5 w-5" />
         </Button>

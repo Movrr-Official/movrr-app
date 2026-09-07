@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
@@ -8,6 +8,33 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import type { AppSessionValue } from "@/providers/SessionProvider";
 
 const SIDEBAR_OPEN_STORAGE_KEY = "movrr-product-sidebar-open";
+const SIDEBAR_PREFERENCE_EVENT = "movrr:sidebar-preference";
+
+function getSidebarOpenSnapshot(): boolean {
+  try {
+    return (
+      JSON.parse(
+        window.localStorage.getItem(SIDEBAR_OPEN_STORAGE_KEY) ?? "false",
+      ) === true
+    );
+  } catch {
+    return false;
+  }
+}
+
+function subscribeToSidebarPreference(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(SIDEBAR_PREFERENCE_EVENT, onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(SIDEBAR_PREFERENCE_EVENT, onStoreChange);
+  };
+}
+
+function persistSidebarOpen(value: boolean): void {
+  window.localStorage.setItem(SIDEBAR_OPEN_STORAGE_KEY, JSON.stringify(value));
+  window.dispatchEvent(new Event(SIDEBAR_PREFERENCE_EVENT));
+}
 
 export function PageShell({
   session,
@@ -17,29 +44,12 @@ export function PageShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  // Default collapsed for first visit; restored preference applied after hydrate.
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarPreferenceReady, setSidebarPreferenceReady] = useState(false);
-
-  useEffect(() => {
-    const stored = window.localStorage.getItem(SIDEBAR_OPEN_STORAGE_KEY);
-    if (stored !== null) {
-      try {
-        setSidebarOpen(JSON.parse(stored) === true);
-      } catch {
-        // Ignore corrupt values; keep default collapsed.
-      }
-    }
-    setSidebarPreferenceReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!sidebarPreferenceReady) return;
-    window.localStorage.setItem(
-      SIDEBAR_OPEN_STORAGE_KEY,
-      JSON.stringify(sidebarOpen),
-    );
-  }, [sidebarOpen, sidebarPreferenceReady]);
+  const sidebarOpen = useSyncExternalStore(
+    subscribeToSidebarPreference,
+    getSidebarOpenSnapshot,
+    () => false,
+  );
+  const toggleSidebar = () => persistSidebarOpen(!sidebarOpen);
 
   return (
     <div className="flex h-screen">
@@ -47,14 +57,15 @@ export function PageShell({
         role={session.role}
         pathname={pathname}
         sidebarOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen((value: boolean) => !value)}
-        onCloseMobile={() => setSidebarOpen(false)}
+        onToggle={toggleSidebar}
+        onCloseMobile={() => persistSidebarOpen(false)}
       />
       <div className="flex flex-1 flex-col overflow-y-auto">
         <div className="flex flex-1 flex-col">
           <Navbar
             session={session}
-            onToggleSidebar={() => setSidebarOpen((value: boolean) => !value)}
+            sidebarOpen={sidebarOpen}
+            onToggleSidebar={toggleSidebar}
           />
           <main className="flex-1 bg-background">{children}</main>
           <Footer />

@@ -8,15 +8,6 @@ import {
   optInToCampaign,
   withdrawCampaignSignup,
 } from "@/lib/platform/campaignPlatform";
-import { communityInstant } from "@/lib/communitySchedule";
-import {
-  joinCommunityRide,
-  createCommunityRide,
-  leaveCommunityRide,
-  editCommunityRide,
-  cancelCommunityRide,
-} from "@/lib/platform/communityPlatform";
-
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import {
@@ -147,52 +138,4 @@ export async function confirmCampaignAction(formData: FormData) {
   }
   revalidatePath("/dashboard/campaigns");
   redirectWithStatus("/dashboard/campaigns", { success: "Participation confirmed." });
-}
-
-export async function communityRideAction(
-  _previous: { success: boolean; error?: string; message?: string } | null,
-  formData: FormData,
-) {
-  const session = await requireProductSession(["rider"]);
-  let success = "Community ride updated.";
-  try {
-    if (formData.get("accountId") !== session.appUser.id) throw new Error("Account changed. Reload before updating community rides.");
-    const action = String(formData.get("action") ?? "");
-    const id = String(formData.get("id") ?? "");
-    const expected = String(formData.get("expectedUpdatedAt") ?? "");
-    if (action === "join") await joinCommunityRide(id);
-    else if (action === "leave") await leaveCommunityRide(id);
-    else if (action === "cancel") await cancelCommunityRide(id, expected);
-    else if (action === "create" || action === "edit") {
-      const local = String(formData.get("scheduledAt") ?? "");
-      const original = String(formData.get("originalScheduledAt") ?? "");
-      const scheduledAt =
-        action === "edit" && local === String(formData.get("originalLocalTime") ?? "")
-          ? original
-          : communityInstant(
-              local,
-              String(formData.get("timezone") ?? "Europe/Amsterdam"),
-              String(formData.get("occurrence") ?? ""),
-            );
-      const input = {
-        title: String(formData.get("title") ?? "").trim(),
-        description: String(formData.get("description") ?? "").trim(),
-        scheduledAt,
-        meetingPoint: String(formData.get("meetingPoint") ?? "").trim(),
-        category: String(formData.get("category") ?? "social"),
-        maxParticipants: Number(formData.get("maxParticipants")),
-      };
-      if (action === "create") {
-        await createCommunityRide({
-          ...input,
-          operationId: String(formData.get("operationId") ?? ""),
-        });
-        success = "Community ride created.";
-      } else await editCommunityRide(id, { ...input, expectedUpdatedAt: expected });
-    } else throw new Error("Unknown community action");
-  } catch (error) {
-    return { success: false, error: mapPlatformError(error) };
-  }
-  revalidatePath("/dashboard/community");
-  return { success: true, message: success };
 }

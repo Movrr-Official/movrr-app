@@ -20,7 +20,6 @@ import {
   QrCode,
   Settings,
   ShieldCheck,
-  ShoppingBag,
   Target,
   Trophy,
   Users,
@@ -52,19 +51,7 @@ const navigation = {
 
     { href: "/dashboard/routes", label: "Routes", icon: MapPinned },
     { href: "/dashboard/rides", label: "Ride history", icon: ClipboardList },
-    { href: "/dashboard/account", label: "Rider self-service", icon: Users },
-    { href: "/dashboard/partners", label: "Partner locations", icon: MapPinned },
-    { href: "/dashboard/privacy", label: "Data and privacy", icon: ShieldCheck },
-
-    { href: "/dashboard/community", label: "Community", icon: Users },
-
     { href: "/dashboard/rewards", label: "Rewards", icon: Trophy },
-
-    {
-      href: "/dashboard/rewards/shop",
-      label: "Rewards Shop",
-      icon: ShoppingBag,
-    },
 
     { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
 

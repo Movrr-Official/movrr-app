@@ -89,7 +89,7 @@ it("requests the canonical lifecycle and stores receipt credentials only in a pr
 });
 it("requires disclosure before any lifecycle request", async () => {
   await expect(requestAccountDeletion(new FormData())).rejects.toThrow(
-    "redirect:/dashboard/privacy?",
+    "redirect:/dashboard/settings/privacy?",
   );
   expect(state.invoke).not.toHaveBeenCalled();
 });
@@ -104,7 +104,7 @@ it.each(["suspended", "deleted"])(
 it("denies account switching between page authorization and deletion", async () => {
   state.subject = "other";
   await expect(requestAccountDeletion(form())).rejects.toThrow(
-    "redirect:/dashboard/privacy?",
+    "redirect:/dashboard/settings/privacy?",
   );
   expect(state.invoke).not.toHaveBeenCalled();
 });
@@ -112,7 +112,7 @@ it("denies password proof for another subject", async () => {
   state.passwordSubject = "other";
   const f = form();
   f.set("password", "fixture-password");
-  await expect(requestAccountDeletion(f)).rejects.toThrow("redirect:/dashboard/privacy?");
+  await expect(requestAccountDeletion(f)).rejects.toThrow("redirect:/dashboard/settings/privacy?");
   expect(state.invoke).not.toHaveBeenCalled();
 });
 it("retains credential-only receipt access after the account is restricted without exposing the credential in HTML", async () => {
@@ -149,4 +149,4 @@ it("does not report completion when the authority is unavailable", async () => {
   expect(html).not.toContain("Status: completed");
 });
 
-it("rejects a stale deletion form from a previously signed-in account",async()=>{const f=form();f.set("accountId","previous-owner");await expect(requestAccountDeletion(f)).rejects.toThrow("redirect:/dashboard/privacy?");expect(state.invoke).not.toHaveBeenCalled()});
+it("rejects a stale deletion form from a previously signed-in account",async()=>{const f=form();f.set("accountId","previous-owner");await expect(requestAccountDeletion(f)).rejects.toThrow("redirect:/dashboard/settings/privacy?");expect(state.invoke).not.toHaveBeenCalled()});

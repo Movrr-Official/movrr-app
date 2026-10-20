@@ -33,8 +33,9 @@ export async function riderSelfServiceAction(form: FormData) {
   } catch {
     error = "Update unavailable. Refresh your account and retry.";
   }
-  revalidatePath("/dashboard/account");
+  const destination = form.get("feature") === "achievements" ? "/dashboard/rewards" : "/dashboard/settings/self-service";
+  revalidatePath(destination);
   redirect(
-    `/dashboard/account?${new URLSearchParams(error ? { error } : { success: "Account updated." })}`,
+    `${destination}?${new URLSearchParams(error ? { error } : { success: "Account updated." })}`,
   );
 }

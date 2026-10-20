@@ -62,19 +62,6 @@ export async function getWalletStatement() {
     throw new Error("Wallet statement incomplete");
   return statement;
 }
-export const catalogSchema = z.object({
-  id: z.string().uuid(),
-  title: z.string(),
-  description: z.string().nullable().optional(),
-  points_price: z.number().int().nonnegative(),
-  available: z.boolean(),
-  eligible: z.boolean(),
-  redemption_enabled: z.boolean(),
-});
-export async function listRewardsCatalog() {
-  await requireProductSession(["rider"]);
-  return z.array(catalogSchema).parse(await platformFetch("/rewards/catalog"));
-}
 const redemptionSchema = z.object({
   id: z.string().uuid(),
   catalogItemId: z.string(),

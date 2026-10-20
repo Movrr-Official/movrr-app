@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { listRedemptions } from "@/lib/platform/riderPlatform";
+import { EarnedAchievements } from "@/components/rider/EarnedAchievements";
+import { StatusToast } from "@/components/form/StatusToast";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatsCard } from "@/components/stats/StatsCard";
@@ -132,7 +135,9 @@ async function PartnerRewardsView() {
   );
 }
 
-export default async function DashboardRewardsPage() {
+export default async function DashboardRewardsPage({ searchParams }: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const session = await getCurrentProductSession();
   if (!session) redirect("/auth/signin");
 
@@ -142,18 +147,19 @@ export default async function DashboardRewardsPage() {
 
   if (session.appUser.role !== "rider") redirect("/dashboard");
 
-  const dashboard = await getRiderRewardsData();
+  const params = await searchParams;
+  const success = typeof params.success === "string" ? params.success : null;
+  const error = typeof params.error === "string" ? params.error : null;
+  const [dashboard, orders] = await Promise.all([getRiderRewardsData(), listRedemptions()]);
 
   return (
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
+        <StatusToast success={success} error={error} />
         <PageHeader
           title="Rewards"
           description="Read-only rewards statement for your rider account, including balance, lifetime earnings, and recent adjustments."
-          action={{
-            label: "Rewards shop",
-            href: "/dashboard/rewards/shop",
-          }}
+          action={{ label: "Download statement", href: "/api/dashboard/rewards/export", method: "post" }}
         />
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4">
@@ -271,6 +277,19 @@ export default async function DashboardRewardsPage() {
             iconName="rewards"
           />
         )}
+        <Card>
+          <CardHeader><CardTitle>Redemption history</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            {orders.length ? orders.map(order => (
+              <Link className="block rounded-xl border border-border/60 p-4 hover:text-primary" key={order.id} href={`/dashboard/rewards/orders/${order.id}`}>
+                <span className="font-medium">{order.rewardTitle || "Reward"}</span>
+                <span className="ml-3 text-sm">{order.redemptionStatus} / {order.isFree ? "Free" : `${order.pointsSpent} pts`}</span>
+              </Link>
+            )) : <p>No rewards claimed yet.</p>}
+          </CardContent>
+        </Card>
+        <EarnedAchievements />
+
       </div>
     </div>
   );

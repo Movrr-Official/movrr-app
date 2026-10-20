@@ -13,8 +13,6 @@ import {
   getRewardCredential,
 } from "@/lib/platform/riderPlatform";
 import { listRiderCampaigns } from "@/lib/platform/campaignPlatform";
-import { listCommunityRides } from "@/lib/platform/communityPlatform";
-import { communityInstant, localCommunityTime } from "@/lib/communitySchedule";
 import { normalizedRiderLocale } from "@/lib/locale";
 import { PlatformApiError } from "@/lib/platform/types";
 const rider = "11111111-1111-4111-8111-111111111111",
@@ -124,27 +122,6 @@ describe("shared rider contracts", () => {
       canConfirm: true,
     });
   });
-  it("retains canonical community meeting place and membership", async () => {
-    fetcher.mockResolvedValue([
-      {
-        id: entry,
-        title: "Ride",
-        description: null,
-        scheduled_at: asOf,
-        meeting_point_name: "Station",
-        category: "social",
-        max_participants: 20,
-        status: "upcoming",
-        updated_at: asOf,
-        isOrganizer: false,
-        isJoined: true,
-      },
-    ]);
-    expect((await listCommunityRides())[0]).toMatchObject({
-      meeting_point_name: "Station",
-      isJoined: true,
-    });
-  });
   it("distinguishes missing orders from an outage", async () => {
     fetcher.mockRejectedValue(
       new PlatformApiError({ kind: "infra", message: "offline", status: 503 }),
@@ -170,31 +147,6 @@ describe("shared rider contracts", () => {
   });
 });
 describe("timezone and locale", () => {
-  it("preserves summer and winter Amsterdam instants", () => {
-    expect(communityInstant("2026-07-01T09:00", "Europe/Amsterdam")).toBe(
-      "2026-07-01T07:00:00.000Z",
-    );
-    expect(communityInstant("2026-12-01T09:00", "Europe/Amsterdam")).toBe(
-      "2026-12-01T08:00:00.000Z",
-    );
-  });
-  it("rejects the DST gap", () =>
-    expect(() => communityInstant("2026-03-29T02:30", "Europe/Amsterdam")).toThrow(
-      "does not exist",
-    ));
-  it("requires an explicit choice for repeated local times", () => {
-    expect(() => communityInstant("2026-10-25T02:30", "Europe/Amsterdam")).toThrow(
-      "occurs twice",
-    );
-    expect(communityInstant("2026-10-25T02:30", "Europe/Amsterdam", "first")).toBe(
-      "2026-10-25T00:30:00.000Z",
-    );
-    expect(communityInstant("2026-10-25T02:30", "Europe/Amsterdam", "second")).toBe(
-      "2026-10-25T01:30:00.000Z",
-    );
-  });
-  it("roundtrips displayed local schedule without server-zone dependence", () =>
-    expect(localCommunityTime("2026-10-19T07:00:00Z")).toBe("2026-10-19T09:00"));
   it.each(["de", "fr", "en", "invalid"])(
     "rejects unsupported or obsolete account locale %s",
     (locale) => expect(() => normalizedRiderLocale(locale)).toThrow(),

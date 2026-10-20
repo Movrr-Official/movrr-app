@@ -51,7 +51,7 @@ export default async function RewardOrderDetailPage({
             )}
           </CardContent>
         </Card>
-        <Link href="/dashboard/rewards/shop" className="text-primary">
+        <Link href="/dashboard/rewards" className="text-primary">
           My Rewards
         </Link>
       </div>

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   updateAdvertiserNotificationPreferencesAction,
   updateAdvertiserSettingsAction,
@@ -344,6 +345,11 @@ export default async function DashboardSettingsPage({
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
         <StatusToast success={success} error={error} />
+        <nav aria-label="Account settings" className="flex flex-wrap gap-4 text-sm">
+          <Link className="text-primary underline" href="/dashboard/settings/self-service">Equipment and preferences</Link>
+          <Link className="text-primary underline" href="/dashboard/settings/privacy">Data and privacy</Link>
+        </nav>
+
 
         <Card className="border-border">
         <CardHeader>

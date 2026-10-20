@@ -26,16 +26,6 @@ const brand = z.object({
     .array(z.object({ preference: z.enum(["preferred", "neutral", "avoided"]) }))
     .nullable(),
 });
-const award = z.object({
-  id: z.string().uuid(),
-  awarded_at: z.string(),
-  badge: z.object({
-    id: z.string().uuid(),
-    code: z.string(),
-    short_label: z.string(),
-    description: z.string().nullable(),
-  }),
-});
 export default async function RiderAccountPage({
   searchParams,
 }: {
@@ -46,12 +36,10 @@ export default async function RiderAccountPage({
   const raw = await Promise.all([
     readRiderFeature("accessories"),
     readRiderFeature("brands"),
-    readRiderFeature("achievements"),
     readRiderFeature("impact"),
   ]);
   const accessories = z.array(accessory).parse(raw[0]),
-    brands = z.array(brand).parse(raw[1]),
-    awards = z.array(award).parse(raw[2]);
+    brands = z.array(brand).parse(raw[1]);
   const impact = z
     .array(
       z.object({
@@ -60,12 +48,12 @@ export default async function RiderAccountPage({
         co2_saved_kg: z.coerce.number(),
       }),
     )
-    .parse(raw[3])[0];
+    .parse(raw[2])[0];
   return (
     <div key={session.appUser.id} className="page-canvas space-y-6">
       <PageHeader
         title="Rider self-service"
-        description="Your equipment, preferences, earned achievements and recorded impact."
+        description="Your campaign equipment, brand preferences and recorded impact."
       />
       <StatusToast error={params.error} success={params.success} />
       <Card>
@@ -144,32 +132,6 @@ export default async function RiderAccountPage({
             </div>
           ))}
           {!brands.length && <p>No published brands available.</p>}
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Earned achievements</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {awards.map((a) => (
-            <div key={a.id} className="rounded-xl border p-4">
-              <p className="font-semibold">{a.badge.short_label}</p>
-              <p>{a.badge.description}</p>
-              <p className="text-sm">
-                Awarded{" "}
-                {new Date(a.awarded_at).toLocaleDateString("en-GB", {
-                  timeZone: "Europe/Amsterdam",
-                })}
-              </p>
-            </div>
-          ))}
-          {!awards.length && <p>No achievements awarded yet.</p>}
-          <form action={riderSelfServiceAction}>
-            <input type="hidden" name="accountId" value={session.appUser.id}/><input type="hidden" name="feature" value="achievements" />
-            <SubmitButton pendingLabel="Refreshing">
-              Refresh achievement progress
-            </SubmitButton>
-          </form>
         </CardContent>
       </Card>
       <Card>

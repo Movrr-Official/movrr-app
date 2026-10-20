@@ -66,6 +66,6 @@ export async function requestAccountDeletion(form: FormData) {
   } catch (e) {
     error = e instanceof Error ? e.message : "Deletion request unavailable";
   }
-  if (error) redirect(`/dashboard/privacy?${new URLSearchParams({ error })}`);
+  if (error) redirect(`/dashboard/settings/privacy?${new URLSearchParams({ error })}`);
   redirect("/account/deletion-receipt");
 }

@@ -150,6 +150,25 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
     },
   };
 }
+/** Assigned routes do not depend on Wallet, campaigns or notification services. */
+export async function getRiderRoutesData() {
+  const session = await requireProductSession(["rider"]);
+  if (!session.riderProfile) throw new Error("Rider onboarding is incomplete. Contact MOVRR support.");
+  const [rows, rides] = await Promise.all([
+    ownedAssignments(session.riderProfile.id),
+    listRideSummaries(),
+  ]);
+  const routes = rows.map(assignment);
+  const latest = rides.summaries[0];
+  const compliance = latest?.session.compliance_score;
+  return {
+    routes,
+    activeRoutes: routes.filter(route => ["assigned", "in-progress"].includes(route.status)).length,
+    currentCompliance: typeof compliance === "number" ? compliance * 100 : null,
+    lastMobileSyncAt: latest?.session.completed_at ?? latest?.session.started_at ?? null,
+  };
+}
+
 /** Settings must remain available independently of ride and financial services. */
 export async function getRiderSettingsData() {
   const session = await requireProductSession(["rider"]);

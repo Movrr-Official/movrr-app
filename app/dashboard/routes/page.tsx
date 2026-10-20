@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { getCurrentProductSession } from "@/lib/appUser";
 import { formatRelativeDate } from "@/lib/format";
-import { getRiderDashboardData } from "@/services/rider";
+import { getRiderRoutesData } from "@/services/rider";
 import { redirect } from "next/navigation";
 import { Bell, FileText, MapPinned, Route, Smartphone } from "lucide-react";
 
@@ -19,7 +19,7 @@ export default async function DashboardRoutesPage() {
   const session = await getCurrentProductSession();
   if (!session || session.appUser.role !== "rider") redirect("/dashboard");
 
-  const dashboard = await getRiderDashboardData();
+  const dashboard = await getRiderRoutesData();
 
   return (
     <div className="page-canvas">

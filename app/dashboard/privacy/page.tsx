@@ -36,6 +36,7 @@ export default async function PrivacyPage({
           <CardTitle>Request account deletion</CardTitle>
         </CardHeader>
         <CardContent>
+          <p className="mb-4">If self-service deletion is paused or unavailable, email <a className="underline" href="mailto:privacy@movrr.nl">privacy@movrr.nl</a> to exercise your privacy rights. Existing requests and deletion receipts remain available through the existing review process.</p>
           <form action={requestAccountDeletion} className="space-y-4"><input type="hidden" name="accountId" value={session.appUser.id}/>
             <p id="deletion-disclosure">
               Requesting deletion restricts your account. MOVRR reviews outstanding

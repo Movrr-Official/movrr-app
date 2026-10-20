@@ -49,26 +49,18 @@ export async function listWalletTransactions(asOf: string): Promise<WalletTransa
   } while (cursor);
   return entries;
 }
-/** Concurrent appends cause a bounded retry, never a mixed-version statement. */
+/** Backend owns snapshot preparation and bounded concurrent-append retries. */
 export async function getWalletStatement() {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const balance = await getWalletBalance();
-    const entries = await listWalletTransactions(balance.asOf);
-    const after = await getWalletBalance();
-    if (
-      balance.riderId !== after.riderId ||
-      entries.some((entry) => entry.riderId !== balance.riderId)
-    )
-      throw new Error("Account changed during Wallet read");
-    if (
-      balance.transactionCount === after.transactionCount &&
-      balance.pointsBalance === after.pointsBalance &&
-      balance.lifetimePointsEarned === after.lifetimePointsEarned &&
-      entries.length === balance.transactionCount
-    )
-      return { balance, entries };
-  }
-  throw new Error("Wallet changed during statement preparation. Please retry.");
+  const session = await requireProductSession(["rider"]);
+  const statement = z.object({
+    balance: walletBalanceSchema,
+    entries: z.array(walletTransactionSchema),
+  }).parse(await platformFetch("/wallet/statement"));
+  if (statement.balance.riderId !== session.riderProfile?.id || statement.entries.some(entry => entry.riderId !== statement.balance.riderId))
+    throw new Error("Account changed during Wallet read");
+  if (statement.entries.length !== statement.balance.transactionCount)
+    throw new Error("Wallet statement incomplete");
+  return statement;
 }
 export const catalogSchema = z.object({
   id: z.string().uuid(),

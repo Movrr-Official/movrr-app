@@ -38,7 +38,7 @@ const debit = {
 };
 beforeEach(() => {
   fetcher.mockReset();
-  guard.mockReset().mockResolvedValue({ appUser: { id: rider, role: "rider" } });
+  guard.mockReset().mockResolvedValue({ appUser: { id: rider, role: "rider" }, riderProfile: { id: rider } });
 });
 describe("Wallet canonical consumer", () => {
   it("reads the authoritative balance without aliases or fabricated values", async () => {
@@ -68,39 +68,24 @@ describe("Wallet canonical consumer", () => {
     fetcher.mockRejectedValue(new Error("offline"));
     await expect(getWalletStatement()).rejects.toThrow("offline");
   });
-  it("retries a concurrent append before returning a coherent statement", async () => {
-    fetcher
-      .mockResolvedValueOnce(balance)
-      .mockResolvedValueOnce({ entries: [debit], nextCursor: null, asOf })
-      .mockResolvedValueOnce({ ...balance, transactionCount: 2, pointsBalance: 80 })
-      .mockResolvedValueOnce({ ...balance, transactionCount: 2, pointsBalance: 80 })
-      .mockResolvedValueOnce({
-        entries: [debit, { ...debit, id: rider, points: 10, category: "route" }],
-        nextCursor: null,
-        asOf,
-      })
-      .mockResolvedValueOnce({ ...balance, transactionCount: 2, pointsBalance: 80 });
+  it("reads one backend-prepared coherent statement without serial API hops", async () => {
+    fetcher.mockResolvedValue({ balance: { ...balance, transactionCount: 2, pointsBalance: 80 }, entries: [debit, { ...debit, id: rider, points: 10, category: "route" }] });
     const result = await getWalletStatement();
     expect(result.balance.pointsBalance).toBe(80);
     expect(result.entries).toHaveLength(2);
+    expect(fetcher).toHaveBeenCalledExactlyOnceWith("/wallet/statement");
   });
   it("fails rather than mixing accounts", async () => {
-    fetcher
-      .mockResolvedValueOnce(balance)
-      .mockResolvedValueOnce({ entries: [debit], nextCursor: null, asOf })
-      .mockResolvedValueOnce({ ...balance, riderId: entry });
+    fetcher.mockResolvedValue({balance:{...balance,riderId:entry},entries:[debit]});
     await expect(getWalletStatement()).rejects.toThrow("Account changed");
   });
   it("rejects a mixed-owner ledger page even when counts match", async () => {
-    fetcher
-      .mockResolvedValueOnce(balance)
-      .mockResolvedValueOnce({
-        entries: [{ ...debit, riderId: entry }],
-        nextCursor: null,
-        asOf,
-      })
-      .mockResolvedValueOnce(balance);
+    fetcher.mockResolvedValue({balance,entries:[{...debit,riderId:entry}]});
     await expect(getWalletStatement()).rejects.toThrow("Account changed");
+  });
+  it("rejects incomplete backend statements", async () => {
+    fetcher.mockResolvedValue({balance,entries:[]});
+    await expect(getWalletStatement()).rejects.toThrow("incomplete");
   });
   it("rejects a changed statement cutoff", async () => {
     fetcher.mockResolvedValue({

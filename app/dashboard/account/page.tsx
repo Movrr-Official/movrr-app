@@ -184,10 +184,10 @@ export default async function RiderAccountPage({
               </p>
               <p>{impact.co2_saved_kg.toFixed(2)} kg CO2e WTW - equivalent car journey estimate</p>
               <p className="text-sm text-muted-foreground">
-                Completed, verified cycling distance with committed settlement evidence.
+                Completed cycling distance verified in authoritative ride records.
                 Average car comparison at 0.190 kg CO2e per vehicle-km (2026 edition,
                 reference data 2025), not measured emissions avoided. Unsupported
-                historical evidence is excluded. Method: MOVRR-NL-CAR-COMPARISON-2026-v1.
+                historical evidence is excluded. Method: MOVRR-NL-CAR-COMPARISON-2026-v2.
               </p>
             </>
           ) : (

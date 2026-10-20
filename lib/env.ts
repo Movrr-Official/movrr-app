@@ -30,6 +30,12 @@ const serverEnvSchema = publicEnvSchema.extend({
     .url("Invalid PLATFORM_API_URL")
     .optional()
     .default("http://localhost:3000/api"),
+}).superRefine((value, context) => {
+  if (value.NODE_ENV !== "production") return;
+  const api = new URL(value.PLATFORM_API_URL);
+  if (api.protocol !== "https:" || ["localhost", "127.0.0.1", "0.0.0.0", "[::1]"].includes(api.hostname) || !api.pathname.replace(/\/$/, "").endsWith("/api")) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["PLATFORM_API_URL"], message: "Production requires an explicit HTTPS Platform API origin ending in /api" });
+  }
 });
 
 type PublicEnv = z.infer<typeof publicEnvSchema>;

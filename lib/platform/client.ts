@@ -106,6 +106,7 @@ export async function platformFetch<T>(
   try {
     response = await fetchImpl(url, {
       method,
+      cache: "no-store",
       headers,
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
@@ -122,8 +123,7 @@ export async function platformFetch<T>(
     });
   }
 
-  const responseCorrelation =
-    response.headers.get("x-correlation-id") ?? correlationId;
+  const responseCorrelation = response.headers.get("x-correlation-id") ?? correlationId;
 
   let json: unknown = null;
   try {
@@ -135,8 +135,7 @@ export async function platformFetch<T>(
   if (!response.ok) {
     const errBody = json as PlatformErrorEnvelope | null;
     const kind = errBody?.error?.kind ?? "infra";
-    const message =
-      errBody?.error?.message ?? `Platform API error (${response.status})`;
+    const message = errBody?.error?.message ?? `Platform API error (${response.status})`;
     throw new PlatformApiError({
       kind,
       message,

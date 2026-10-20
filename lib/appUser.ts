@@ -1,4 +1,5 @@
-﻿import { redirect } from "next/navigation";
+﻿import { normalizedRiderLocale } from "@/lib/locale";
+import { redirect } from "next/navigation";
 import type { User as SupabaseAuthUser } from "@supabase/supabase-js";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
@@ -163,7 +164,7 @@ export async function getAuthenticatedAppUser(): Promise<ProductIdentity | null>
   const admin = createSupabaseAdminClient();
   const { data: appUserRow, error: appUserError } = await admin
     .from("user")
-    .select("id, email, name, phone, role, status, avatar_url, organization, language_preference")
+    .select("id, email, name, phone, role, status, avatar_url, organization")
     .eq("id", authUser.id)
     .maybeSingle();
 
@@ -175,6 +176,7 @@ export async function getAuthenticatedAppUser(): Promise<ProductIdentity | null>
   if (!appUserRow) {
     return null;
   }
+  if (!["active", "pending"].includes(String(appUserRow.status).toLowerCase())) return null;
 
   // Prefer declared product roles; allow active users through so /partners/me can
   // discover organisation membership without requiring admin_users.
@@ -193,6 +195,13 @@ export async function getAuthenticatedAppUser(): Promise<ProductIdentity | null>
   }
 
   if (!role) return null;
+  let riderLocale: ReturnType<typeof normalizedRiderLocale>;
+  {
+    const preference = await admin.from("user_preferences").select("language").eq("user_id", authUser.id).maybeSingle();
+    if (preference.error) throw new Error("Account preferences unavailable");
+    riderLocale = normalizedRiderLocale(preference.data?.language);
+  }
+
 
   return {
     authUser,
@@ -206,7 +215,7 @@ export async function getAuthenticatedAppUser(): Promise<ProductIdentity | null>
       avatarUrl: appUserRow.avatar_url,
       phone: appUserRow.phone,
       organization: appUserRow.organization,
-      languagePreference: appUserRow.language_preference ?? "en",
+      languagePreference: riderLocale!,
     },
   };
 }
@@ -225,18 +234,14 @@ export async function getRiderProductSession(identity?: ProductIdentity): Promis
       "id, city, country, vehicle_type, is_certified, emergency_contact, emergency_phone, created_at",
     )
     .eq("user_id", resolvedIdentity.authUser.id)
-    .order("created_at", { ascending: false })
-    .limit(5);
+    .limit(2);
 
   if (riderProfileError) {
     logger.error("Failed to resolve rider product session", riderProfileError.message);
   }
 
   if ((riderRows?.length ?? 0) > 1) {
-    logger.warn(
-      "Multiple rider profiles detected for product user; using the newest profile for session defaults",
-      resolvedIdentity.authUser.id,
-    );
+    throw new Error("Rider identity requires operational review");
   }
 
   const latestRider = riderRows?.[0] ?? null;

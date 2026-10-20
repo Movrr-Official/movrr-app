@@ -71,7 +71,7 @@ export default async function DashboardRouteDetailPage({
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4">
           <StatsCard
             title="Route progress"
-            value={`${route.routeProgress}%`}
+            value={route.routeProgress === null ? "Unavailable" : `${route.routeProgress}%`}
             description="Latest synced progress from mobile execution telemetry"
             icon={Route}
           />
@@ -83,7 +83,7 @@ export default async function DashboardRouteDetailPage({
           />
           <StatsCard
             title="Distance"
-            value={`${route.distanceKm.toFixed(1)} km`}
+            value={route.distanceKm === null ? "Unavailable" : `${route.distanceKm.toFixed(1)} km`}
             description="Accumulated route distance from tracking logs"
             icon={FileText}
           />
@@ -123,10 +123,9 @@ export default async function DashboardRouteDetailPage({
               <div className="rounded-xl border border-border/60 bg-background/70 p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="font-medium">Compliance posture</p>
+                    <p className="font-medium">Recorded ride compliance</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Latest posture derived from synced route progress and
-                      telemetry freshness.
+                      Assignment progress is separate from ride verification. See ride history for verified results.
                     </p>
                   </div>
                   <Badge
@@ -237,35 +236,13 @@ export default async function DashboardRouteDetailPage({
               </CardHeader>
               <CardContent className="space-y-3">
                 {route.tracking.length ? (
-                  route.tracking.map(
-                    (tracking: {
-                      id: string;
-                      total_distance?: number | null;
-                      route_compliance?: number | null;
-                      impressions_earned?: number | null;
-                      start_time?: string | null;
-                      end_time?: string | null;
-                    }) => (
-                      <div
-                        key={tracking.id}
-                        className="rounded-xl border border-border/60 bg-background/70 p-4 text-sm"
-                      >
-                        <p className="font-medium">Tracking session</p>
-                        <p className="mt-1 text-muted-foreground">
-                          Compliance {Number(tracking.route_compliance ?? 0)}%
-                        </p>
-                        <p className="text-muted-foreground">
-                          Distance{" "}
-                          {Number(tracking.total_distance ?? 0).toFixed(1)} km
-                        </p>
-                        <p className="mt-2 text-xs text-muted-foreground">
-                          {formatRelativeDate(
-                            tracking.end_time ?? tracking.start_time ?? null,
-                          )}
-                        </p>
-                      </div>
-                    ),
-                  )
+                  route.tracking.map(summary => (
+                    <div key={summary.rideSessionId} className="rounded-xl border border-border/60 bg-background/70 p-4 text-sm">
+                      <p>Verification: {summary.session.verification_result?.status ?? "Unavailable"} ? Settlement: {summary.settlement.status}</p>
+                      <p>Distance: {summary.session.total_distance_meters == null ? "Unavailable" : `${(summary.session.total_distance_meters / 1000).toFixed(1)} km`}</p>
+                      <p>Committed points: {summary.committedPoints ?? "Unavailable"}</p>
+                    </div>
+                  ))
                 ) : (
                   <p className="text-sm text-muted-foreground">
                     No synced route telemetry is available yet for this

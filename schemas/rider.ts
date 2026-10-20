@@ -17,8 +17,8 @@ export const riderCampaignSchema = z.object({
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   targetZones: z.array(z.string()).default([]),
-  qrScans: z.number().default(0),
-  impressions: z.number().default(0),
+  qrScans: z.number().nullable(),
+  impressions: z.number().nullable(),
 });
 
 export const riderRouteSchema = z.object({
@@ -31,11 +31,13 @@ export const riderRouteSchema = z.object({
   endLocation: z.string().optional(),
   startedAt: z.string().optional().nullable(),
   completedAt: z.string().optional().nullable(),
-  routeProgress: z.number().default(0),
+  routeProgress: z.number().nullable(),
   coverageKm: z.number().default(0),
   campaignId: z.string().optional().nullable(),
   lastSyncedAt: z.string().nullable().optional(),
-  complianceStatus: z.enum(["healthy", "watch", "attention"]).default("watch"),
+  complianceStatus: z
+    .enum(["healthy", "watch", "attention", "unavailable"])
+    .default("watch"),
   syncSource: z.string().default("movrr-mobile"),
   timeline: z.array(riderTimelineEventSchema).default([]),
 });
@@ -43,7 +45,9 @@ export const riderRouteSchema = z.object({
 export const riderRewardTransactionSchema = z.object({
   id: z.string(),
   type: z.enum(["awarded", "redeemed", "adjusted"]),
-  category: z.enum(["campaign", "route", "adjustment", "redemption", "other"]).default("other"),
+  category: z
+    .enum(["campaign", "route", "adjustment", "redemption", "refund", "other"])
+    .default("other"),
   points: z.number(),
   description: z.string(),
   createdAt: z.string(),
@@ -81,7 +85,7 @@ export const riderProfileSchema = z.object({
   vehicleType: z.string().optional().nullable(),
   emergencyContact: z.string().optional().nullable(),
   emergencyPhone: z.string().optional().nullable(),
-  languagePreference: z.string().default("en"),
+  languagePreference: z.enum(["en-US", "nl-NL"]).default("en-US"),
   timezone: z.string().default("Europe/Amsterdam"),
 });
 
@@ -96,8 +100,10 @@ export const riderDashboardSchema = z.object({
   lifetimePointsEarned: z.number(),
   activeCampaigns: z.number(),
   activeRoutes: z.number(),
-  currentCompliance: z.number(),
-  complianceStatus: z.enum(["healthy", "watch", "attention"]).default("watch"),
+  currentCompliance: z.number().nullable(),
+  complianceStatus: z
+    .enum(["healthy", "watch", "attention", "unavailable"])
+    .default("watch"),
   lastActive: z.string().optional().nullable(),
   lastMobileSyncAt: z.string().optional().nullable(),
   campaigns: z.array(riderCampaignSchema),
@@ -116,7 +122,9 @@ export type RiderRoute = z.infer<typeof riderRouteSchema>;
 export type RiderRewardTransaction = z.infer<typeof riderRewardTransactionSchema>;
 export type RiderRewardsSummary = z.infer<typeof riderRewardsSummarySchema>;
 export type RiderNotification = z.infer<typeof riderNotificationSchema>;
-export type RiderNotificationPreferences = z.infer<typeof riderNotificationPreferencesSchema>;
+export type RiderNotificationPreferences = z.infer<
+  typeof riderNotificationPreferencesSchema
+>;
 export type RiderProfile = z.infer<typeof riderProfileSchema>;
 export type RiderSupportInfo = z.infer<typeof riderSupportInfoSchema>;
 export type RiderDashboard = z.infer<typeof riderDashboardSchema>;

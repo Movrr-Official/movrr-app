@@ -18,7 +18,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
-import { getRiderDashboardData } from "@/services/rider";
 import { getCurrentProductSession } from "@/lib/appUser";
 import { listRiderCampaigns } from "@/lib/platform/campaignPlatform";
 import { getGovernmentProgrammes } from "@/lib/platform/governmentPlatform";
@@ -126,34 +125,13 @@ export default async function DashboardCampaignsPage({
 
   if (!session || session.appUser.role !== "rider") redirect("/dashboard");
 
-  let platformCampaigns: Awaited<ReturnType<typeof listRiderCampaigns>> = [];
-  let platformError: string | null = null;
-  try {
-    platformCampaigns = await listRiderCampaigns();
-  } catch (err) {
-    platformError = err instanceof Error ? err.message : "Failed to load campaigns";
-  }
-
-  const dashboard = await getRiderDashboardData();
-  const campaigns =
-    platformCampaigns.length > 0
-      ? platformCampaigns.map((c) => ({
-          id: c.id,
-          name: c.name,
-          description: c.description,
-          status: c.lifecycleStatus,
-          campaignType: c.campaignType,
-          startDate: c.startDate,
-          endDate: c.endDate,
-          targetZones: c.targetZones,
-          signupStatus: c.signupStatus,
-        }))
-      : dashboard.campaigns.map((c) => ({ ...c, signupStatus: undefined }));
+  const platformCampaigns = await listRiderCampaigns();
+  const campaigns = platformCampaigns.map(c => ({ ...c, status: c.lifecycleStatus }));
 
   return (
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
-        <StatusToast success={success} error={error ?? platformError} />
+        <StatusToast success={success} error={error} />
         {campaigns.length ? (
           <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
             {campaigns.map((campaign) => (
@@ -203,7 +181,7 @@ export default async function DashboardCampaignsPage({
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {!campaign.signupStatus ? (
+                    {campaign.canJoin ? (
                       <form action={optInCampaignAction}>
                         <input type="hidden" name="campaignId" value={campaign.id} />
                         <SubmitButton type="submit" size="sm" pendingLabel="Joining">
@@ -211,11 +189,9 @@ export default async function DashboardCampaignsPage({
                         </SubmitButton>
                       </form>
                     ) : null}
-                    {campaign.signupStatus &&
-                    campaign.signupStatus !== "withdrawn" &&
-                    campaign.signupStatus !== "confirmed" ? (
+                    {campaign.canWithdraw || campaign.canConfirm ? (
                       <>
-                        <form action={withdrawCampaignAction}>
+                        {campaign.canWithdraw && <form action={withdrawCampaignAction}>
                           <input type="hidden" name="campaignId" value={campaign.id} />
                           <SubmitButton
                             type="submit"
@@ -225,8 +201,8 @@ export default async function DashboardCampaignsPage({
                           >
                             Withdraw
                           </SubmitButton>
-                        </form>
-                        <form action={confirmCampaignAction}>
+                        </form>}
+                        {campaign.canConfirm && <form action={confirmCampaignAction}>
                           <input type="hidden" name="campaignId" value={campaign.id} />
                           <SubmitButton
                             type="submit"
@@ -236,7 +212,7 @@ export default async function DashboardCampaignsPage({
                           >
                             Confirm participation
                           </SubmitButton>
-                        </form>
+                        </form>}
                       </>
                     ) : null}
                   </div>

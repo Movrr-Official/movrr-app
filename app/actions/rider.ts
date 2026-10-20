@@ -1,3 +1,4 @@
+"use server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireProductSession } from "@/lib/appUser";
@@ -7,10 +8,23 @@ import {
   optInToCampaign,
   withdrawCampaignSignup,
 } from "@/lib/platform/campaignPlatform";
-import { joinCommunityRide, createCommunityRide } from "@/lib/platform/communityPlatform";
-import { redeemReward } from "@/lib/platform/riderPlatform";
-import { createSupabaseAdminClient } from "@/lib/supabase-admin";
-import { markSingleNotificationRead, markUserNotificationsRead, persistNotificationsPreference, revalidateRoleNotificationPaths } from "@/lib/notifications";
+import { communityInstant } from "@/lib/communitySchedule";
+import {
+  joinCommunityRide,
+  createCommunityRide,
+  leaveCommunityRide,
+  editCommunityRide,
+  cancelCommunityRide,
+} from "@/lib/platform/communityPlatform";
+
+import { z } from "zod";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
+import {
+  markSingleNotificationRead,
+  markUserNotificationsRead,
+  persistNotificationsPreference,
+  revalidateRoleNotificationPaths,
+} from "@/lib/notifications";
 
 function redirectWithStatus(path: string, params: Record<string, string>) {
   const search = new URLSearchParams(params);
@@ -23,29 +37,38 @@ function mapPlatformError(error: unknown): string {
 }
 
 export async function updateRiderProfileAction(formData: FormData) {
-  "use server";
-
   const session = await requireProductSession(["rider"]);
-  const admin = createSupabaseAdminClient();
-
-  const payload = {
-    phone: String(formData.get("phone") ?? "").trim() || null,
-    city: String(formData.get("city") ?? "").trim() || null,
-    country: String(formData.get("country") ?? "").trim() || null,
-    emergency_contact: String(formData.get("emergencyContact") ?? "").trim() || null,
-    emergency_phone: String(formData.get("emergencyPhone") ?? "").trim() || null,
-    vehicle_type: String(formData.get("vehicleType") ?? "").trim() || null,
-    language_preference: String(formData.get("languagePreference") ?? "").trim() || "en",
-  };
-
-  const [userResult, riderResult] = await Promise.all([
-    admin.from("user").update({ phone: payload.phone, language_preference: payload.language_preference }).eq("id", session.appUser.id),
-    admin.from("rider").update({ city: payload.city, country: payload.country, emergency_contact: payload.emergency_contact, emergency_phone: payload.emergency_phone, vehicle_type: payload.vehicle_type }).eq("user_id", session.appUser.id),
-  ]);
-
-  if (userResult.error || riderResult.error) {
-    redirectWithStatus("/dashboard/settings", { error: userResult.error?.message || riderResult.error?.message || "Failed to update rider profile" });
-  }
+  if (formData.get("accountId") !== session.appUser.id) redirectWithStatus("/dashboard/settings", {error:"Account changed. Reload before editing your profile."});
+  const profile = z
+    .object({
+      phone: z.string().max(100),
+      city: z.string().max(200),
+      country: z.string().max(100),
+      emergency_contact: z.string().max(200),
+      emergency_phone: z.string().max(100),
+      vehicle_type: z.string().max(100),
+      language: z.enum(["en-US", "nl-NL"]),
+    })
+    .safeParse({
+      phone: String(formData.get("phone") ?? ""),
+      city: String(formData.get("city") ?? ""),
+      country: String(formData.get("country") ?? ""),
+      emergency_contact: String(formData.get("emergencyContact") ?? ""),
+      emergency_phone: String(formData.get("emergencyPhone") ?? ""),
+      vehicle_type: String(formData.get("vehicleType") ?? ""),
+      language: formData.get("languagePreference"),
+    });
+  if (!profile.success)
+    redirectWithStatus("/dashboard/settings", {
+      error: "Check your profile fields and supported language.",
+    });
+  const { error } = await (
+    await createSupabaseServerClient()
+  ).rpc("update_my_rider_profile", { p_profile: profile.data });
+  if (error)
+    redirectWithStatus("/dashboard/settings", {
+      error: "Profile update unavailable. No changes were saved.",
+    });
 
   revalidatePath("/dashboard/settings");
   revalidatePath("/dashboard");
@@ -53,28 +76,27 @@ export async function updateRiderProfileAction(formData: FormData) {
 }
 
 export async function updateRiderNotificationPreferencesAction(formData: FormData) {
-  "use server";
-
   const session = await requireProductSession(["rider"]);
-  const notifications = String(formData.get("productNotifications") ?? "false") === "true";
+  const notifications =
+    String(formData.get("productNotifications") ?? "false") === "true";
 
   await persistNotificationsPreference(session.appUser.id, notifications);
   revalidateRoleNotificationPaths("rider");
-  redirectWithStatus("/dashboard/notifications", { success: "Notification preference saved." });
+  redirectWithStatus("/dashboard/notifications", {
+    success: "Notification preference saved.",
+  });
 }
 
 export async function markRiderNotificationsReadAction() {
-  "use server";
-
   const session = await requireProductSession(["rider"]);
   await markUserNotificationsRead(session.appUser.id);
   revalidatePath("/dashboard/notifications");
-  redirectWithStatus("/dashboard/notifications", { success: "Notifications marked as read." });
+  redirectWithStatus("/dashboard/notifications", {
+    success: "Notifications marked as read.",
+  });
 }
 
 export async function markRiderNotificationReadAction(formData: FormData) {
-  "use server";
-
   const session = await requireProductSession(["rider"]);
   const notificationId = String(formData.get("notificationId") ?? "").trim();
   await markSingleNotificationRead(session.appUser.id, notificationId);
@@ -83,7 +105,6 @@ export async function markRiderNotificationReadAction(formData: FormData) {
 }
 
 export async function optInCampaignAction(formData: FormData) {
-  "use server";
   await requireProductSession(["rider"]);
   const campaignId = String(formData.get("campaignId") ?? "").trim();
   if (!campaignId) {
@@ -99,7 +120,6 @@ export async function optInCampaignAction(formData: FormData) {
 }
 
 export async function withdrawCampaignAction(formData: FormData) {
-  "use server";
   await requireProductSession(["rider"]);
   const campaignId = String(formData.get("campaignId") ?? "").trim();
   if (!campaignId) {
@@ -115,7 +135,6 @@ export async function withdrawCampaignAction(formData: FormData) {
 }
 
 export async function confirmCampaignAction(formData: FormData) {
-  "use server";
   await requireProductSession(["rider"]);
   const campaignId = String(formData.get("campaignId") ?? "").trim();
   if (!campaignId) {
@@ -130,70 +149,50 @@ export async function confirmCampaignAction(formData: FormData) {
   redirectWithStatus("/dashboard/campaigns", { success: "Participation confirmed." });
 }
 
-export async function redeemRewardAction(formData: FormData) {
-  "use server";
-  await requireProductSession(["rider"]);
-  const catalogItemId = String(formData.get("catalogItemId") ?? "").trim();
-  if (!catalogItemId) {
-    redirectWithStatus("/dashboard/rewards/shop", { error: "Missing catalog item." });
-  }
+export async function communityRideAction(
+  _previous: { success: boolean; error?: string; message?: string } | null,
+  formData: FormData,
+) {
+  const session = await requireProductSession(["rider"]);
+  let success = "Community ride updated.";
   try {
-    const result = await redeemReward(catalogItemId);
-    const id =
-      result && typeof result === "object" && "id" in result
-        ? String((result as { id: string }).id)
-        : null;
-    revalidatePath("/dashboard/rewards");
-    revalidatePath("/dashboard/rewards/shop");
-    if (id) {
-      redirectWithStatus(`/dashboard/rewards/orders/${id}`, {
-        success: "Reward redeemed.",
-      });
-    }
-    redirectWithStatus("/dashboard/rewards/shop", { success: "Reward redeemed." });
+    if (formData.get("accountId") !== session.appUser.id) throw new Error("Account changed. Reload before updating community rides.");
+    const action = String(formData.get("action") ?? "");
+    const id = String(formData.get("id") ?? "");
+    const expected = String(formData.get("expectedUpdatedAt") ?? "");
+    if (action === "join") await joinCommunityRide(id);
+    else if (action === "leave") await leaveCommunityRide(id);
+    else if (action === "cancel") await cancelCommunityRide(id, expected);
+    else if (action === "create" || action === "edit") {
+      const local = String(formData.get("scheduledAt") ?? "");
+      const original = String(formData.get("originalScheduledAt") ?? "");
+      const scheduledAt =
+        action === "edit" && local === String(formData.get("originalLocalTime") ?? "")
+          ? original
+          : communityInstant(
+              local,
+              String(formData.get("timezone") ?? "Europe/Amsterdam"),
+              String(formData.get("occurrence") ?? ""),
+            );
+      const input = {
+        title: String(formData.get("title") ?? "").trim(),
+        description: String(formData.get("description") ?? "").trim(),
+        scheduledAt,
+        meetingPoint: String(formData.get("meetingPoint") ?? "").trim(),
+        category: String(formData.get("category") ?? "social"),
+        maxParticipants: Number(formData.get("maxParticipants")),
+      };
+      if (action === "create") {
+        await createCommunityRide({
+          ...input,
+          operationId: String(formData.get("operationId") ?? ""),
+        });
+        success = "Community ride created.";
+      } else await editCommunityRide(id, { ...input, expectedUpdatedAt: expected });
+    } else throw new Error("Unknown community action");
   } catch (error) {
-    redirectWithStatus("/dashboard/rewards/shop", { error: mapPlatformError(error) });
-  }
-}
-
-export async function createCommunityRideAction(formData: FormData) {
-  "use server";
-  await requireProductSession(["rider"]);
-  const title = String(formData.get("title") ?? "").trim();
-  const scheduledAt = String(formData.get("scheduledAt") ?? "").trim();
-  if (!title || !scheduledAt) {
-    redirectWithStatus("/dashboard/community", {
-      error: "Title and scheduled time are required.",
-    });
-  }
-  try {
-    await createCommunityRide({
-      title,
-      scheduledAt,
-      description: String(formData.get("description") ?? "").trim() || undefined,
-      meetingPoint: String(formData.get("meetingPoint") ?? "").trim() || undefined,
-      category: String(formData.get("category") ?? "").trim() || undefined,
-      maxParticipants: Number(formData.get("maxParticipants") ?? 20) || 20,
-    });
-  } catch (error) {
-    redirectWithStatus("/dashboard/community", { error: mapPlatformError(error) });
+    return { success: false, error: mapPlatformError(error) };
   }
   revalidatePath("/dashboard/community");
-  redirectWithStatus("/dashboard/community", { success: "Community ride created." });
-}
-
-export async function joinCommunityRideAction(formData: FormData) {
-  "use server";
-  await requireProductSession(["rider"]);
-  const communityRideId = String(formData.get("communityRideId") ?? "").trim();
-  if (!communityRideId) {
-    redirectWithStatus("/dashboard/community", { error: "Missing ride id." });
-  }
-  try {
-    await joinCommunityRide(communityRideId);
-  } catch (error) {
-    redirectWithStatus("/dashboard/community", { error: mapPlatformError(error) });
-  }
-  revalidatePath("/dashboard/community");
-  redirectWithStatus("/dashboard/community", { success: "Joined community ride." });
+  return { success: true, message: success };
 }

@@ -1,140 +1,70 @@
 import Link from "next/link";
-import { redeemRewardAction } from "@/app/actions/rider";
-import { StatusToast } from "@/components/form/StatusToast";
-import { SubmitButton } from "@/components/form/SubmitButton";
-import { EmptyState } from "@/components/shared/EmptyState";
+import { requireProductSession } from "@/lib/appUser";
+import { listRewardsCatalog, listRedemptions } from "@/lib/platform/riderPlatform";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { StatsCard } from "@/components/stats/StatsCard";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { getWalletBalance, listRewardsCatalog } from "@/lib/platform/riderPlatform";
-import { redirect } from "next/navigation";
-import { getCurrentProductSession } from "@/lib/appUser";
-import { ShoppingBag, Wallet } from "lucide-react";
-
-export default async function RewardsShopPage({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const session = await getCurrentProductSession();
-  if (!session || session.appUser.role !== "rider") redirect("/dashboard");
-
-  const params = await searchParams;
-  const success = typeof params.success === "string" ? params.success : null;
-  const error = typeof params.error === "string" ? params.error : null;
-
-  let balance = { pointsBalance: 0, lifetimePointsEarned: 0 };
-  let catalog: Awaited<ReturnType<typeof listRewardsCatalog>> = [];
-  let loadError: string | null = null;
-
-  try {
-    [balance, catalog] = await Promise.all([
-      getWalletBalance(),
-      listRewardsCatalog(),
-    ]);
-  } catch (err) {
-    loadError = err instanceof Error ? err.message : "Failed to load rewards shop";
-  }
-
-  const activeItems = catalog.filter(
-    (item) => !item.status || item.status === "active",
-  );
-
+export default async function RewardsShopPage() {
+  await requireProductSession(["rider"]);
+  const [catalog, orders] = await Promise.all([listRewardsCatalog(), listRedemptions()]);
   return (
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
         <PageHeader
           title="Rewards Shop"
-          description="Browse partner catalog items and redeem points via Platform POST /rewards/redeem."
+          description="Web purchasing is unavailable. Existing rewards and delivery remain accessible."
           action={{ label: "View statement", href: "/dashboard/rewards" }}
         />
-        <StatusToast success={success} error={error ?? loadError} />
-
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <StatsCard
-            title="Available points"
-            value={balance.pointsBalance}
-            description="Current wallet balance from Platform"
-            icon={Wallet}
-          />
-          <StatsCard
-            title="Catalog items"
-            value={activeItems.length}
-            description="Active rewards available for redemption"
-            icon={ShoppingBag}
-          />
-        </div>
-
-        {activeItems.length ? (
-          <Card className="border-border">
-            <CardHeader>
-              <CardTitle>Available rewards</CardTitle>
-              <CardDescription>
-                Redeem points for partner fulfilment items.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              {activeItems.map((item) => (
+        <Card>
+          <CardHeader>
+            <CardTitle>Rewards catalog</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2">
+            {catalog.length ? (
+              catalog.map((item) => (
                 <div
                   key={item.id}
-                  className="flex flex-col gap-4 rounded-xl border border-border/60 bg-background/70 p-4"
+                  className="space-y-3 rounded-xl border border-border/60 p-4"
                 >
-                  <div>
-                    <p className="font-semibold">
-                      {item.title ?? item.name ?? item.id}
-                    </p>
-                    {item.description ? (
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {item.description}
-                      </p>
-                    ) : null}
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {typeof item.pointsCost === "number" ? (
-                        <Badge>{item.pointsCost} pts</Badge>
-                      ) : null}
-                      {item.fulfilmentType ? (
-                        <Badge variant="outline">{item.fulfilmentType}</Badge>
-                      ) : null}
-                    </div>
-                  </div>
-                  <form action={redeemRewardAction}>
-                    <input type="hidden" name="catalogItemId" value={item.id} />
-                    <SubmitButton
-                      type="submit"
-                      disabled={
-                        typeof item.pointsCost === "number" &&
-                        balance.pointsBalance < item.pointsCost
-                      }
-                      pendingLabel="Redeeming"
-                    >
-                      Redeem
-                    </SubmitButton>
-                  </form>
+                  <p className="font-semibold">{item.title}</p>
+                  <p className="text-sm text-muted-foreground">{item.description}</p>
+                  <Badge>
+                    {item.points_price === 0 ? "Free" : `${item.points_price} pts`}
+                  </Badge>
+                  <p className="text-sm">
+                    {item.available ? "Catalog item" : "Currently unavailable"}
+                  </p>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
-        ) : (
-          <EmptyState
-            title="No rewards available"
-            description="Active catalog items will appear here once Platform returns them."
-            iconName="rewards"
-          />
-        )}
-
-        <Link
-          href="/dashboard/rewards"
-          className="text-sm text-primary hover:underline"
-        >
-          Back to rewards statement
-        </Link>
+              ))
+            ) : (
+              <p>No rewards available.</p>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>My Rewards</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {orders.length ? (
+              orders.map((order) => (
+                <Link
+                  className="block rounded-xl border border-border/60 p-4 hover:text-primary"
+                  key={order.id}
+                  href={`/dashboard/rewards/orders/${order.id}`}
+                >
+                  <span className="font-medium">{order.rewardTitle || "Reward"}</span>
+                  <span className="ml-3 text-sm">
+                    {order.redemptionStatus} /{" "}
+                    {order.isFree ? "Free" : `${order.pointsSpent} pts`}
+                  </span>
+                </Link>
+              ))
+            ) : (
+              <p>No rewards claimed yet.</p>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

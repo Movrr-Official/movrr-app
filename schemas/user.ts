@@ -13,7 +13,7 @@ export const appUserSchema = z.object({
   avatarUrl: z.string().optional().nullable(),
   phone: z.string().optional().nullable(),
   organization: z.string().optional().nullable(),
-  languagePreference: z.string().default("en"),
+  languagePreference: z.enum(["en-US", "nl-NL"]).default("en-US"),
 });
 
 export type AppUser = z.infer<typeof appUserSchema>;

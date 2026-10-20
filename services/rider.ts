@@ -1,510 +1,218 @@
-﻿import { SUPPORT_EMAIL } from "@/lib/env";
+import { SUPPORT_EMAIL } from "@/lib/env";
 import { requireProductSession } from "@/lib/appUser";
-import { getComplianceStatus, resolveLatestTimestamp } from "@/lib/product-freshness";
-import { createSupabaseAdminClient } from "@/lib/supabase-admin";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { getWalletStatement } from "@/lib/platform/riderPlatform";
+import { listRiderCampaigns } from "@/lib/platform/campaignPlatform";
+import { listRideSummaries } from "@/lib/platform/riderSelfService";
 import {
-  getWalletBalance,
-  listWalletTransactions,
-} from "@/lib/platform/riderPlatform";
-import type { RiderDashboard, RiderRewardTransaction, RiderRoute, RiderTimelineEvent } from "@/schemas";
-
-function calculateRouteProgress(status?: string | null) {
-  if (status === "completed") return 100;
-  if (status === "in-progress") return 55;
-  if (status === "assigned") return 10;
-  return 0;
+  listUserNotifications,
+  getUserNotificationPreferences,
+} from "@/lib/notifications";
+import type { RiderDashboard, RiderRoute } from "@/schemas";
+async function ownedAssignments(riderId: string) {
+  const db = await createSupabaseServerClient();
+  const all: Record<string, unknown>[] = [];
+  for (let offset = 0; ; offset += 500) {
+    const { data, error } = await db
+      .from("rider_route")
+      .select(
+        "id,route_id,campaign_id,status,assigned_at,started_at,completed_at,updated_at,progress,route:route_id(id,name,city,start_lat,start_lng,end_lat,end_lng,coverage_km,description,estimated_duration_minutes)",
+      )
+      .eq("rider_id", riderId)
+      .order("assigned_at", { ascending: false })
+      .order("id")
+      .range(offset, offset + 499);
+    if (error) throw new Error("Route assignments unavailable");
+    all.push(...data);
+    if (data.length < 500) break;
+  }
+  return all;
 }
-
-function mapNotificationCategory(type?: string | null) {
-  if (!type) return "general";
-  if (type.includes("campaign")) return "campaign";
-  if (type.includes("route")) return "route";
-  if (type.includes("reward")) return "reward";
-  return "account";
+function assignment(row: Record<string, unknown>): RiderRoute {
+  const route = row.route as Record<
+    string,
+    unknown
+  > | null;
+  return {
+    id: String(row.route_id),
+    riderRouteId: String(row.id),
+    name: String(route?.name ?? "Assigned route"),
+    status: String(row.status),
+    city: typeof route?.city === "string" ? route.city : undefined,
+    startedAt: row.started_at as string | null,
+    completedAt: row.completed_at as string | null,
+    routeProgress: typeof row.progress === "number" ? row.progress : null,
+    coverageKm: Number(route?.coverage_km ?? 0),
+    campaignId: row.campaign_id as string | null,
+    lastSyncedAt: row.updated_at as string | null,
+    complianceStatus: "unavailable",
+    syncSource: "assignment",
+    timeline: [
+      ["assigned_at", "Route assigned"], ["started_at", "Route started"], ["completed_at", "Route completed"]
+    ].filter(([key]) => typeof row[key] === "string").map(([key,label]) => ({ id:`${row.id}:${key}`,label,detail:"Recorded assignment event",occurredAt:String(row[key]),tone:"default" as const })),
+  };
 }
-
-function mapRewardCategory(source?: string | null): RiderRewardTransaction["category"] {
-  if (source === "adjustment") return "adjustment";
-  if (source === "redemption") return "redemption";
-  if (source === "campaign") return "campaign";
-  if (source === "route") return "route";
-  return "other";
-}
-
-type RiderProfileRow = {
-  id: string;
-  city?: string | null;
-  country?: string | null;
-  vehicle_type?: string | null;
-  is_certified?: boolean | null;
-  emergency_contact?: string | null;
-  emergency_phone?: string | null;
-};
-
-async function getRiderProfileRows(admin: ReturnType<typeof createSupabaseAdminClient>, userId: string) {
-  const { data } = await admin
-    .from("rider")
-    .select(
-      "id, city, country, vehicle_type, is_certified, emergency_contact, emergency_phone, created_at",
-    )
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-
-  return ((data ?? []) as RiderProfileRow[]).filter((row) => Boolean(row.id));
-}
-
 export async function getRiderDashboardData(): Promise<RiderDashboard> {
   const session = await requireProductSession(["rider"]);
-  const admin = createSupabaseAdminClient();
-  const { data: userPreferences } = await admin
-    .from("user_preferences")
-    .select("notifications")
-    .eq("user_id", session.appUser.id)
-    .maybeSingle();
-
-  const riderRows = await getRiderProfileRows(admin, session.appUser.id);
-  const riderIds = Array.from(new Set(riderRows.map((row) => row.id)));
-  const resolvedProfile =
-    riderRows.find((row) => row.id === session.riderProfile?.id) ??
-    riderRows[0] ??
-    session.riderProfile ??
-    null;
-  const riderId = resolvedProfile?.id ?? "";
-
-  if (!riderIds.length) {
-    return {
-      riderId: "",
-      pointsBalance: 0,
-      lifetimePointsEarned: 0,
-      activeCampaigns: 0,
-      activeRoutes: 0,
-      currentCompliance: 0,
-      complianceStatus: "watch",
-      lastActive: null,
-      lastMobileSyncAt: null,
-      campaigns: [],
-      routes: [],
-      rewards: [],
-      rewardsSummary: {
-        availablePoints: 0,
-        lifetimePointsEarned: 0,
-        awardedPoints: 0,
-        redeemedPoints: 0,
-        adjustmentPoints: 0,
-      },
-      notifications: [],
-      preferences: {
-        productNotifications: userPreferences?.notifications ?? true,
-      },
-      profile: {
-        riderId: "",
-        email: session.appUser.email,
-        city: null,
-        country: null,
-        isCertified: false,
-        accountNotes: null,
-        vehicleType: null,
-        emergencyContact: null,
-        emergencyPhone: null,
-        languagePreference: session.appUser.languagePreference,
-        timezone: "Europe/Amsterdam",
-      },
-      support: {
-        supportEmail: SUPPORT_EMAIL,
-        helpLabel: "Contact MOVRR support for route execution issues or account assistance.",
-      },
-    };
-  }
-
-  const [assignmentsRes, signupsRes, routeAssignmentsRes, balanceRes, rewardsRes, notificationsRes] =
+  const rider = session.riderProfile;
+  if (!rider) throw new Error("Rider onboarding is incomplete. Contact MOVRR support.");
+  const [statement, campaigns, rows, notifications, productNotifications, rides] =
     await Promise.all([
-      admin
-        .from("campaign_assignment")
-        .select("rider_id, campaign_id")
-        .in("rider_id", riderIds),
-      admin
-        .from("campaign_signup")
-        .select("rider_id, campaign_id, status")
-        .in("rider_id", riderIds),
-      admin
-        .from("rider_route")
-        .select("id, rider_id, route_id, campaign_id, status, assigned_at, started_at, completed_at, updated_at, progress")
-        .in("rider_id", riderIds)
-        .order("assigned_at", { ascending: false }),
-      admin
-        .from("rider_reward_balance")
-        .select("rider_id, points_balance, lifetime_points_earned")
-        .in("rider_id", riderIds),
-      admin
-        .from("reward_transactions")
-        .select("id, points_earned, source, metadata, created_at")
-        .in("rider_id", riderIds)
-        .order("created_at", { ascending: false })
-        .limit(25),
-      admin
-        .from("notifications")
-        .select("id, title, message, type, is_read, created_at")
-        .eq("user_id", session.appUser.id)
-        .order("created_at", { ascending: false })
-        .limit(25),
+      getWalletStatement(),
+      listRiderCampaigns(),
+      ownedAssignments(rider.id),
+      listUserNotifications(session.appUser.id, "rider"),
+      getUserNotificationPreferences(session.appUser.id),
+      listRideSummaries(),
     ]);
-
-  const routeRows = routeAssignmentsRes.data ?? [];
-  const routeIds = routeRows.map((row: any) => row.route_id).filter(Boolean);
-  const { data: trackingRows } = routeIds.length
-    ? await admin
-        .from("route_tracking")
-        .select("id, route_id, start_time, end_time, total_distance, route_compliance, impressions_earned")
-        .in("rider_id", riderIds)
-        .in("route_id", routeIds)
-        .order("start_time", { ascending: false })
-    : { data: [] };
-
-  const trackingByRoute = new Map<string, any[]>();
-  (trackingRows ?? []).forEach((row: any) => {
-    const key = row.route_id;
-    if (!trackingByRoute.has(key)) trackingByRoute.set(key, []);
-    trackingByRoute.get(key)?.push(row);
-  });
-
-  const { data: routeDetails } = routeIds.length
-    ? await admin
-        .from("route")
-        .select(
-          "id, name, city, start_lat, start_lng, end_lat, end_lng, estimated_duration_minutes, coverage_km, campaign_id",
-        )
-        .in("id", routeIds)
-    : { data: [] as any[] };
-
-  const campaignIds = Array.from(
-    new Set(
-      [
-        ...(assignmentsRes.data ?? []).map((row: any) => row.campaign_id),
-        ...(signupsRes.data ?? []).map((row: any) => row.campaign_id),
-        ...(routeRows ?? []).map((row: any) => row.campaign_id),
-        ...(routeDetails ?? []).map((route: any) => route.campaign_id),
-      ].filter(Boolean),
-    ),
-  );
-
-  const { data: campaignRows, error: campaignRowsError } = campaignIds.length
-    ? await admin
-        .from("campaign")
-        .select("*")
-        .in("id", campaignIds)
-    : { data: [] as any[], error: null };
-
-  if (campaignRowsError) {
-    throw campaignRowsError;
-  }
-
-  const campaignMap = new Map((campaignRows ?? []).map((campaign: any) => [campaign.id, campaign]));
-  const routeById = new Map((routeDetails ?? []).map((route: any) => [route.id, route]));
-
-  const formatCoordinate = (lat?: number | null, lng?: number | null) => {
-    if (typeof lat !== "number" || typeof lng !== "number") return undefined;
-    return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-  };
-
-  const routes: RiderRoute[] = routeRows.map((row: any) => {
-    const route = routeById.get(row.route_id);
-    const tracking = trackingByRoute.get(route?.id ?? row.route_id) ?? [];
-    const progress = Number(row.progress ?? calculateRouteProgress(row.status));
-    const lastSyncedAt = resolveLatestTimestamp([
-      row.updated_at,
-      row.completed_at,
-      row.started_at,
-      row.assigned_at,
-      ...tracking.flatMap((item: any) => [item.end_time, item.start_time]),
-    ]);
-
-    const timelineCandidates: RiderTimelineEvent[] = [
-      {
-        id: `${row.id}-assigned`,
-        label: "Assigned",
-        detail: "Route assignment synced from MOVRR dispatch.",
-        occurredAt: row.assigned_at ?? null,
-        tone: "info",
-      },
-      {
-        id: `${row.id}-started`,
-        label: "Started",
-        detail: "Route execution start captured by mobile telemetry.",
-        occurredAt: row.started_at ?? null,
-        tone: "default",
-      },
-      {
-        id: `${row.id}-completed`,
-        label: "Completed",
-        detail: "Route completion synced from MOVRR Mobile.",
-        occurredAt: row.completed_at ?? null,
-        tone: "success",
-      },
-    ];
-
-    return {
-      id: route?.id ?? row.id,
-      riderRouteId: row.id,
-      name: route?.name ?? "Assigned route",
-      status: row.status ?? "assigned",
-      city: route?.city ?? resolvedProfile?.city ?? undefined,
-      startLocation: formatCoordinate(route?.start_lat, route?.start_lng),
-      endLocation: formatCoordinate(route?.end_lat, route?.end_lng),
-      startedAt: row.started_at,
-      completedAt: row.completed_at,
-      routeProgress: progress,
-      coverageKm: Number(route?.coverage_km ?? 0),
-      campaignId: route?.campaign_id ?? null,
-      lastSyncedAt,
-      complianceStatus: getComplianceStatus(progress),
-      syncSource: "movrr-mobile",
-      timeline: timelineCandidates.filter((event) => Boolean(event.occurredAt)),
-    };
-  });
-
-  const balanceRows = balanceRes.data ?? [];
-  let totalPointsBalance = balanceRows.reduce((sum: number, row: any) => sum + Number(row.points_balance ?? 0), 0);
-  let totalLifetimePointsEarned = balanceRows.reduce((sum: number, row: any) => sum + Number(row.lifetime_points_earned ?? 0), 0);
-
-  let rewards: RiderRewardTransaction[] = (rewardsRes.data ?? []).map((row: any) => ({
+  const { balance: wallet, entries } = statement;
+  const routes = rows.map(assignment);
+  const rewards = entries.map((row) => ({
     id: row.id,
-    type: row.source === "adjustment" ? "adjusted" : row.source === "redemption" ? "redeemed" : "awarded",
-    category: mapRewardCategory(row.source),
-    points: Number(row.points_earned ?? 0),
-    description:
-      row.metadata?.description ??
-      (row.source === "redemption"
-        ? "Reward redeemed"
-        : row.source === "adjustment"
-          ? "Points adjusted"
-          : "Points awarded"),
-    createdAt: row.created_at,
+    type:
+      row.category === "redemption"
+        ? ("redeemed" as const)
+        : row.category === "adjustment" || row.category === "refund" || row.points < 0
+          ? ("adjusted" as const)
+          : ("awarded" as const),
+    category: row.category,
+    points: row.points,
+    description: row.description,
+    createdAt: row.createdAt,
   }));
-
-  try {
-    const [walletBalance, walletTransactions] = await Promise.all([
-      getWalletBalance(),
-      listWalletTransactions(),
-    ]);
-    totalPointsBalance = walletBalance.pointsBalance;
-    totalLifetimePointsEarned = walletBalance.lifetimePointsEarned;
-    rewards = walletTransactions.map((row) => ({
-      id: row.id,
-      type:
-        row.source === "adjustment"
-          ? "adjusted"
-          : row.source === "redemption"
-            ? "redeemed"
-            : "awarded",
-      category: mapRewardCategory(row.source),
-      points: row.points,
-      description: row.description ?? "Wallet transaction",
-      createdAt: row.createdAt ?? new Date().toISOString(),
-    }));
-  } catch {
-    // Supabase wallet rows remain the fallback source.
-  }
-
-  const notifications = (notificationsRes.data ?? []).map((row: any) => ({
-    id: row.id,
-    title: row.title,
-    message: row.message,
-    type: row.type,
-    category: mapNotificationCategory(row.type),
-    isRead: Boolean(row.is_read),
-    createdAt: row.created_at,
-  }));
-
-  const campaigns = campaignIds
-    .map((campaignId) => campaignMap.get(campaignId))
-    .filter(Boolean)
-    .map((campaign: any) => ({
-    id: campaign.id,
-    name: campaign.name,
-    description: campaign.description ?? undefined,
-    status: campaign.lifecycle_status ?? "draft",
-    campaignType: campaign.campaign_type ?? undefined,
-    startDate: campaign.start_date ?? undefined,
-    endDate: campaign.end_date ?? undefined,
-    targetZones: campaign.target_zones ?? [],
-    qrScans: Number(campaign.qr_scans ?? 0),
-    impressions: Number(campaign.impressions ?? 0),
-  }));
-
-  const activeCampaigns = campaigns.length;
-  const activeRoutes = routes.length;
-  const awardedPoints = rewards
-    .filter((reward) => reward.points > 0 && reward.category !== "adjustment" && reward.category !== "redemption")
-    .reduce((sum, reward) => sum + reward.points, 0);
-  const redeemedPoints = rewards
-    .filter((reward) => reward.category === "redemption")
-    .reduce((sum, reward) => sum + Math.abs(reward.points), 0);
-  const adjustmentPoints = rewards
-    .filter((reward) => reward.category === "adjustment")
-    .reduce((sum, reward) => sum + reward.points, 0);
-  const currentCompliance = routes.length
-    ? Math.round(routes.reduce((sum, route) => sum + route.routeProgress, 0) / routes.length)
-    : 0;
-
+  const latest = rides.summaries[0];
+  const compliance = latest?.session.compliance_score;
   return {
-    riderId,
-    pointsBalance: totalPointsBalance,
-    lifetimePointsEarned: totalLifetimePointsEarned,
-    activeCampaigns,
-    activeRoutes,
-    currentCompliance,
-    complianceStatus: getComplianceStatus(currentCompliance),
+    riderId: rider.id,
+    pointsBalance: wallet.pointsBalance,
+    lifetimePointsEarned: wallet.lifetimePointsEarned,
+    activeCampaigns: campaigns.filter(
+      (c) => c.lifecycleStatus === "active" && c.signupStatus === "confirmed",
+    ).length,
+    activeRoutes: routes.filter((r) => ["assigned", "in-progress"].includes(r.status))
+      .length,
+    currentCompliance: typeof compliance === "number" ? compliance * 100 : null,
+    complianceStatus:
+      typeof compliance === "number"
+        ? compliance >= 0.8
+          ? "healthy"
+          : compliance >= 0.5
+            ? "watch"
+            : "attention"
+        : "unavailable",
     lastActive: session.authUser.last_sign_in_at ?? null,
-    lastMobileSyncAt: resolveLatestTimestamp(routes.map((route) => route.lastSyncedAt)),
-    campaigns,
+    lastMobileSyncAt: latest?.session.completed_at ?? latest?.session.started_at ?? null,
+    campaigns: campaigns.map((c) => ({
+      id: c.id,
+      name: c.name,
+      description: c.description ?? undefined,
+      status: c.lifecycleStatus,
+      campaignType: c.campaignType ?? undefined,
+      startDate: c.startDate ?? undefined,
+      endDate: c.endDate ?? undefined,
+      targetZones: c.targetZones,
+      qrScans: null,
+      impressions: null,
+    })),
     routes,
     rewards,
     rewardsSummary: {
-      availablePoints: totalPointsBalance,
-      lifetimePointsEarned: totalLifetimePointsEarned,
-      awardedPoints,
-      redeemedPoints,
-      adjustmentPoints,
+      availablePoints: wallet.pointsBalance,
+      lifetimePointsEarned: wallet.lifetimePointsEarned,
+      awardedPoints: entries
+        .filter((e) => !["redemption", "adjustment", "refund"].includes(e.category) && e.points > 0)
+        .reduce((s, e) => s + e.points, 0),
+      redeemedPoints: -entries
+        .filter((e) => e.category === "redemption")
+        .reduce((s, e) => s + e.points, 0),
+      adjustmentPoints: entries
+        .filter((e) => (["adjustment", "refund"].includes(e.category) || (e.category !== "redemption" && e.points < 0)))
+        .reduce((s, e) => s + e.points, 0),
     },
     notifications,
-    preferences: {
-      productNotifications: userPreferences?.notifications ?? true,
-    },
+    preferences: { productNotifications },
     profile: {
-      riderId,
+      riderId: rider.id,
       email: session.appUser.email,
-      city: resolvedProfile?.city ?? null,
-      country: resolvedProfile?.country ?? null,
-      isCertified: Boolean(resolvedProfile?.is_certified),
+      city: rider.city,
+      country: rider.country,
+      isCertified: !!rider.is_certified,
       accountNotes: null,
-      vehicleType: resolvedProfile?.vehicle_type ?? null,
-      emergencyContact: resolvedProfile?.emergency_contact ?? null,
-      emergencyPhone: resolvedProfile?.emergency_phone ?? null,
+      vehicleType: rider.vehicle_type,
+      emergencyContact: rider.emergency_contact,
+      emergencyPhone: rider.emergency_phone,
       languagePreference: session.appUser.languagePreference,
       timezone: "Europe/Amsterdam",
     },
     support: {
       supportEmail: SUPPORT_EMAIL,
-      helpLabel: "Contact MOVRR support for route execution issues or account assistance.",
+      helpLabel: "Contact MOVRR support for ride or account assistance.",
     },
   };
 }
-
 export async function getRiderRouteDetail(routeId: string) {
   const session = await requireProductSession(["rider"]);
-  const admin = createSupabaseAdminClient();
-  const riderRows = await getRiderProfileRows(admin, session.appUser.id);
-  const riderIds = Array.from(new Set(riderRows.map((row) => row.id)));
-  if (!riderIds.length) return null;
-
-  const { data: assignmentRows } = await admin
-    .from("rider_route")
-    .select("id, rider_id, route_id, campaign_id, status, assigned_at, started_at, completed_at, updated_at, progress")
-    .in("rider_id", riderIds)
-    .eq("route_id", routeId)
-    .order("updated_at", { ascending: false })
-    .limit(1);
-
-  const assignment = assignmentRows?.[0] ?? null;
-
-  if (!assignment) return null;
-
-  const { data: route } = await admin
-    .from("route")
-    .select(
-      "id, name, city, description, start_lat, start_lng, end_lat, end_lng, campaign_id, estimated_duration_minutes, coverage_km",
-    )
-    .eq("id", routeId)
-    .maybeSingle();
-  const { data: tracking } = await admin
-    .from("route_tracking")
-    .select("id, start_time, end_time, total_distance, route_compliance, impressions_earned")
-    .eq("route_id", routeId)
-    .in("rider_id", riderIds)
-    .order("start_time", { ascending: false })
-    .limit(10);
-
-  const trackingIds = (tracking ?? []).map((row: any) => row.id);
-  const { data: impressions } = trackingIds.length
-    ? await admin.from("impression_events").select("id").in("route_tracking_id", trackingIds)
-    : { data: [] };
-  const { data: campaignZones } = route?.campaign_id
-    ? await admin.from("campaign_zone").select("id, name").eq("campaign_id", route.campaign_id)
-    : { data: [] };
-  const { data: hotZones } = route?.campaign_id
-    ? await admin
+  if (!session.riderProfile) return null;
+  const rows = await ownedAssignments(session.riderProfile.id);
+  const row = rows.find((r) => r.route_id === routeId);
+  if (!row) return null;
+  const r = row.route as Record<
+    string,
+    unknown
+  > | null;
+  const route = assignment(row);
+  const history: import("@/lib/platform/riderSelfService").RideSummary[] = [];
+  let cursor: string | undefined;
+  do {
+    const page = await listRideSummaries(cursor, routeId);
+    history.push(...page.summaries);
+    cursor = page.nextCursor
+      ? Buffer.from(JSON.stringify(page.nextCursor)).toString("base64url")
+      : undefined;
+  } while (cursor);
+  const measured = history.filter(
+    (x) => typeof x.session.total_distance_meters === "number",
+  );
+  const db = await createSupabaseServerClient();
+  const geography = row.campaign_id
+    ? await db.rpc("get_campaign_geography", { p_campaign_id: row.campaign_id })
+    : { data: { zones: [] }, error: null };
+  if (geography.error) throw new Error("Campaign geography unavailable");
+  const hot = row.campaign_id
+    ? await db
         .from("campaign_hot_zone")
-        .select("id, name, bonus_percent")
-        .eq("campaign_id", route.campaign_id)
-    : { data: [] };
-
-  const progress = Number(assignment.progress ?? calculateRouteProgress(assignment.status));
-  const lastSyncedAt = resolveLatestTimestamp([
-    assignment.updated_at,
-    assignment.completed_at,
-    assignment.started_at,
-    assignment.assigned_at,
-    ...(tracking ?? []).flatMap((row: any) => [row.end_time, row.start_time]),
-  ]);
-
-  const timelineCandidates: RiderTimelineEvent[] = [
-    {
-      id: `${assignment.id}-assigned`,
-      label: "Assigned",
-      detail: "Route assignment synced from MOVRR dispatch.",
-      occurredAt: assignment.assigned_at ?? null,
-      tone: "info",
-    },
-    {
-      id: `${assignment.id}-started`,
-      label: "Started",
-      detail: "Route execution start captured by mobile telemetry.",
-      occurredAt: assignment.started_at ?? null,
-      tone: "default",
-    },
-    {
-      id: `${assignment.id}-completed`,
-      label: "Completed",
-      detail: "Route completion synced from MOVRR Mobile.",
-      occurredAt: assignment.completed_at ?? null,
-      tone: "success",
-    },
-    ...((tracking ?? []).map((row: any) => ({
-      id: row.id,
-      label: "Tracking sync",
-      detail: `Telemetry distance ${Number(row.total_distance ?? 0).toFixed(1)} km - Compliance ${Number(row.route_compliance ?? 0)}%`,
-      occurredAt: row.end_time ?? row.start_time ?? null,
-      tone: "default" as const,
-    }))),
-  ];
-
+        .select("id,name,bonus_percent")
+        .eq("campaign_id", row.campaign_id)
+    : { data: [], error: null };
+  if (hot.error) throw new Error("Hot zones unavailable");
   return {
-    id: route?.id ?? routeId,
-    riderRouteId: assignment.id,
-    name: route?.name ?? "Route",
-    description: route?.description ?? null,
-    city: route?.city ?? null,
-    startLocation: route ? `${Number(route.start_lat).toFixed(5)}, ${Number(route.start_lng).toFixed(5)}` : null,
-    endLocation: route ? `${Number(route.end_lat).toFixed(5)}, ${Number(route.end_lng).toFixed(5)}` : null,
-    status: assignment.status ?? "assigned",
-    startedAt: assignment.started_at,
-    completedAt: assignment.completed_at,
-    routeProgress: progress,
-    coverageKm: Number(route?.coverage_km ?? 0),
-    campaignId: route?.campaign_id ?? null,
-    lastSyncedAt,
-    complianceStatus: getComplianceStatus(progress),
-    syncSource: "movrr-mobile",
-    timeline: timelineCandidates.filter((event) => Boolean(event.occurredAt)),
-    estimatedDurationMinutes: Number(route?.estimated_duration_minutes ?? 0),
-    verifiedMinutes: 0,
-    distanceKm: (tracking ?? []).reduce(
-      (sum: number, row: any) => sum + Number(row.total_distance ?? 0),
-      0,
-    ),
-    impressions: (tracking ?? []).reduce((sum: number, row: any) => sum + Number(row.impressions_earned ?? 0), 0) || (impressions ?? []).length,
-    campaignZones: campaignZones ?? [],
-    hotZones: hotZones ?? [],
-    tracking: tracking ?? [],
+    ...route,
+    description: r?.description as string | null,
+    startLocation:
+      typeof r?.start_lat === "number" ? `${r.start_lat}, ${r.start_lng}` : null,
+    endLocation: typeof r?.end_lat === "number" ? `${r.end_lat}, ${r.end_lng}` : null,
+    estimatedDurationMinutes:
+      typeof r?.estimated_duration_minutes === "number"
+        ? r.estimated_duration_minutes
+        : null,
+    verifiedMinutes: history.length
+      ? history.reduce(
+          (sum, x) =>
+            sum +
+            Math.max(
+              0,
+              ...x.transactions.map((t) => Number(t.metadata?.verifiedMinutes ?? 0)),
+            ),
+          0,
+        )
+      : null,
+    distanceKm: measured.length
+      ? measured.reduce((sum, x) => sum + (x.session.total_distance_meters ?? 0), 0) /
+        1000
+      : null,
+    impressions: null,
+    campaignZones: (geography.data?.zones ?? []) as Array<{ id: string; name: string }>,
+    hotZones: hot.data ?? [],
+    tracking: history,
   };
 }

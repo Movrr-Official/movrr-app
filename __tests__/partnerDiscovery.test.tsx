@@ -1,0 +1,10 @@
+import {renderToStaticMarkup} from "react-dom/server";
+import {beforeEach,expect,it,vi} from "vitest";
+const state=vi.hoisted(()=>({guard:vi.fn(),fetch:vi.fn()}));
+vi.mock("@/lib/appUser",()=>({requireProductSession:state.guard}));
+vi.mock("@/lib/platform/client",()=>({platformFetch:state.fetch}));
+import PartnerLocationsPage from "@/app/dashboard/partners/page";
+beforeEach(()=>{state.guard.mockReset().mockResolvedValue({});state.fetch.mockReset().mockResolvedValue({locations:[],nextCursor:null,complete:true,fetchedAt:'2026-10-20T00:00:00Z'})});
+it('uses the canonical bounded discovery API with existing defaults',async()=>{const html=renderToStaticMarkup(await PartnerLocationsPage({searchParams:Promise.resolve({})}));expect(state.fetch).toHaveBeenCalledWith(expect.stringContaining('/partners/locations?south=52.25&north=52.45'));expect(html).toContain('No published locations');expect(html).toContain('min="-90"')});
+it.each([{south:'90',north:'0'},{south:'0',north:'89'},{cursor:'not-a-cursor'}])('shows recoverable validation without querying the API for %j',async params=>{const html=renderToStaticMarkup(await PartnerLocationsPage({searchParams:Promise.resolve(params)}));expect(html).toContain('role="alert"');expect(html).toContain('Reset location search');expect(state.fetch).not.toHaveBeenCalled()});
+it('denies restricted sessions before discovery',async()=>{state.guard.mockRejectedValue(new Error('restricted'));await expect(PartnerLocationsPage({searchParams:Promise.resolve({})})).rejects.toThrow('restricted');expect(state.fetch).not.toHaveBeenCalled()});

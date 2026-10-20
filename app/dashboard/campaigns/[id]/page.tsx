@@ -58,13 +58,13 @@ export default async function DashboardCampaignDetailPage({
           />
           <StatsCard
             title="Impressions"
-            value={String(campaign.impressions)}
+            value={campaign.impressions === null ? "Unavailable" : String(campaign.impressions)}
             description="Recorded impression volume"
             icon={LineChart}
           />
           <StatsCard
             title="QR scans"
-            value={String(campaign.qrScans)}
+            value={campaign.qrScans === null ? "Unavailable" : String(campaign.qrScans)}
             description="Attributed QR scan volume"
             icon={ScanLine}
           />

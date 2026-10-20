@@ -10,6 +10,10 @@ export function StatusToast({
   success?: string | null;
   error?: string | null;
 }) {
+  const feedback = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (error) feedback.current?.focus();
+  }, [error]);
   const lastMessage = useRef<string | null>(null);
 
   useEffect(() => {
@@ -23,5 +27,19 @@ export function StatusToast({
     }
   }, [success, error]);
 
-  return null;
+  return error ? (
+    <p
+      ref={feedback}
+      id="form-feedback"
+      tabIndex={-1}
+      role="alert"
+      className="rounded-xl border border-destructive/40 bg-destructive/5 p-4 text-sm"
+    >
+      {error}
+    </p>
+  ) : success ? (
+    <p role="status" className="text-sm">
+      {success}
+    </p>
+  ) : null;
 }

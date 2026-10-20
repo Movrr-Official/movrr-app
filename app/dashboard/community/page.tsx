@@ -1,131 +1,110 @@
-import {
-  createCommunityRideAction,
-  joinCommunityRideAction,
-} from "@/app/actions/rider";
+import { randomUUID } from "node:crypto";
 import { StatusToast } from "@/components/form/StatusToast";
 import { SubmitButton } from "@/components/form/SubmitButton";
-import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { getCurrentProductSession } from "@/lib/appUser";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { requireProductSession } from "@/lib/appUser";
 import { listCommunityRides } from "@/lib/platform/communityPlatform";
-import { formatRelativeDate } from "@/lib/format";
-import { redirect } from "next/navigation";
-
+import { CommunityActionForm } from "@/components/rider/CommunityActionForm";
+import { CommunityFields } from "@/components/rider/CommunityFields";
 export default async function CommunityPage({
   searchParams,
 }: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<Record<string, string | undefined>>;
 }) {
-  const session = await getCurrentProductSession();
-  if (!session || session.appUser.role !== "rider") redirect("/dashboard");
-
+  const session = await requireProductSession(["rider"]);
   const params = await searchParams;
-  const success = typeof params.success === "string" ? params.success : null;
-  const error = typeof params.error === "string" ? params.error : null;
-
-  let rides: Awaited<ReturnType<typeof listCommunityRides>> = [];
-  let loadError: string | null = null;
-  try {
-    rides = await listCommunityRides();
-  } catch (err) {
-    loadError = err instanceof Error ? err.message : "Failed to load community rides";
-  }
-
+  const rides = await listCommunityRides();
   return (
-    <div className="page-canvas">
+    <div key={session.appUser.id} className="page-canvas">
       <div className="space-y-6 md:space-y-8">
         <PageHeader
           title="Community"
-          description="List, create, and join community rides via Platform API."
+          description="Create, join and manage community rides."
         />
-        <StatusToast success={success} error={error ?? loadError} />
-
-        <Card className="border-border">
+        <StatusToast success={params.success ?? null} error={params.error ?? null} />
+        <Card>
           <CardHeader>
             <CardTitle>Create community ride</CardTitle>
-            <CardDescription>
-              POST /api/v1/community-rides — organiser must have an active rider profile.
-            </CardDescription>
           </CardHeader>
           <CardContent>
-            <form action={createCommunityRideAction} className="grid gap-4 md:grid-cols-2">
-              <Input name="title" placeholder="Ride title" required />
-              <Input name="scheduledAt" type="datetime-local" required />
-              <Input name="meetingPoint" placeholder="Meeting point" className="md:col-span-2" />
-              <Input name="category" placeholder="Category (e.g. social)" />
-              <Input name="maxParticipants" type="number" placeholder="Max participants" defaultValue={20} />
-              <Textarea
-                name="description"
-                placeholder="Description"
-                className="md:col-span-2"
-              />
-              <SubmitButton type="submit" pendingLabel="Creating">
-                Create ride
-              </SubmitButton>
-            </form>
+            <CommunityActionForm
+              key={session.appUser.id}
+              create
+              operationId={randomUUID()}
+              accountId={session.appUser.id}
+              className="grid gap-4 md:grid-cols-2"
+            >
+              <input type="hidden" name="action" value="create" />
+              <CommunityFields />
+              <SubmitButton pendingLabel="Creating">Create ride</SubmitButton>
+            </CommunityActionForm>
           </CardContent>
         </Card>
-
-        {rides.length ? (
-          <Card className="border-border">
+        {rides.map((ride) => (
+          <Card key={ride.id}>
             <CardHeader>
-              <CardTitle>Upcoming rides</CardTitle>
-              <CardDescription>
-                Join community rides open for participation.
-              </CardDescription>
+              <CardTitle>{ride.title}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              {rides.map((ride) => (
-                <div
-                  key={ride.id}
-                  className="flex flex-col gap-3 rounded-xl border border-border/60 p-4 md:flex-row md:items-center md:justify-between"
-                >
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold">{ride.title}</p>
-                      {ride.status ? (
-                        <Badge variant="outline" className="capitalize">
-                          {ride.status}
-                        </Badge>
-                      ) : null}
-                    </div>
-                    {ride.description ? (
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {ride.description}
-                      </p>
-                    ) : null}
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      {formatRelativeDate(ride.scheduledAt ?? null)}
-                      {ride.meetingPoint ? ` · ${ride.meetingPoint}` : ""}
-                    </p>
-                  </div>
-                  <form action={joinCommunityRideAction}>
-                    <input type="hidden" name="communityRideId" value={ride.id} />
-                    <SubmitButton type="submit" variant="outline" pendingLabel="Joining">
-                      Join ride
+            <CardContent className="space-y-4">
+              <p>{ride.description}</p>
+              <p>
+                {new Date(ride.scheduled_at).toLocaleString("en-GB", {
+                  timeZone: "Europe/Amsterdam",
+                  timeZoneName: "short",
+                })}{" "}
+                / {ride.meeting_point_name}
+              </p>
+              <p>
+                {ride.status} / {ride.isJoined ? "Joined" : "Not joined"}
+              </p>
+              {!ride.isOrganizer && (
+                <CommunityActionForm accountId={session.appUser.id}>
+                  <input type="hidden" name="id" value={ride.id} />
+                  <input
+                    type="hidden"
+                    name="action"
+                    value={ride.isJoined ? "leave" : "join"}
+                  />
+                  <SubmitButton pendingLabel="Updating">
+                    {ride.isJoined ? "Leave ride" : "Join ride"}
+                  </SubmitButton>
+                </CommunityActionForm>
+              )}
+              {ride.isOrganizer && (
+                <>
+                  <details>
+                    <summary className="cursor-pointer">Edit your ride</summary>
+                    <CommunityActionForm accountId={session.appUser.id} className="mt-4 grid gap-4 md:grid-cols-2">
+                      <input type="hidden" name="action" value="edit" />
+                      <input type="hidden" name="id" value={ride.id} />
+                      <input
+                        type="hidden"
+                        name="expectedUpdatedAt"
+                        value={ride.updated_at}
+                      />
+                      <CommunityFields ride={ride} />
+                      <SubmitButton pendingLabel="Saving">Save changes</SubmitButton>
+                    </CommunityActionForm>
+                  </details>
+                  <CommunityActionForm accountId={session.appUser.id}>
+                    <input type="hidden" name="id" value={ride.id} />
+                    <input type="hidden" name="action" value="cancel" />
+                    <input
+                      type="hidden"
+                      name="expectedUpdatedAt"
+                      value={ride.updated_at}
+                    />
+                    <SubmitButton variant="outline" pendingLabel="Cancelling">
+                      Cancel ride
                     </SubmitButton>
-                  </form>
-                </div>
-              ))}
+                  </CommunityActionForm>
+                </>
+              )}
             </CardContent>
           </Card>
-        ) : (
-          <EmptyState
-            title="No community rides yet"
-            description="Create a ride or check back when other riders publish upcoming events."
-            iconName="dashboard"
-          />
-        )}
+        ))}
+        {!rides.length && <p>No upcoming community rides.</p>}
       </div>
     </div>
   );

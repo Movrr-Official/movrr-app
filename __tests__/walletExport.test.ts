@@ -1,0 +1,10 @@
+import {beforeEach,expect,it,vi} from "vitest";
+const state=vi.hoisted(()=>({trusted:true,guard:vi.fn(),dashboard:vi.fn()}));
+vi.mock("@/lib/appUser",()=>({requireProductSession:state.guard}));
+vi.mock("@/lib/requestProtection",()=>({isTrustedSameOriginRequest:()=>state.trusted}));
+vi.mock("@/services/rider",()=>({getRiderDashboardData:state.dashboard}));
+import {POST} from "@/app/api/dashboard/rewards/export/route";
+beforeEach(()=>{state.trusted=true;state.guard.mockReset().mockResolvedValue({});state.dashboard.mockReset().mockResolvedValue({rewards:[{description:'Credit',type:'awarded',category:'route',points:100,createdAt:'2026-10-20T00:00:00Z'},{description:'=HYPERLINK("fixture")',type:'redeemed',category:'redemption',points:-50,createdAt:'2026-10-20T01:00:00Z'},{description:'Refund',type:'adjusted',category:'refund',points:50,createdAt:'2026-10-20T02:00:00Z'}]})});
+it('exports signed credits, debits and refunds without turning numeric negatives into text',async()=>{const response=await POST(new Request('https://app.isolated.test',{method:'POST'}));const csv=await response.text();expect(csv).toContain(',redemption,-50,');expect(csv).toContain(',refund,50,');expect(csv).toContain("'=HYPERLINK");expect(response.headers.get('cache-control')).toBe('no-store')});
+it('denies cross-origin statements before loading financial data',async()=>{state.trusted=false;expect((await POST(new Request('https://app.isolated.test',{method:'POST'}))).status).toBe(403);expect(state.dashboard).not.toHaveBeenCalled()});
+it('denies a restricted session before loading financial data',async()=>{state.guard.mockRejectedValue(new Error('restricted'));await expect(POST(new Request('https://app.isolated.test',{method:'POST'}))).rejects.toThrow('restricted');expect(state.dashboard).not.toHaveBeenCalled()});

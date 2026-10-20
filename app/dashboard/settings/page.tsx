@@ -28,6 +28,7 @@ import { getGovernmentMe } from "@/lib/platform/governmentPlatform";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
 import { getPartnerSettings } from "@/services/partner";
 import { getRiderDashboardData } from "@/services/rider";
+import { RIDER_LANGUAGE_OPTIONS } from "@/lib/locale";
 import { redirect } from "next/navigation";
 
 const LANGUAGE_OPTIONS = [
@@ -354,56 +355,57 @@ export default async function DashboardSettingsPage({
         </CardHeader>
         <CardContent>
           <form
-            action={updateRiderProfileAction}
+            key={session.appUser.id} action={updateRiderProfileAction}
             className="grid gap-4 md:grid-cols-2"
           >
+            <input type="hidden" name="accountId" value={session.appUser.id}/>
             <Input
-              value={dashboard.profile.email}
+              aria-label="Email address" value={dashboard.profile.email}
               readOnly
               disabled
               type="email"
             />
             <Input
-              name="phone"
+              name="phone" aria-label="Phone" aria-describedby={error ? "form-feedback" : undefined}
               placeholder="Phone"
               defaultValue={session.appUser.phone ?? ""}
             />
             <Input
-              name="city"
+              name="city" aria-label="City" aria-describedby={error ? "form-feedback" : undefined}
               placeholder="City"
               defaultValue={dashboard.profile.city ?? ""}
             />
             <Input
-              name="country"
+              name="country" aria-label="Country" aria-describedby={error ? "form-feedback" : undefined}
               placeholder="Country"
               defaultValue={dashboard.profile.country ?? ""}
             />
             <Input
-              name="vehicleType"
+              name="vehicleType" aria-label="Vehicle type" aria-describedby={error ? "form-feedback" : undefined}
               placeholder="Vehicle type"
               defaultValue={dashboard.profile.vehicleType ?? ""}
             />
             <Input
-              name="emergencyContact"
+              name="emergencyContact" aria-label="Emergency contact" aria-describedby={error ? "form-feedback" : undefined}
               placeholder="Emergency contact"
               defaultValue={dashboard.profile.emergencyContact ?? ""}
             />
             <Input
-              name="emergencyPhone"
+              name="emergencyPhone" aria-label="Emergency phone" aria-describedby={error ? "form-feedback" : undefined}
               placeholder="Emergency phone"
               defaultValue={dashboard.profile.emergencyPhone ?? ""}
             />
             <Select
-              name="languagePreference"
+              name="languagePreference" aria-label="Account language" aria-describedby={error ? "form-feedback" : undefined}
               defaultValue={dashboard.profile.languagePreference}
-              options={LANGUAGE_OPTIONS}
+              options={RIDER_LANGUAGE_OPTIONS}
             />
             <Select
-              name="timezone"
+              disabled name="timezone" aria-label="Reporting time zone" aria-describedby={error ? "form-feedback" : undefined}
               defaultValue={dashboard.profile.timezone}
               options={TIMEZONE_OPTIONS}
             />
-            <Textarea
+            <Textarea aria-label="Account notes"
               className="md:col-span-2"
               value={
                 dashboard.profile.accountNotes ??

@@ -257,11 +257,7 @@ export default async function DashboardRewardsPage() {
                     </p>
                   </div>
                   <p className="text-lg font-semibold">
-                    {reward.type === "redeemed"
-                      ? "-"
-                      : reward.points > 0
-                        ? "+"
-                        : ""}
+                    {reward.points > 0 ? "+" : ""}
                     {reward.points}
                   </p>
                 </div>

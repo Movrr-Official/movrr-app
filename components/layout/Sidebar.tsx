@@ -51,6 +51,10 @@ const navigation = {
     { href: "/dashboard/campaigns", label: "Campaigns", icon: Megaphone },
 
     { href: "/dashboard/routes", label: "Routes", icon: MapPinned },
+    { href: "/dashboard/rides", label: "Ride history", icon: ClipboardList },
+    { href: "/dashboard/account", label: "Rider self-service", icon: Users },
+    { href: "/dashboard/partners", label: "Partner locations", icon: MapPinned },
+    { href: "/dashboard/privacy", label: "Data and privacy", icon: ShieldCheck },
 
     { href: "/dashboard/community", label: "Community", icon: Users },
 

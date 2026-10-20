@@ -1,6 +1,12 @@
 ﻿import { formatRelativeDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { RiderDashboard } from "@/schemas";
 
 export function RiderOverview({ data }: { data: RiderDashboard }) {
@@ -12,20 +18,29 @@ export function RiderOverview({ data }: { data: RiderDashboard }) {
         <CardHeader>
           <CardTitle>Current rider posture</CardTitle>
           <CardDescription>
-            Assignment visibility, compliance freshness, and mobile-synced route status for your rider account.
+            Assignment visibility, compliance freshness, and mobile-synced route status
+            for your rider account.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="rounded-xl border border-border/60 bg-background/70 p-4">
               <p className="text-sm text-muted-foreground">Primary route</p>
-              <p className="mt-2 text-xl font-semibold">{primaryRoute?.name ?? "No active route"}</p>
-              <p className="mt-2 text-sm text-muted-foreground">{primaryRoute?.city ?? "Awaiting assignment"}</p>
+              <p className="mt-2 text-xl font-semibold">
+                {primaryRoute?.name ?? "No active route"}
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {primaryRoute?.city ?? "Awaiting assignment"}
+              </p>
             </div>
             <div className="rounded-xl border border-border/60 bg-background/70 p-4">
               <p className="text-sm text-muted-foreground">Compliance score</p>
               <div className="mt-2 flex items-center gap-3">
-                <p className="text-xl font-semibold">{data.currentCompliance}%</p>
+                <p className="text-xl font-semibold">
+                  {data.currentCompliance === null
+                    ? "Unavailable"
+                    : `${data.currentCompliance}%`}
+                </p>
                 <Badge
                   variant={
                     data.complianceStatus === "healthy"
@@ -45,7 +60,9 @@ export function RiderOverview({ data }: { data: RiderDashboard }) {
             </div>
           </div>
           <div className="rounded-xl border border-border/60 bg-background/70 p-4 text-sm text-muted-foreground">
-            Ride execution stays mobile-first in MOVRR Mobile. This workspace stays informational and mirrors your latest assignments, rewards, notifications, and account settings.
+            Ride execution stays mobile-first in MOVRR Mobile. This workspace stays
+            informational and mirrors your latest assignments, rewards, notifications, and
+            account settings.
           </div>
           <div className="space-y-3">
             {data.campaigns.slice(0, 3).map((campaign) => (
@@ -77,18 +94,23 @@ export function RiderOverview({ data }: { data: RiderDashboard }) {
         <CardHeader>
           <CardTitle>Rewards statement</CardTitle>
           <CardDescription>
-            Balance, lifetime earnings, and recent reward movement tied to your rider profile.
+            Balance, lifetime earnings, and recent reward movement tied to your rider
+            profile.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="rounded-xl border border-border/60 bg-background/70 p-4">
               <p className="text-sm text-muted-foreground">Available points</p>
-              <p className="mt-2 text-3xl font-semibold">{data.rewardsSummary.availablePoints}</p>
+              <p className="mt-2 text-3xl font-semibold">
+                {data.rewardsSummary.availablePoints}
+              </p>
             </div>
             <div className="rounded-xl border border-border/60 bg-background/70 p-4">
               <p className="text-sm text-muted-foreground">Lifetime earned</p>
-              <p className="mt-2 text-3xl font-semibold">{data.rewardsSummary.lifetimePointsEarned}</p>
+              <p className="mt-2 text-3xl font-semibold">
+                {data.rewardsSummary.lifetimePointsEarned}
+              </p>
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">

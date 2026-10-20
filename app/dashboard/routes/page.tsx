@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/shared/EmptyState";
-import { PageHeader } from "@/components/shared/PageHeader";
 import { StatsCard } from "@/components/stats/StatsCard";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -45,8 +44,12 @@ export default async function DashboardRoutesPage() {
             icon={Bell}
           />
           <StatsCard
-            title="Compliance posture"
-            value={`${dashboard.currentCompliance}%`}
+            title="Recorded ride compliance"
+            value={
+              dashboard.currentCompliance === null
+                ? "Unavailable"
+                : `${dashboard.currentCompliance}%`
+            }
             description="Latest compliance score synced from rider execution data"
             icon={FileText}
           />
@@ -57,8 +60,8 @@ export default async function DashboardRoutesPage() {
             <CardHeader>
               <CardTitle>Assigned routes</CardTitle>
               <CardDescription>
-                Route history, verification status, sync freshness, and compliance
-                posture from the latest rider execution data.
+                Route history, verification status, sync freshness, and compliance posture
+                from the latest rider execution data.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -110,7 +113,12 @@ export default async function DashboardRoutesPage() {
                       )}
                     </div>
                     <div className="grid gap-2 text-sm text-muted-foreground md:text-right">
-                      <p>Progress {route.routeProgress}%</p>
+                      <p>
+                        Progress{" "}
+                        {route.routeProgress === null
+                          ? "Unavailable"
+                          : `${route.routeProgress}%`}
+                      </p>
                       <p>Coverage {route.coverageKm.toFixed(1)} km</p>
                       <p>Verification {route.complianceStatus}</p>
                     </div>

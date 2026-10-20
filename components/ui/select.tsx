@@ -13,6 +13,11 @@ type SelectOption = {
 
 type SelectSharedProps = {
   name?: string;
+  id?: string;
+  "aria-label"?: string;
+  "aria-labelledby"?: string;
+  "aria-describedby"?: string;
+  "aria-invalid"?: React.AriaAttributes["aria-invalid"];
   options?: SelectOption[];
   placeholder?: string;
   className?: string;
@@ -24,6 +29,11 @@ type SelectProps = React.ComponentProps<typeof SelectPrimitive.Root> &
 
 function Select({
   name,
+  id,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
   options,
   placeholder = "Select an option",
   children,
@@ -59,7 +69,7 @@ function Select({
       >
         {options ? (
           <>
-            <SelectTrigger className={props.className} size={props.size}>
+            <SelectTrigger id={id} aria-label={ariaLabel} aria-labelledby={ariaLabelledBy} aria-describedby={ariaDescribedBy} aria-invalid={ariaInvalid} className={props.className} size={props.size}>
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>

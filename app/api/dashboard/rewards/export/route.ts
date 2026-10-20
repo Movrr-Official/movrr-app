@@ -7,7 +7,9 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 function escapeCsv(value: string | number) {
-  const stringValue = String(value ?? "");
+  const raw = String(value ?? "");
+  const stringValue =
+    typeof value === "string" && /^[=+@\t\r-]/.test(raw) ? "\'" + raw : raw;
   if (/[",\n]/.test(stringValue)) {
     return `"${stringValue.replace(/"/g, '""')}"`;
   }
@@ -16,7 +18,10 @@ function escapeCsv(value: string | number) {
 
 export async function POST(request: Request) {
   if (!isTrustedSameOriginRequest(request)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403, headers: { "cache-control": "no-store" } });
+    return NextResponse.json(
+      { error: "forbidden" },
+      { status: 403, headers: { "cache-control": "no-store" } },
+    );
   }
 
   await requireProductSession(["rider"]);
@@ -27,7 +32,7 @@ export async function POST(request: Request) {
     reward.description,
     reward.type,
     reward.category,
-    reward.type === "redeemed" ? -Math.abs(reward.points) : reward.points,
+    reward.points,
     reward.createdAt,
   ]);
 

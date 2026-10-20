@@ -27,7 +27,7 @@ import { getCurrentProductSession } from "@/lib/appUser";
 import { getGovernmentMe } from "@/lib/platform/governmentPlatform";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
 import { getPartnerSettings } from "@/services/partner";
-import { getRiderDashboardData } from "@/services/rider";
+import { getRiderSettingsData } from "@/services/rider";
 import { RIDER_LANGUAGE_OPTIONS } from "@/lib/locale";
 import { redirect } from "next/navigation";
 
@@ -339,7 +339,7 @@ export default async function DashboardSettingsPage({
 
   if (session.appUser.role !== "rider") redirect("/dashboard");
 
-  const dashboard = await getRiderDashboardData();
+  const dashboard = await getRiderSettingsData();
   return (
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">

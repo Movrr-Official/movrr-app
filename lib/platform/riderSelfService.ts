@@ -18,7 +18,8 @@ export const rideSummarySchema = z.object({
       duration_ms: z.number().nullable().optional(),
       compliance_score: z.number().nullable().optional(),
       verification_result: z
-        .object({ status: z.string() })
+        // Historical evidence can lack status; preserve absence without inventing verification.
+        .object({ status: z.string().optional() })
         .passthrough()
         .nullable()
         .optional(),

@@ -40,7 +40,7 @@ import {
   type ProductNotification,
 } from "@/lib/notifications";
 import { getAdvertiserDashboardData } from "@/services/advertiser";
-import { getRiderDashboardData } from "@/services/rider";
+import { getRiderNotificationsData } from "@/services/rider";
 import { redirect } from "next/navigation";
 
 function RoleNotificationsInbox({
@@ -416,7 +416,7 @@ export default async function DashboardNotificationsPage({
 
   if (session.appUser.role !== "rider") redirect("/dashboard");
 
-  const dashboard = await getRiderDashboardData();
+  const dashboard = await getRiderNotificationsData();
   const categories = Array.from(
     new Set(dashboard.notifications.map((item) => item.category)),
   ).sort();

@@ -56,11 +56,12 @@ export async function listUserNotifications(
 
 export async function getUserNotificationPreferences(userId: string): Promise<boolean> {
   const admin = createSupabaseAdminClient();
-  const { data } = await admin
+  const { data, error } = await admin
     .from("user_preferences")
     .select("notifications")
     .eq("user_id", userId)
     .maybeSingle();
+  if (error) throw new Error("Notification preferences unavailable");
   return data?.notifications ?? true;
 }
 

@@ -7,8 +7,19 @@ vi.mock("@/lib/platform/campaignPlatform",()=>({listRiderCampaigns:async()=>[]})
 vi.mock("@/lib/platform/riderSelfService",()=>({listRideSummaries:async()=>({summaries:[]})}));
 vi.mock("@/lib/notifications",()=>({listUserNotifications:async()=>[],getUserNotificationPreferences:async()=>true}));
 vi.mock("@/lib/supabase-server",()=>({createSupabaseServerClient:async()=>({from:()=>{const q={select:()=>q,eq:()=>q,order:()=>q,range:async()=>({data:[],error:null})};return q}})}));
-import {getRiderDashboardData} from "@/services/rider";
+import {getRiderDashboardData, getRiderSettingsData, getRiderNotificationsData} from "@/services/rider";
 beforeEach(()=>{state.guard.mockReset().mockResolvedValue({appUser:{id:'owner',email:'owner@isolated.test',languagePreference:'en-US'},authUser:{},riderProfile:{id:'rider'}});state.statement.mockReset().mockResolvedValue({balance:{pointsBalance:90,lifetimePointsEarned:200},entries:[['route',100],['route',20],['route',-5],['other',30],['other',-7],['redemption',-50],['refund',50],['adjustment',-48]].map(([category,points],index)=>({id:String(index),category,points,description:'Recorded activity',createdAt:'2026-10-20T00:00:00Z'}))})});
 it('reconciles the signed statement breakdown including bonuses, other credits and earning reversals',async()=>{const d=await getRiderDashboardData();expect(d.pointsBalance).toBe(90);expect(d.lifetimePointsEarned).toBe(200);expect(d.rewardsSummary).toMatchObject({awardedPoints:150,redeemedPoints:50,adjustmentPoints:-10});expect(d.rewardsSummary.awardedPoints-d.rewardsSummary.redeemedPoints+d.rewardsSummary.adjustmentPoints).toBe(d.pointsBalance);expect(d.rewards[2].type).toBe('adjusted');expect(d.rewards[4].type).toBe('adjusted');expect(d.currentCompliance).toBeNull()});
 it('does not fabricate a rider identity or wallet when onboarding has no profile',async()=>{state.guard.mockResolvedValue({appUser:{},riderProfile:null});await expect(getRiderDashboardData()).rejects.toThrow('onboarding');expect(state.statement).not.toHaveBeenCalled()});
 it('stops a restricted session before reading financial data',async()=>{state.guard.mockRejectedValue(new Error('restricted'));await expect(getRiderDashboardData()).rejects.toThrow('restricted');expect(state.statement).not.toHaveBeenCalled()});
+it('loads real profile and inbox independently of an unavailable wallet',async()=>{
+  state.statement.mockRejectedValue(new Error('wallet unavailable'));
+  expect(await getRiderSettingsData()).toMatchObject({profile:{email:'owner@isolated.test',languagePreference:'en-US'},preferences:{productNotifications:true}});
+  expect(await getRiderNotificationsData()).toMatchObject({notifications:[],preferences:{productNotifications:true}});
+  expect(state.statement).not.toHaveBeenCalled();
+});
+it('authorizes settings and inbox before private reads',async()=>{
+  state.guard.mockRejectedValue(new Error('restricted'));
+  await expect(getRiderSettingsData()).rejects.toThrow('restricted');
+  await expect(getRiderNotificationsData()).rejects.toThrow('restricted');
+});

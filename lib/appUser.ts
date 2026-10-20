@@ -1,4 +1,5 @@
 ﻿import { normalizedRiderLocale } from "@/lib/locale";
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import type { User as SupabaseAuthUser } from "@supabase/supabase-js";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
@@ -147,7 +148,8 @@ export async function fetchGovernmentContext(): Promise<GovernmentContext | null
   }
 }
 
-export async function getAuthenticatedAppUser(): Promise<ProductIdentity | null> {
+// Request-scoped only: never retain private identity across server renders.
+export const getAuthenticatedAppUser = cache(async (): Promise<ProductIdentity | null> => {
   const supabase = await createSupabaseServerClient();
   const {
     data: { user: authUser },
@@ -218,7 +220,7 @@ export async function getAuthenticatedAppUser(): Promise<ProductIdentity | null>
       languagePreference: riderLocale!,
     },
   };
-}
+});
 
 export async function getRiderProductSession(identity?: ProductIdentity): Promise<ProductSession | null> {
   const resolvedIdentity = identity ?? (await getAuthenticatedAppUser());
@@ -329,15 +331,16 @@ export async function getPartnerProductSession(
   };
 }
 
-export async function getCurrentProductSession(): Promise<ProductSession | null> {
+export const getCurrentProductSession = cache(async (): Promise<ProductSession | null> => {
   const identity = await getAuthenticatedAppUser();
   if (!identity) return null;
 
   // Prefer Platform org membership: partner > government > declared role.
-  const partnerSession = await getPartnerProductSession(identity);
+  const [partnerSession, governmentSession] = await Promise.all([
+    getPartnerProductSession(identity),
+    getGovernmentProductSession(identity),
+  ]);
   if (partnerSession) return partnerSession;
-
-  const governmentSession = await getGovernmentProductSession(identity);
   if (governmentSession) return governmentSession;
 
   if (identity.appUser.role === "rider") {
@@ -357,7 +360,7 @@ export async function getCurrentProductSession(): Promise<ProductSession | null>
   }
 
   return null;
-}
+});
 
 export async function requireProductSession(allowedRoles?: ProductRole[]) {
   const identity = await getAuthenticatedAppUser();

@@ -150,6 +150,44 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
     },
   };
 }
+/** Settings must remain available independently of ride and financial services. */
+export async function getRiderSettingsData() {
+  const session = await requireProductSession(["rider"]);
+  const rider = session.riderProfile;
+  if (!rider) throw new Error("Rider onboarding is incomplete. Contact MOVRR support.");
+  const productNotifications = await getUserNotificationPreferences(session.appUser.id);
+  return {
+    profile: {
+      email: session.appUser.email,
+      city: rider.city,
+      country: rider.country,
+      vehicleType: rider.vehicle_type,
+      emergencyContact: rider.emergency_contact,
+      emergencyPhone: rider.emergency_phone,
+      languagePreference: session.appUser.languagePreference,
+      timezone: "Europe/Amsterdam",
+      accountNotes: null,
+    },
+    preferences: { productNotifications },
+    support: { supportEmail: SUPPORT_EMAIL },
+  };
+}
+
+export async function getRiderNotificationsData() {
+  const session = await requireProductSession(["rider"]);
+  const [notifications, productNotifications] = await Promise.all([
+    listUserNotifications(session.appUser.id, "rider"),
+    getUserNotificationPreferences(session.appUser.id),
+  ]);
+  return {
+    notifications,
+    preferences: { productNotifications },
+    support: {
+      supportEmail: SUPPORT_EMAIL,
+      helpLabel: "Contact MOVRR support for ride or account assistance.",
+    },
+  };
+}
 export async function getRiderRouteDetail(routeId: string) {
   const session = await requireProductSession(["rider"]);
   if (!session.riderProfile) return null;

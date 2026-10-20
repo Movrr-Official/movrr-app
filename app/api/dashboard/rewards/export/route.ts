@@ -1,7 +1,7 @@
 ﻿import { NextResponse } from "next/server";
 import { requireProductSession } from "@/lib/appUser";
 import { isTrustedSameOriginRequest } from "@/lib/requestProtection";
-import { getRiderDashboardData } from "@/services/rider";
+import { getRiderRewardsData } from "@/services/rider";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
   }
 
   await requireProductSession(["rider"]);
-  const dashboard = await getRiderDashboardData();
+  const dashboard = await getRiderRewardsData();
 
   const header = ["description", "type", "category", "statement_points", "created_at"];
   const rows = dashboard.rewards.map((reward) => [

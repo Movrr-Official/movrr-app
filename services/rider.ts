@@ -52,21 +52,8 @@ function assignment(row: Record<string, unknown>): RiderRoute {
     ].filter(([key]) => typeof row[key] === "string").map(([key,label]) => ({ id:`${row.id}:${key}`,label,detail:"Recorded assignment event",occurredAt:String(row[key]),tone:"default" as const })),
   };
 }
-export async function getRiderDashboardData(): Promise<RiderDashboard> {
-  const session = await requireProductSession(["rider"]);
-  const rider = session.riderProfile;
-  if (!rider) throw new Error("Rider onboarding is incomplete. Contact MOVRR support.");
-  const [statement, campaigns, rows, notifications, productNotifications, rides] =
-    await Promise.all([
-      getWalletStatement(),
-      listRiderCampaigns(),
-      ownedAssignments(rider.id),
-      listUserNotifications(session.appUser.id, "rider"),
-      getUserNotificationPreferences(session.appUser.id),
-      listRideSummaries(),
-    ]);
+function statementRewards(statement: Awaited<ReturnType<typeof getWalletStatement>>) {
   const { balance: wallet, entries } = statement;
-  const routes = rows.map(assignment);
   const rewards = entries.map((row) => ({
     id: row.id,
     type:
@@ -80,6 +67,44 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
     description: row.description,
     createdAt: row.createdAt,
   }));
+  return { rewards,
+    rewardsSummary: {
+      availablePoints: wallet.pointsBalance,
+      lifetimePointsEarned: wallet.lifetimePointsEarned,
+      awardedPoints: entries
+        .filter((e) => !["redemption", "adjustment", "refund"].includes(e.category) && e.points > 0)
+        .reduce((s, e) => s + e.points, 0),
+      redeemedPoints: -entries
+        .filter((e) => e.category === "redemption")
+        .reduce((s, e) => s + e.points, 0),
+      adjustmentPoints: entries
+        .filter((e) => (["adjustment", "refund"].includes(e.category) || (e.category !== "redemption" && e.points < 0)))
+        .reduce((s, e) => s + e.points, 0),
+    },
+  };
+}
+
+/** Financial pages depend only on the authoritative Wallet statement. */
+export async function getRiderRewardsData() {
+  const session = await requireProductSession(["rider"]);
+  if (!session.riderProfile) throw new Error("Rider onboarding is incomplete. Contact MOVRR support.");
+  return statementRewards(await getWalletStatement());
+}
+
+export async function getRiderDashboardData(): Promise<Omit<RiderDashboard, "notifications" | "preferences" | "profile" | "support">> {
+  const session = await requireProductSession(["rider"]);
+  const rider = session.riderProfile;
+  if (!rider) throw new Error("Rider onboarding is incomplete. Contact MOVRR support.");
+  const [statement, campaigns, rows, rides] =
+    await Promise.all([
+      getWalletStatement(),
+      listRiderCampaigns(),
+      ownedAssignments(rider.id),
+      listRideSummaries(),
+    ]);
+  const { balance: wallet } = statement;
+  const routes = rows.map(assignment);
+  const { rewards, rewardsSummary } = statementRewards(statement);
   const latest = rides.summaries[0];
   const compliance = latest?.session.compliance_score;
   return {
@@ -116,38 +141,7 @@ export async function getRiderDashboardData(): Promise<RiderDashboard> {
     })),
     routes,
     rewards,
-    rewardsSummary: {
-      availablePoints: wallet.pointsBalance,
-      lifetimePointsEarned: wallet.lifetimePointsEarned,
-      awardedPoints: entries
-        .filter((e) => !["redemption", "adjustment", "refund"].includes(e.category) && e.points > 0)
-        .reduce((s, e) => s + e.points, 0),
-      redeemedPoints: -entries
-        .filter((e) => e.category === "redemption")
-        .reduce((s, e) => s + e.points, 0),
-      adjustmentPoints: entries
-        .filter((e) => (["adjustment", "refund"].includes(e.category) || (e.category !== "redemption" && e.points < 0)))
-        .reduce((s, e) => s + e.points, 0),
-    },
-    notifications,
-    preferences: { productNotifications },
-    profile: {
-      riderId: rider.id,
-      email: session.appUser.email,
-      city: rider.city,
-      country: rider.country,
-      isCertified: !!rider.is_certified,
-      accountNotes: null,
-      vehicleType: rider.vehicle_type,
-      emergencyContact: rider.emergency_contact,
-      emergencyPhone: rider.emergency_phone,
-      languagePreference: session.appUser.languagePreference,
-      timezone: "Europe/Amsterdam",
-    },
-    support: {
-      supportEmail: SUPPORT_EMAIL,
-      helpLabel: "Contact MOVRR support for ride or account assistance.",
-    },
+    rewardsSummary,
   };
 }
 /** Assigned routes do not depend on Wallet, campaigns or notification services. */

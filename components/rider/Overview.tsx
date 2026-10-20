@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import type { RiderDashboard } from "@/schemas";
 
-export function RiderOverview({ data }: { data: RiderDashboard }) {
+export function RiderOverview({ data }: { data: Omit<RiderDashboard, "notifications" | "preferences" | "profile" | "support"> }) {
   const primaryRoute = data.routes[0];
 
   return (

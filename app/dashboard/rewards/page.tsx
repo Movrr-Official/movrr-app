@@ -14,7 +14,7 @@ import {
 import { getCurrentProductSession } from "@/lib/appUser";
 import { hasPartnerCapability } from "@/lib/platform/capabilities";
 import { formatRelativeDate } from "@/lib/format";
-import { getRiderDashboardData } from "@/services/rider";
+import { getRiderRewardsData } from "@/services/rider";
 import { listPartnerRewards } from "@/services/partner";
 import { redirect } from "next/navigation";
 import { CircleDollarSign, FileText, Trophy, Wallet } from "lucide-react";
@@ -142,7 +142,7 @@ export default async function DashboardRewardsPage() {
 
   if (session.appUser.role !== "rider") redirect("/dashboard");
 
-  const dashboard = await getRiderDashboardData();
+  const dashboard = await getRiderRewardsData();
 
   return (
     <div className="page-canvas">

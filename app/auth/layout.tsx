@@ -30,13 +30,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <span className="text-2xl font-bold uppercase">Movrr</span>
           </div>
           <h1 className="mb-4 text-3xl font-semibold tracking-tight md:text-4xl">
-            MOVRR Business Workspace
+            MOVRR
           </h1>
           <p className="text-base opacity-90 md:text-lg">
-            The secure workspace for organisations participating in the MOVRR
-            platform — reward partners, advertisers, and future enterprise
-            partners operating across fulfilment, campaigns, and account
-            controls.
+            Your MOVRR account connects you to personal Rider services and any organisations you are authorised to work with.
           </p>
         </div>
 
@@ -83,12 +80,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </div>
             <div>
               <h3 className="font-semibold">
-                Enterprise Security &amp; Role-Based Access
+                Account security
               </h3>
               <p className="opacity-80">
-                After sign-in, access is scoped to your organisation membership
-                and permissions — so each team only enters the workspace they
-                are authorised to use.
+                Your account is independent. Rider services and organisation access are available only when those relationships have been added.
               </p>
             </div>
           </div>

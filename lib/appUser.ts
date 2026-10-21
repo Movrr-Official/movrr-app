@@ -56,6 +56,11 @@ export type ProductSession = {
   advertiserContext?: { organisationId: string; capabilities: string[] };
 };
 
+export type AccountIdentity = {
+  authUser: SupabaseAuthUser;
+  appUser: Omit<AppUser, "role">;
+};
+
 type ProductIdentity = {
   authUser: SupabaseAuthUser;
   appUser: AppUser;
@@ -87,8 +92,7 @@ export async function fetchPartnerContext(): Promise<PartnerContext | null> {
         error.status === 403 ||
         error.kind === "unauthenticated" ||
         error.kind === "permission_denied" ||
-        error.kind === "BusinessFailure" ||
-        error.kind === "unrecognised_principal"
+        error.kind === "BusinessFailure"
       ) {
         return null;
       }
@@ -131,8 +135,7 @@ export async function fetchGovernmentContext(): Promise<GovernmentContext | null
         error.status === 403 ||
         error.kind === "unauthenticated" ||
         error.kind === "permission_denied" ||
-        error.kind === "BusinessFailure" ||
-        error.kind === "unrecognised_principal"
+        error.kind === "BusinessFailure"
       ) {
         return null;
       }
@@ -148,7 +151,7 @@ export async function fetchGovernmentContext(): Promise<GovernmentContext | null
 }
 
 // Request-scoped only: never retain private identity across server renders.
-export const getAuthenticatedAppUser = cache(async (): Promise<ProductIdentity | null> => {
+export const getAuthenticatedAppUser = cache(async (): Promise<AccountIdentity | null> => {
   const supabase = await createSupabaseServerClient();
   const {
     data: { user: authUser },
@@ -181,19 +184,6 @@ export const getAuthenticatedAppUser = cache(async (): Promise<ProductIdentity |
   }
   if (String(appUserRow.status).toLowerCase() !== "active") return null;
 
-  const workspaces = await getAccountWorkspaces();
-  const selectedWorkspace = (await cookies()).get("movrr-workspace")?.value;
-  let role: ProductRole | null;
-  if (selectedWorkspace) {
-    role = selectedWorkspace === "rider" ? (workspaces.rider ? "rider" : null) :
-      workspaces.memberships.find(member => member.organisationId === selectedWorkspace)?.domain ?? null;
-    if (!role) redirect("/workspaces");
-  } else {
-    if (workspaces.memberships.length + (workspaces.rider ? 1 : 0) > 1) redirect("/workspaces");
-    role = workspaces.memberships[0]?.domain ?? (workspaces.rider ? "rider" : null);
-  }
-
-  if (!role) return null;
   let riderLocale: ReturnType<typeof normalizedRiderLocale>;
   {
     const preference = await admin.from("user_preferences").select("language").eq("user_id", authUser.id).maybeSingle();
@@ -209,7 +199,6 @@ export const getAuthenticatedAppUser = cache(async (): Promise<ProductIdentity |
       authUserId: authUser.id,
       email: appUserRow.email,
       name: appUserRow.name ?? appUserRow.email,
-      role,
       status: appUserRow.status ?? "active",
       avatarUrl: appUserRow.avatar_url,
       phone: appUserRow.phone,
@@ -219,8 +208,27 @@ export const getAuthenticatedAppUser = cache(async (): Promise<ProductIdentity |
   };
 });
 
+async function getSelectedProductIdentity(): Promise<ProductIdentity | null> {
+  const identity = await getAuthenticatedAppUser();
+  if (!identity) return null;
+  const workspaces = await getAccountWorkspaces();
+  const selectedWorkspace = (await cookies()).get("movrr-workspace")?.value;
+  let role: ProductRole | null;
+  if (selectedWorkspace) {
+    role = selectedWorkspace === "rider" ? (workspaces.rider ? "rider" : null) :
+      workspaces.memberships.find(member => member.organisationId === selectedWorkspace)?.domain ?? null;
+    if (!role) redirect("/workspaces");
+  } else {
+    if (workspaces.memberships.length + (workspaces.rider ? 1 : 0) > 1) redirect("/workspaces");
+    role = workspaces.memberships[0]?.domain ?? (workspaces.rider ? "rider" : null);
+  }
+
+  if (!role) return null;
+  return { ...identity, appUser: { ...identity.appUser, role } };
+}
+
 export async function getRiderProductSession(identity?: ProductIdentity): Promise<ProductSession | null> {
-  const resolvedIdentity = identity ?? (await getAuthenticatedAppUser());
+  const resolvedIdentity = identity ?? (await getSelectedProductIdentity());
   if (!resolvedIdentity || resolvedIdentity.appUser.role !== "rider") return null;
 
   const admin = createSupabaseAdminClient();
@@ -267,7 +275,7 @@ export async function getRiderProductSession(identity?: ProductIdentity): Promis
 }
 
 export async function getAdvertiserProductSession(identity?: ProductIdentity): Promise<ProductSession | null> {
-  const resolvedIdentity = identity ?? (await getAuthenticatedAppUser());
+  const resolvedIdentity = identity ?? (await getSelectedProductIdentity());
   if (!resolvedIdentity || resolvedIdentity.appUser.role !== "advertiser") return null;
 
   const admin = createSupabaseAdminClient();
@@ -300,7 +308,7 @@ export async function getAdvertiserProductSession(identity?: ProductIdentity): P
 export async function getGovernmentProductSession(
   identity?: ProductIdentity,
 ): Promise<ProductSession | null> {
-  const resolvedIdentity = identity ?? (await getAuthenticatedAppUser());
+  const resolvedIdentity = identity ?? (await getSelectedProductIdentity());
   if (!resolvedIdentity) return null;
 
   const governmentContext = await fetchGovernmentContext();
@@ -322,7 +330,7 @@ export async function getGovernmentProductSession(
 export async function getPartnerProductSession(
   identity?: ProductIdentity,
 ): Promise<ProductSession | null> {
-  const resolvedIdentity = identity ?? (await getAuthenticatedAppUser());
+  const resolvedIdentity = identity ?? (await getSelectedProductIdentity());
   if (!resolvedIdentity) return null;
 
   const partnerContext = await fetchPartnerContext();
@@ -342,29 +350,14 @@ export async function getPartnerProductSession(
 }
 
 export const getCurrentProductSession = cache(async (): Promise<ProductSession | null> => {
-  const identity = await getAuthenticatedAppUser();
+  const identity = await getSelectedProductIdentity();
   if (!identity) return null;
-
-  if (identity.appUser.role === "rider") return getRiderProductSession(identity);
-  if (identity.appUser.role === "advertiser") return getAdvertiserProductSession(identity);
-
-  // Prefer Platform org membership: partner > government > declared role.
-  const [partnerSession, governmentSession] = await Promise.all([
-    getPartnerProductSession(identity),
-    getGovernmentProductSession(identity),
-  ]);
-  if (partnerSession) return partnerSession;
-  if (governmentSession) return governmentSession;
-
-  if (identity.appUser.role === "partner") {
-    return null;
+  switch (identity.appUser.role) {
+    case "rider": return getRiderProductSession(identity);
+    case "advertiser": return getAdvertiserProductSession(identity);
+    case "partner": return getPartnerProductSession(identity);
+    case "government": return getGovernmentProductSession(identity);
   }
-
-  if (identity.appUser.role === "government") {
-    return null;
-  }
-
-  return null;
 });
 
 export async function requireProductSession(allowedRoles?: ProductRole[]) {
@@ -375,7 +368,7 @@ export async function requireProductSession(allowedRoles?: ProductRole[]) {
 
   const session = await getCurrentProductSession();
   if (!session) {
-    redirect("/unauthorized");
+    redirect("/workspaces");
   }
 
   if (allowedRoles && !allowedRoles.includes(session.appUser.role)) {

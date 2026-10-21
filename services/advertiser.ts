@@ -95,7 +95,7 @@ export async function getAdvertiserDashboardData(range: AdvertiserAnalyticsRange
   }
 
   let campaignsSource: Array<Record<string, unknown>> = [];
-  try {
+  {
     const platformCampaigns = await listAdvertiserCampaigns();
     campaignsSource = platformCampaigns.map((campaign) => ({
       id: campaign.id,
@@ -113,30 +113,23 @@ export async function getAdvertiserDashboardData(range: AdvertiserAnalyticsRange
       created_at: null,
       updated_at: null,
     }));
-  } catch {
-    const { data } = await admin
-      .from("campaign")
-      .select("id, name, description, lifecycle_status, budget, start_date, end_date, campaign_type, target_zones, impressions, qr_scans, max_riders, created_at, updated_at")
-      .eq("advertiser_id", advertiserId)
-      .order("created_at", { ascending: false });
-    campaignsSource = (data ?? []) as Array<Record<string, unknown>>;
   }
 
   const campaignIds = campaignsSource.map((campaign) => String(campaign.id));
   const [assignmentsRes, zonesRes, hotZonesRes, notificationsRes] = await Promise.all([
-    campaignIds.length ? admin.from("campaign_assignment").select("campaign_id, rider_id").in("campaign_id", campaignIds) : Promise.resolve({ data: [] as any[] }),
-    campaignIds.length ? admin.from("campaign_zone").select("campaign_id, name").in("campaign_id", campaignIds) : Promise.resolve({ data: [] as any[] }),
-    campaignIds.length ? admin.from("campaign_hot_zone").select("campaign_id, name").in("campaign_id", campaignIds) : Promise.resolve({ data: [] as any[] }),
+    campaignIds.length ? admin.from("campaign_assignment").select("campaign_id, rider_id").in("campaign_id", campaignIds) : Promise.resolve({ data: [] as { campaign_id: string; rider_id?: string; name?: string }[] }),
+    campaignIds.length ? admin.from("campaign_zone").select("campaign_id, name").in("campaign_id", campaignIds) : Promise.resolve({ data: [] as { campaign_id: string; rider_id?: string; name?: string }[] }),
+    campaignIds.length ? admin.from("campaign_hot_zone").select("campaign_id, name").in("campaign_id", campaignIds) : Promise.resolve({ data: [] as { campaign_id: string; rider_id?: string; name?: string }[] }),
     admin.from("notifications").select("id, title, message, type, is_read, created_at").eq("user_id", session.appUser.id).order("created_at", { ascending: false }).limit(25),
   ]);
 
   const assignedCounts = new Map<string, number>();
-  (assignmentsRes.data ?? []).forEach((row: any) => {
+  (assignmentsRes.data ?? []).forEach((row) => {
     assignedCounts.set(row.campaign_id, (assignedCounts.get(row.campaign_id) ?? 0) + 1);
   });
 
   const zoneCounts = new Map<string, number>();
-  [...(zonesRes.data ?? []), ...(hotZonesRes.data ?? [])].forEach((row: any) => {
+  [...(zonesRes.data ?? []), ...(hotZonesRes.data ?? [])].forEach((row) => {
     if (!row?.name) return;
     zoneCounts.set(row.name, (zoneCounts.get(row.name) ?? 0) + 1);
   });
@@ -166,14 +159,14 @@ export async function getAdvertiserDashboardData(range: AdvertiserAnalyticsRange
   }));
 
   const rangeStart = getRangeStart(range);
-  const campaignsForAnalytics = mappedCampaigns.filter((campaign: any) => {
+  const campaignsForAnalytics = mappedCampaigns.filter((campaign) => {
     const date = new Date(campaign.startDate ?? campaign.createdAt ?? campaign.endDate ?? Date.now());
     return !Number.isNaN(date.getTime()) && date >= rangeStart;
   });
   const analyticsSource = campaignsForAnalytics.length ? campaignsForAnalytics : mappedCampaigns;
 
   const trendMap = new Map<string, { label: string; impressions: number; qrScans: number }>();
-  analyticsSource.forEach((campaign: any) => {
+  analyticsSource.forEach((campaign) => {
     const date = new Date(campaign.startDate ?? campaign.createdAt ?? campaign.endDate ?? Date.now());
     const label = bucketLabel(date, range);
     if (!trendMap.has(label)) trendMap.set(label, { label, impressions: 0, qrScans: 0 });
@@ -184,12 +177,12 @@ export async function getAdvertiserDashboardData(range: AdvertiserAnalyticsRange
 
   const analytics = {
     range,
-    totalBudget: analyticsSource.reduce((sum: number, campaign: any) => sum + campaign.budget, 0),
-    totalImpressions: analyticsSource.reduce((sum: number, campaign: any) => sum + campaign.impressions, 0),
-    totalQrScans: analyticsSource.reduce((sum: number, campaign: any) => sum + campaign.qrScans, 0),
-    activeCampaigns: analyticsSource.filter((campaign: any) => campaign.lifecycleStatus === "active").length,
-    lastUpdatedAt: resolveLatestTimestamp(analyticsSource.flatMap((campaign: any) => [campaign.updatedAt, campaign.createdAt, campaign.endDate])),
-    campaignPerformance: analyticsSource.slice(0, 8).map((campaign: any) => ({
+    totalBudget: analyticsSource.reduce((sum: number, campaign) => sum + campaign.budget, 0),
+    totalImpressions: analyticsSource.reduce((sum: number, campaign) => sum + campaign.impressions, 0),
+    totalQrScans: analyticsSource.reduce((sum: number, campaign) => sum + campaign.qrScans, 0),
+    activeCampaigns: analyticsSource.filter((campaign) => campaign.lifecycleStatus === "active").length,
+    lastUpdatedAt: resolveLatestTimestamp(analyticsSource.flatMap((campaign) => [campaign.updatedAt, campaign.createdAt, campaign.endDate])),
+    campaignPerformance: analyticsSource.slice(0, 8).map((campaign) => ({
       label: campaign.name,
       impressions: campaign.impressions,
       scans: campaign.qrScans,
@@ -211,7 +204,7 @@ export async function getAdvertiserDashboardData(range: AdvertiserAnalyticsRange
     advertiserId,
     campaigns: mappedCampaigns,
     analytics,
-    notifications: (notificationsRes.data ?? []).map((row: any) => ({
+    notifications: (notificationsRes.data ?? []).map((row) => ({
       id: row.id,
       title: row.title,
       message: row.message,
@@ -249,7 +242,7 @@ export async function getAdvertiserCampaignDetail(campaignId: string) {
   if (!advertiserId) return null;
 
   let campaign: Record<string, unknown> | null = null;
-  try {
+  {
     const platformCampaign = await getAdvertiserCampaign(campaignId);
     if (platformCampaign) {
       campaign = {
@@ -270,18 +263,6 @@ export async function getAdvertiserCampaignDetail(campaignId: string) {
         updated_at: null,
       };
     }
-  } catch {
-    campaign = null;
-  }
-
-  if (!campaign) {
-    const { data } = await admin
-      .from("campaign")
-      .select("id, name, description, lifecycle_status, budget, start_date, end_date, campaign_type, target_zones, impressions, qr_scans, max_riders, vehicle_type_required, created_at, updated_at")
-      .eq("advertiser_id", advertiserId)
-      .eq("id", campaignId)
-      .maybeSingle();
-    campaign = (data as Record<string, unknown> | null) ?? null;
   }
 
   if (!campaign) return null;
@@ -292,13 +273,13 @@ export async function getAdvertiserCampaignDetail(campaignId: string) {
     admin.from("campaign_hot_zone").select("id, name, bonus_percent").eq("campaign_id", campaignId),
   ]);
 
-  const riderIds = (assignments ?? []).map((row: any) => row.rider_id).filter(Boolean);
+  const riderIds = (assignments ?? []).map((row) => row.rider_id).filter(Boolean);
   const { data: riders } = riderIds.length ? await admin.from("rider").select("id, user_id, city, country").in("id", riderIds) : { data: [] };
-  const userIds = (riders ?? []).map((row: any) => row.user_id).filter(Boolean);
+  const userIds = (riders ?? []).map((row) => row.user_id).filter(Boolean);
   const { data: users } = userIds.length ? await admin.from("user").select("id, name, email").in("id", userIds) : { data: [] };
 
-  const userMap = new Map((users ?? []).map((user: any) => [user.id, user]));
-  const ridersWithUsers = (riders ?? []).map((rider: any) => ({
+  const userMap = new Map((users ?? []).map((user) => [user.id, user]));
+  const ridersWithUsers = (riders ?? []).map((rider) => ({
     id: rider.id,
     name: userMap.get(rider.user_id)?.name ?? "Rider",
     email: userMap.get(rider.user_id)?.email ?? "",

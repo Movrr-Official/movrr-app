@@ -3,6 +3,7 @@ import { z } from "zod";
 export const partnerMembershipRoleSchema = z.enum([
   "owner",
   "manager",
+  "partner_operations_manager",
   "staff",
   "viewer",
 ]);
@@ -70,7 +71,8 @@ export const partnerStaffMemberSchema = z.object({
   id: z.string(),
   organisationId: z.string().optional(),
   userId: z.string(),
-  role: partnerMembershipRoleSchema.or(z.string()),
+  role: partnerMembershipRoleSchema,
+  updatedAt: z.string().optional(),
   status: z.string().optional().nullable(),
   email: z.string().optional().nullable(),
   name: z.string().optional().nullable(),

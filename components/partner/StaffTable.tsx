@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import {
   inviteStaffAction,
   updateStaffRoleAction,
@@ -17,8 +18,8 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import type { PartnerStaffMember } from "@/schemas";
 
 const ROLE_OPTIONS = [
-  { value: "owner", label: "Owner" },
   { value: "manager", label: "Manager" },
+  { value: "partner_operations_manager", label: "Partner Operations Manager" },
   { value: "staff", label: "Staff" },
   { value: "viewer", label: "Viewer" },
 ];
@@ -26,10 +27,13 @@ const ROLE_OPTIONS = [
 export function StaffTable({
   members,
   canManage,
+  actorRole,
 }: {
   members: PartnerStaffMember[];
   canManage: boolean;
+  actorRole: string | null;
 }) {
+  const roleOptions = actorRole === "partner_operations_manager" ? ROLE_OPTIONS.filter(option => ["staff", "viewer"].includes(option.value)) : ROLE_OPTIONS;
   return (
     <div className="space-y-6">
       <Card className="border-border">
@@ -63,11 +67,12 @@ export function StaffTable({
                       {member.status}
                     </Badge>
                   ) : null}
-                  {canManage ? (
+                  {canManage && member.role !== "owner" && (actorRole !== "partner_operations_manager" || ["staff", "viewer"].includes(member.role)) ? (
                     <form
                       action={updateStaffRoleAction}
                       className="flex flex-wrap items-center gap-2"
                     >
+                      <input type="hidden" name="expectedUpdatedAt" value={member.updatedAt ?? ""} />
                       <input
                         type="hidden"
                         name="membershipId"
@@ -78,12 +83,13 @@ export function StaffTable({
                         defaultValue={
                           typeof member.role === "string" ? member.role : "viewer"
                         }
-                        options={ROLE_OPTIONS}
+                        options={roleOptions}
                         className="w-36"
                       />
                       <SubmitButton size="sm" pendingLabel="Saving…">
                         Update role
                       </SubmitButton>
+                      <SubmitButton size="sm" name="status" value={member.status === "revoked" ? "active" : "revoked"} pendingLabel="Saving…">{member.status === "revoked" ? "Restore membership" : "Revoke membership"}</SubmitButton>
                     </form>
                   ) : null}
                 </div>
@@ -104,8 +110,7 @@ export function StaffTable({
           <CardHeader>
             <CardTitle>Invite staff</CardTitle>
             <CardDescription>
-              Creates membership via POST /api/v1/organisations/:id/staff.
-              Revoke is not exposed by Platform yet — change role instead.
+              Invite an existing account to this organisation. Access begins after verified acceptance.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -113,11 +118,12 @@ export function StaffTable({
               action={inviteStaffAction}
               className="grid gap-4 md:grid-cols-3"
             >
+              <input type="hidden" name="operationToken" value={randomBytes(32).toString("hex")} />
               <Input name="userId" placeholder="Auth user id" required />
               <Select
                 name="role"
                 defaultValue="staff"
-                options={ROLE_OPTIONS}
+                options={roleOptions}
               />
               <SubmitButton pendingLabel="Inviting…">Invite</SubmitButton>
             </form>

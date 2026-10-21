@@ -1,4 +1,5 @@
 import { beforeEach, expect, it, vi } from "vitest";
+vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => undefined }) }));
 const state = vi.hoisted(() => ({
   status: "active",
   id: "11111111-1111-4111-8111-111111111111",
@@ -10,9 +11,7 @@ vi.mock("@/lib/env", () => ({
   NEXT_PUBLIC_SUPABASE_ANON_KEY: "anon",
 }));
 vi.mock("@/lib/platform/client", () => ({
-  platformFetch: async () => {
-    throw new Error("No organisation membership");
-  },
+  platformFetch: async () => ({ rider: true, memberships: [] }),
 }));
 vi.mock("@/lib/supabase-server", () => ({
   createSupabaseServerClient: async () => ({
@@ -26,6 +25,7 @@ vi.mock("@/lib/supabase-server", () => ({
 }));
 vi.mock("@/lib/supabase-admin", () => ({
   createSupabaseAdminClient: () => ({
+    rpc: async () => ({ data: state.status === "active", error: state.fail ? { message: "offline" } : null }),
     from: (table: string) => ({
       select() {
         return this;
@@ -70,7 +70,7 @@ it("allows an eligible rider and reads the canonical language preference", async
     status: "active",
     languagePreference: "nl-NL",
   }));
-it.each(["suspended", "blocked", "deleted", "inactive", "unknown", ""])(
+it.each(["pending", "suspended", "blocked", "deleted", "inactive", "unknown", ""])(
   "rejects existing-session access for %s",
   async (status) => {
     state.status = status;

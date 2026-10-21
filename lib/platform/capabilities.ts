@@ -31,6 +31,10 @@ const BUNDLE_CAPABILITIES: Record<
     "fulfilment.read",
     "analytics.view",
   ],
+  partner_operations_manager: [
+    "staff.manage", "resources.manage", "rewards.manage", "rewards.catalog.read",
+    "fulfilment.validate", "fulfilment.confirm", "fulfilment.read", "analytics.view",
+  ],
   staff: [
     "fulfilment.validate",
     "fulfilment.confirm",
@@ -50,9 +54,11 @@ const GOVERNMENT_BUNDLE_CAPABILITIES: readonly GovernmentCapability[] = [
 ];
 
 export function capabilitiesForGovernmentRole(
-  _role: string | null | undefined,
+  role: string | null | undefined,
 ): GovernmentCapability[] {
-  return [...GOVERNMENT_BUNDLE_CAPABILITIES];
+  if (!isPartnerMembershipRole(role)) return [];
+  if (role === "partner_operations_manager" || role === "manager" || role === "staff") return [];
+  return GOVERNMENT_BUNDLE_CAPABILITIES.filter(capability => capability !== "org.settings" || role === "owner");
 }
 
 export function hasGovernmentCapability(
@@ -68,6 +74,7 @@ export function isPartnerMembershipRole(
   return (
     value === "owner" ||
     value === "manager" ||
+    value === "partner_operations_manager" ||
     value === "staff" ||
     value === "viewer"
   );
@@ -76,7 +83,7 @@ export function isPartnerMembershipRole(
 export function capabilitiesForMembershipRole(
   role: string | null | undefined,
 ): PartnerCapability[] {
-  if (!isPartnerMembershipRole(role)) return ["fulfilment.read"];
+  if (!isPartnerMembershipRole(role)) return [];
   return [...BUNDLE_CAPABILITIES[role]];
 }
 

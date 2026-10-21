@@ -57,6 +57,7 @@ export function Navbar({
       </div>
 
       <div className="flex items-center gap-3">
+        <Button asChild variant="ghost" size="sm"><a href="/workspaces">Switch workspace</a></Button>
         <ThemeToggle />
 
         <Button

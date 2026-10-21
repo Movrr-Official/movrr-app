@@ -4,6 +4,7 @@
  */
 
 import { PLATFORM_API_URL } from "@/lib/env";
+import { cookies } from "next/headers";
 import { logger } from "@/lib/logger";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import {
@@ -94,6 +95,10 @@ export async function platformFetch<T>(
     Authorization: `Bearer ${token}`,
     "X-Correlation-Id": correlationId,
   };
+  if (tokenOverride === undefined) {
+    const selected = (await cookies()).get("movrr-workspace")?.value;
+    if (selected && selected !== "rider") headers["x-organisation-id"] = selected;
+  }
 
   if (body !== undefined) {
     headers["Content-Type"] = "application/json";

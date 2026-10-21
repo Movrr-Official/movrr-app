@@ -30,6 +30,7 @@ function mapPlatformError(error: unknown): string {
 
 export async function updateAdvertiserSettingsAction(formData: FormData) {
   const session = await requireProductSession(["advertiser"]);
+  if (!session.advertiserContext?.capabilities.includes("org.settings")) throw new Error("Organisation settings permission required");
   const admin = createSupabaseAdminClient();
 
   const payload = {
@@ -48,7 +49,7 @@ export async function updateAdvertiserSettingsAction(formData: FormData) {
 
   const [userResult, advertiserResult, preferencesResult] = await Promise.all([
     admin.from("user").update({ name: payload.name, phone: payload.phone, organization: payload.company_name, language_preference: payload.language }).eq("id", session.appUser.id),
-    admin.from("advertiser").update(payload).eq("user_id", session.appUser.id),
+    admin.from("advertiser").update(payload).eq("id", session.advertiserProfile!.id).eq("organisation_id", session.advertiserContext.organisationId),
     admin.from("user_preferences").upsert({ user_id: session.appUser.id, notifications: productNotifications }, { onConflict: "user_id" }),
   ]);
 

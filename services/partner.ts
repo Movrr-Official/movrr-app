@@ -1,3 +1,4 @@
+import { isPartnerMembershipRole } from "@/lib/platform/capabilities";
 /**
  * Thin Partner Platform API wrappers — no SQL fulfilment / business rules.
  */
@@ -110,6 +111,7 @@ function mapReward(raw: unknown): PartnerReward {
 
 function mapStaff(raw: unknown): PartnerStaffMember {
   const row = asRecord(raw);
+  if (!isPartnerMembershipRole(typeof row.role === "string" ? row.role : undefined)) throw new Error("Unknown organisation membership role");
   return {
     id: String(row.id ?? ""),
     organisationId:
@@ -119,7 +121,8 @@ function mapStaff(raw: unknown): PartnerStaffMember {
           ? row.organisation_id
           : undefined,
     userId: String(row.userId ?? row.user_id ?? ""),
-    role: String(row.role ?? "viewer"),
+    role: row.role as PartnerStaffMember["role"],
+    updatedAt: typeof row.updatedAt === "string" ? row.updatedAt : typeof row.updated_at === "string" ? row.updated_at : undefined,
     status: typeof row.status === "string" ? row.status : null,
     email: typeof row.email === "string" ? row.email : null,
     name: typeof row.name === "string" ? row.name : null,
@@ -221,35 +224,26 @@ export async function listPartnerRewards(): Promise<PartnerReward[]> {
 export async function listPartnerStaff(): Promise<PartnerStaffMember[]> {
   const session = await requirePartnerSession();
   const orgId = session.partnerContext!.organisationId;
-  // Prefer org-scoped staff endpoint (supports mutations); fall back to partners/staff.
-  try {
-    const data = await platformFetch<unknown[]>(
-      `/organisations/${orgId}/staff`,
-    );
-    return (Array.isArray(data) ? data : [])
-      .map(mapStaff)
-      .filter((m) => m.id && m.userId);
-  } catch {
-    const data = await platformFetch<unknown[]>("/partners/staff");
-    return (Array.isArray(data) ? data : [])
-      .map(mapStaff)
-      .filter((m) => m.id && m.userId);
-  }
+  const data = await platformFetch<unknown[]>(`/organisations/${orgId}/staff`);
+  return data.map(mapStaff);
 }
 
 export async function invitePartnerStaff(input: {
+  operationToken: string;
   userId: string;
   role: string;
 }) {
   const session = await requirePartnerSession();
   const orgId = session.partnerContext!.organisationId;
-  return platformFetch<unknown>(`/organisations/${orgId}/staff`, {
+  return platformFetch<{ invitationId: string; url: string }>(`/organisations/${orgId}/invitations`, {
     method: "POST",
     body: input,
   });
 }
 
 export async function updatePartnerStaffRole(input: {
+  expectedUpdatedAt: string;
+  status?: "active" | "invited" | "revoked";
   membershipId: string;
   role: string;
 }) {

@@ -36,7 +36,7 @@ export class PlatformApiError extends Error {
 }
 
 /** Membership roles returned by Platform Organisation model. */
-export type PartnerMembershipRole = "owner" | "manager" | "staff" | "viewer";
+export type PartnerMembershipRole = "owner" | "manager" | "partner_operations_manager" | "staff" | "viewer";
 
 /**
  * Capability strings used only for UI gating.

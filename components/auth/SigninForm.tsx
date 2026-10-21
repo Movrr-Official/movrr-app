@@ -28,7 +28,8 @@ export function SigninForm() {
   const [error, setError] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/";
+  const requestedRedirect = searchParams.get("redirectTo") || "/";
+  const redirectTo = requestedRedirect.startsWith("/") && !requestedRedirect.startsWith("//") && !requestedRedirect.includes("\\") ? requestedRedirect : "/";
 
   const form = useForm<SignInFormData>({
     resolver: zodResolver(signInFormSchema),

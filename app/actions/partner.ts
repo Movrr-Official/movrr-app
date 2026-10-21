@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requirePartnerSession } from "@/lib/appUser";
@@ -174,7 +175,10 @@ export async function inviteStaffAction(formData: FormData) {
   }
 
   try {
-    await invitePartnerStaff({ userId, role });
+    const operationToken = String(formData.get("operationToken") ?? "");
+    const invitation = await invitePartnerStaff({ userId, role, operationToken });
+    (await cookies()).set("movrr-invitation", JSON.stringify({ actor: session.authUser.id, organisationId: session.partnerContext!.organisationId, url: invitation.url }),
+      { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/dashboard/staff", maxAge: 600 });
   } catch (error) {
     redirectWithStatus("/dashboard/staff", {
       error: mapPlatformError(error),
@@ -206,7 +210,11 @@ export async function updateStaffRoleAction(formData: FormData) {
   }
 
   try {
-    await updatePartnerStaffRole({ membershipId, role });
+    const expectedUpdatedAt = String(formData.get("expectedUpdatedAt") ?? "");
+    const rawStatus = formData.get("status");
+    if (rawStatus !== null && rawStatus !== "revoked" && rawStatus !== "active") throw new Error("Invalid membership status");
+    const status = rawStatus === "revoked" || rawStatus === "active" ? rawStatus : undefined;
+    await updatePartnerStaffRole({ membershipId, role, expectedUpdatedAt, status });
   } catch (error) {
     redirectWithStatus("/dashboard/staff", {
       error: mapPlatformError(error),

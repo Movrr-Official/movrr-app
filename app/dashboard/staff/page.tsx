@@ -1,3 +1,5 @@
+import { cookies } from "next/headers";
+import { Input } from "@/components/ui/input";
 import { StaffTable } from "@/components/partner/StaffTable";
 import { StatusToast } from "@/components/form/StatusToast";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -13,6 +15,10 @@ export default async function PartnerStaffPage({
 }) {
   const session = await requirePartnerSession();
   const params = await searchParams;
+  let invitationUrl: string | undefined;
+  try { const saved = JSON.parse((await cookies()).get("movrr-invitation")?.value ?? "null");
+    if (saved?.actor === session.authUser.id && saved.organisationId === session.partnerContext!.organisationId && typeof saved.url === "string") invitationUrl = saved.url;
+  } catch { /* Invalid/expired receipt has no effect on authorization. */ }
   const success = typeof params.success === "string" ? params.success : null;
   const error = typeof params.error === "string" ? params.error : null;
   const canManage = hasPartnerCapability(
@@ -54,7 +60,8 @@ export default async function PartnerStaffPage({
           title="Staff"
           description="Invite and change organisation membership roles through Platform APIs only."
         />
-        <StaffTable members={members} canManage={canManage} />
+        {invitationUrl && <div className="space-y-2"><p>Invitation link ? share with the invited account holder</p><Input value={invitationUrl} readOnly /></div>}
+        <StaffTable members={members} canManage={canManage} actorRole={session.partnerContext!.membershipRole} />
       </div>
     </div>
   );

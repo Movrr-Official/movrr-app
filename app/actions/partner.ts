@@ -14,6 +14,7 @@ import {
 } from "@/lib/notifications";
 import {
   confirmPartnerCollection,
+  cancelPartnerFulfilment,
   importPartnerResourceCodes,
   invitePartnerStaff,
   patchPartnerSettings,
@@ -24,6 +25,11 @@ import {
 function redirectWithStatus(path: string, params: Record<string, string>) {
   const search = new URLSearchParams(params);
   redirect(`${path}?${search.toString()}`);
+}
+
+function lifecycleVersion(form:FormData) {
+  const value=form.get("expectedVersion");
+  return typeof value==="string" && value.trim()!=="" ? Number(value) : NaN;
 }
 
 function mapPlatformError(error: unknown): string {
@@ -67,7 +73,7 @@ export async function confirmCollectionAction(formData: FormData) {
   }
 
   try {
-    await confirmPartnerCollection(fulfilmentId);
+    await confirmPartnerCollection(fulfilmentId, lifecycleVersion(formData), String(formData.get("reason") ?? ""), String(formData.get("operationId") ?? ""));
   } catch (error) {
     redirectWithStatus(`/dashboard/collections/${fulfilmentId}`, {
       error: mapPlatformError(error),
@@ -115,6 +121,17 @@ export async function validateTokenAction(formData: FormData) {
   redirectWithStatus("/dashboard/validate", {
     success: "Token validated by Platform API.",
   });
+}
+
+export async function cancelCollectionAction(formData:FormData) {
+ const session=await requirePartnerSession();
+ if(!hasPartnerCapability(session.partnerContext!.capabilities,"fulfilment.cancel"))redirectWithStatus("/dashboard/collections",{error:"Your role cannot cancel rewards."});
+ const id=String(formData.get("fulfilmentId")??"");
+ if(!/^[0-9a-f-]{36}$/i.test(id))redirectWithStatus("/dashboard/collections",{error:"Invalid reward id."});
+ try{await cancelPartnerFulfilment(id,lifecycleVersion(formData),String(formData.get("reason")??""),String(formData.get("operationId")??""));}
+ catch(error){redirectWithStatus(`/dashboard/collections/${id}`,{error:mapPlatformError(error)});}
+ revalidatePath("/dashboard/collections");revalidatePath(`/dashboard/collections/${id}`);
+ redirectWithStatus("/dashboard/collections",{success:"Reward cancellation settled by Platform."});
 }
 
 export async function importResourceCodesAction(formData: FormData) {

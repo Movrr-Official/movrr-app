@@ -1,4 +1,4 @@
-import { confirmCollectionAction } from "@/app/actions/partner";
+import { cancelCollectionAction, confirmCollectionAction } from "@/app/actions/partner";
 import { SubmitButton } from "@/components/form/SubmitButton";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,9 +13,13 @@ import type { PartnerPendingFulfilment } from "@/schemas";
 export function CollectionDetail({
   item,
   canConfirm,
+  canCancel=false,
+  operationId,
 }: {
   item: PartnerPendingFulfilment;
   canConfirm: boolean;
+  canCancel?: boolean;
+  operationId: string;
 }) {
   return (
     <Card className="border-border">
@@ -65,9 +69,12 @@ export function CollectionDetail({
           </div>
         </dl>
 
-        {canConfirm ? (
+        {canConfirm && item.version != null ? (
           <form action={confirmCollectionAction} className="pt-2">
             <input type="hidden" name="fulfilmentId" value={item.id} />
+            <input type="hidden" name="expectedVersion" value={item.version} />
+            <input type="hidden" name="operationId" value={operationId+":collect"} />
+            <input type="hidden" name="reason" value="collection_confirmed" />
             <SubmitButton pendingLabel="Confirming…">
               Confirm collection
             </SubmitButton>
@@ -77,6 +84,11 @@ export function CollectionDetail({
             Your membership role cannot confirm collections.
           </p>
         )}
+        {canCancel && item.version != null && !["completed","collected","delivered","dispatched","refunded","reversed"].includes(item.state ?? "") ? <form action={cancelCollectionAction} className="space-y-3">
+          <input type="hidden" name="fulfilmentId" value={item.id}/><input type="hidden" name="expectedVersion" value={item.version}/><input type="hidden" name="operationId" value={operationId+":cancel"}/>
+          <label className="block text-sm">Cancellation reason (shown to the rider)<input name="reason" required maxLength={1000} className="mt-1 w-full rounded-md border border-input bg-background p-2"/></label>
+          <SubmitButton pendingLabel="Cancelling…">Cancel reward</SubmitButton>
+        </form> : null}
       </CardContent>
     </Card>
   );

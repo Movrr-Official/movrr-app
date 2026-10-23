@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RewardFinancialSummary } from "@/components/rider/RewardFinancialSummary";
 import { listRedemptions } from "@/lib/platform/riderPlatform";
 import { EarnedAchievements } from "@/components/rider/EarnedAchievements";
 import { StatusToast } from "@/components/form/StatusToast";
@@ -283,7 +284,8 @@ export default async function DashboardRewardsPage({ searchParams }: {
             {orders.length ? orders.map(order => (
               <Link className="block rounded-xl border border-border/60 p-4 hover:text-primary" key={order.id} href={`/dashboard/rewards/orders/${order.id}`}>
                 <span className="font-medium">{order.rewardTitle || "Reward"}</span>
-                <span className="ml-3 text-sm">{order.redemptionStatus} / {order.isFree ? "Free" : `${order.pointsSpent} pts`}</span>
+                <span className="ml-3 text-sm">{order.redemptionStatus} / {order.isFree ? "Free" : `${order.pointsSpent} pts originally requested`}</span>
+                <RewardFinancialSummary financial={order.financial} locale={session.appUser.languagePreference==="nl-NL"?"nl":"en"}/>
               </Link>
             )) : <p>No rewards claimed yet.</p>}
           </CardContent>

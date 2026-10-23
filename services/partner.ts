@@ -26,6 +26,7 @@ function mapPendingItem(raw: unknown): PartnerPendingFulfilment {
   const row = asRecord(raw);
   return {
     id: String(row.id ?? ""),
+    version: typeof row.version === "number" ? row.version : undefined,
     state: typeof row.state === "string" ? row.state : undefined,
     progress: typeof row.progress === "string" ? row.progress : undefined,
     fulfilmentType:
@@ -175,13 +176,23 @@ export async function getPartnerPendingFulfilment(
   return items.find((item) => item.id === id) ?? null;
 }
 
-export async function confirmPartnerCollection(fulfilmentId: string) {
+export async function confirmPartnerCollection(fulfilmentId: string, expectedVersion: number, reason: string, operationId: string) {
+  assertLifecycleInput(expectedVersion,reason,operationId);
   await requirePartnerSession();
   return platformFetch<unknown>("/partners/collections/confirm", {
     method: "POST",
-    body: { fulfilmentId },
-    idempotencyKey: createCorrelationId(),
+    body: { fulfilmentId, expectedVersion, reason },
+    idempotencyKey: operationId,
   });
+}
+
+function assertLifecycleInput(version:number,reason:string,operation:string) {
+ if(!Number.isSafeInteger(version)||version<0||!reason.trim()||reason.length>1000||!operation.trim()||operation.length>200)throw new Error("Current version, reason and stable operation are required");
+}
+
+export async function cancelPartnerFulfilment(fulfilmentId:string,expectedVersion:number,reason:string,operationId:string) {
+ await requirePartnerSession();assertLifecycleInput(expectedVersion,reason,operationId);
+ return platformFetch(`/fulfilment/${encodeURIComponent(fulfilmentId)}/cancel`,{method:"POST",body:{expectedVersion,reason,riderReason:reason},idempotencyKey:operationId});
 }
 
 export async function validatePartnerToken(token: string) {

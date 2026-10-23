@@ -12,6 +12,8 @@ export const partnerCapabilitySchema = z.enum([
   "fulfilment.read",
   "fulfilment.validate",
   "fulfilment.confirm",
+  "fulfilment.cancel",
+  "fulfilment.refund",
   "resources.manage",
   "rewards.catalog.read",
   "rewards.manage",
@@ -40,6 +42,7 @@ export const partnerDashboardSchema = z.object({
 });
 
 export const partnerPendingFulfilmentSchema = z.object({
+  version: z.number().int().nonnegative().optional(),
   id: z.string(),
   state: z.string().optional(),
   progress: z.string().optional(),

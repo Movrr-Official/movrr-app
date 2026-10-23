@@ -46,6 +46,8 @@ export type PartnerCapability =
   | "fulfilment.read"
   | "fulfilment.validate"
   | "fulfilment.confirm"
+  | "fulfilment.cancel"
+  | "fulfilment.refund"
   | "resources.manage"
   | "rewards.catalog.read"
   | "rewards.manage"

@@ -19,6 +19,7 @@ const BUNDLE_CAPABILITIES: Record<
     "rewards.catalog.read",
     "fulfilment.validate",
     "fulfilment.confirm",
+    "fulfilment.cancel", "fulfilment.refund",
     "fulfilment.read",
     "analytics.view",
   ],
@@ -28,12 +29,14 @@ const BUNDLE_CAPABILITIES: Record<
     "rewards.catalog.read",
     "fulfilment.validate",
     "fulfilment.confirm",
+    "fulfilment.cancel", "fulfilment.refund",
     "fulfilment.read",
     "analytics.view",
   ],
   partner_operations_manager: [
     "staff.manage", "resources.manage", "rewards.manage", "rewards.catalog.read",
-    "fulfilment.validate", "fulfilment.confirm", "fulfilment.read", "analytics.view",
+    "fulfilment.validate", "fulfilment.confirm",
+    "fulfilment.cancel", "fulfilment.refund", "fulfilment.read", "analytics.view",
   ],
   staff: [
     "fulfilment.validate",

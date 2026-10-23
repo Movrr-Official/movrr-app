@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { CollectionDetail } from "@/components/partner/CollectionDetail";
 import { StatusToast } from "@/components/form/StatusToast";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -38,7 +39,7 @@ export default async function PartnerCollectionDetailPage({
           }}
         />
         {item ? (
-          <CollectionDetail item={item} canConfirm={canConfirm} />
+          <CollectionDetail item={item} canConfirm={canConfirm} canCancel={hasPartnerCapability(session.partnerContext!.capabilities,"fulfilment.cancel")} operationId={randomUUID()}/>
         ) : (
           <EmptyState
             title="Fulfilment not in pending list"

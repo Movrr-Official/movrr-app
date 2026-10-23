@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RewardFinancialSummary } from "@/components/rider/RewardFinancialSummary";
 import { requireProductSession } from "@/lib/appUser";
 import { getRedemption, getFulfilment } from "@/lib/platform/riderPlatform";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -28,6 +29,7 @@ export default async function RewardOrderDetailPage({
           </CardHeader>
           <CardContent className="space-y-4">
             <Badge>{fulfilment?.state ?? order.redemptionStatus}</Badge>
+            <RewardFinancialSummary financial={order.financial} locale={session.appUser.languagePreference==="nl-NL"?"nl":"en"}/>
             <p>{fulfilment?.progress}</p>
             <p className="text-sm">
               Claimed{" "}

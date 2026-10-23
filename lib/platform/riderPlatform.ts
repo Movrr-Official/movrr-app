@@ -62,7 +62,11 @@ export async function getWalletStatement() {
     throw new Error("Wallet statement incomplete");
   return statement;
 }
+const financialSchema = z.object({
+ originalPointsCharged:z.number().int().nonnegative().nullable(),pointsRefunded:z.number().int().nonnegative().nullable(),reservationReleased:z.number().int().nonnegative(),outstandingRefund:z.number().int().nonnegative().nullable(),netPointsSpent:z.number().int().nullable(),cancellationActor:z.enum(["admin","merchant","system"]).nullable(),cancellationReason:z.string().nullable(),reconciliationRequired:z.boolean(),state:z.string()
+});
 const redemptionSchema = z.object({
+  financial: financialSchema.optional(),
   id: z.string().uuid(),
   catalogItemId: z.string(),
   pointsSpent: z.number().int().nonnegative(),

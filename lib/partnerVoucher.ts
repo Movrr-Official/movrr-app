@@ -3,6 +3,16 @@ export type VoucherValidationState = { outcome?: VoucherOutcome; fulfilmentId?: 
 
 export const voucherCopy = {
   en: {
+    phoneTitle: "Continue on your phone",
+    phoneDescription: "Use your phone's camera to scan rider rewards. You can keep managing your workspace here.",
+    phoneQr: "Scan this QR code with your phone camera to open the MOVRR reward scanner",
+    phoneStep1: "Open your phone's camera and scan this QR code.",
+    phoneStep2: "Sign in to MOVRR with your merchant account. Choose your workspace if asked.",
+    phoneStep3: "Tap Scan a reward and scan the rider's QR code. Check the result before handing over the reward.",
+    phoneLink: "Or open this link on your phone", copyLink: "Copy link", copied: "Link copied.",
+    copyFailed: "Select and copy the link above, then open it on your phone.",
+    phonePrivacy: "This QR code opens MOVRR. It does not sign you in or redeem a reward.",
+    viewCollections: "View collections", preparing: "Preparing your scanner?",
     title: "Scan a reward", description: "Scan the rider’s QR code, then confirm the handover.",
     start: "Start camera", stop: "Stop camera", scanning: "Hold the QR code inside the frame.",
     cameraError: "Camera unavailable. Allow camera access in your browser settings or enter the code below.",
@@ -16,6 +26,16 @@ export const voucherCopy = {
     next: "Review collection", another: "Scan another reward", ready: "Code ready for validation",
   },
   nl: {
+    phoneTitle: "Ga verder op je telefoon",
+    phoneDescription: "Scan beloningen van fietsers met de camera van je telefoon. Je kunt je werkruimte hier blijven beheren.",
+    phoneQr: "Scan deze QR-code met de camera van je telefoon om de MOVRR-beloningsscanner te openen",
+    phoneStep1: "Open de camera van je telefoon en scan deze QR-code.",
+    phoneStep2: "Log in op MOVRR met je partneraccount. Kies je werkruimte als daarom wordt gevraagd.",
+    phoneStep3: "Tik op Scan een beloning en scan de QR-code van de fietser. Controleer het resultaat voordat je de beloning overhandigt.",
+    phoneLink: "Of open deze link op je telefoon", copyLink: "Link kopi?ren", copied: "Link gekopieerd.",
+    copyFailed: "Selecteer en kopieer de link hierboven en open deze op je telefoon.",
+    phonePrivacy: "Deze QR-code opent MOVRR. Je wordt niet automatisch ingelogd en er wordt geen beloning ingewisseld.",
+    viewCollections: "Ophalen bekijken", preparing: "Scanner voorbereiden?",
     title: "Scan een beloning", description: "Scan de QR-code van de fietser en bevestig daarna de overdracht.",
     start: "Camera starten", stop: "Camera stoppen", scanning: "Houd de QR-code binnen het kader.",
     cameraError: "Camera niet beschikbaar. Geef cameratoegang in je browserinstellingen of voer de code hieronder in.",

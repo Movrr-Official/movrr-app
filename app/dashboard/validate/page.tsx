@@ -1,3 +1,5 @@
+import QRCode from "qrcode";
+import { APP_URL } from "@/lib/env";
 import { getPartnerLocale } from "@/lib/partnerLocaleServer";
 import { partnerText } from "@/lib/partnerLocale";
 import { ValidateTokenForm } from "@/components/partner/ValidateTokenForm";
@@ -22,6 +24,9 @@ export default async function PartnerValidatePage({
     "fulfilment.validate",
   );
 
+  const handoffUrl = new URL("/dashboard/validate", APP_URL).href;
+  const handoffQr = canValidate ? await QRCode.toDataURL(handoffUrl, { width: 216, margin: 4, errorCorrectionLevel: "M", color: { dark: "#123c2c", light: "#ffffff" } }) : "";
+
   return (
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
@@ -30,7 +35,7 @@ export default async function PartnerValidatePage({
           title={t("Scan a reward")}
           description={t("Check a rider reward securely before handover.")}
         />
-        <ValidateTokenForm initialLocale={locale} canValidate={canValidate} />
+        <ValidateTokenForm initialLocale={locale} canValidate={canValidate} handoffUrl={handoffUrl} handoffQr={handoffQr} />
       </div>
     </div>
   );

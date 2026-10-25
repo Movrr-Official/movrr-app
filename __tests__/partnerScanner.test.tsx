@@ -9,7 +9,12 @@ import { ValidateTokenForm } from "@/components/partner/ValidateTokenForm";
 let root: Root, host: HTMLDivElement;
 const stop = vi.fn();
 let media: ReturnType<typeof vi.fn>;
+let mobile = true;
+const deviceListeners = new Set<() => void>();
+const handoff = { handoffUrl: "https://app.movrr.nl/dashboard/validate", handoffQr: "data:image/png;base64,AA==" };
 beforeEach(() => {
+  mobile = true; deviceListeners.clear();
+  Object.defineProperty(window, "matchMedia", { configurable: true, value: () => ({ matches: mobile, addEventListener: (_event: string, fn: () => void) => deviceListeners.add(fn), removeEventListener: (_event: string, fn: () => void) => deviceListeners.delete(fn) }) });
   vi.clearAllMocks(); Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
   Object.defineProperty(navigator, "onLine", { configurable: true, value: true });
   media = vi.fn().mockResolvedValue({ getTracks: () => [{ stop }] });
@@ -25,7 +30,7 @@ afterEach(async () => { await act(async () => root.unmount()); host.remove(); vi
 const button = (text: string) => [...host.querySelectorAll("button")].find(el => el.textContent === text)!;
 const start = async () => { await act(async () => { button("Start camera").click(); await new Promise(resolve => setTimeout(resolve, 30)); }); };
 it("captures once with rear camera, stops tracks and waits for explicit validation", async () => {
-  await act(async () => root.render(<ValidateTokenForm canValidate />)); await start();
+  await act(async () => root.render(<ValidateTokenForm {...handoff} canValidate />)); await start();
   expect(media).toHaveBeenCalledWith({ video: { facingMode: { ideal: "environment" } }, audio: false });
   expect(stop).toHaveBeenCalled(); expect(state.validate).not.toHaveBeenCalled();
   expect(host.querySelector<HTMLInputElement>('[name="token"]')?.value).toBe("a".repeat(64));
@@ -36,10 +41,10 @@ it("captures once with rear camera, stops tracks and waits for explicit validati
   expect(document.activeElement?.getAttribute("role")).toBe("alert");
 });
 it("disables camera and validation offline; viewers never request camera access", async () => {
-  await act(async () => root.render(<ValidateTokenForm canValidate={false} />));
+  await act(async () => root.render(<ValidateTokenForm {...handoff} canValidate={false} />));
   expect(host.textContent).toContain("Your role cannot validate"); expect(media).not.toHaveBeenCalled();
   Object.defineProperty(navigator,"onLine",{configurable:true,value:false});
-  await act(async () => { root.render(<ValidateTokenForm canValidate />); window.dispatchEvent(new Event("offline")); });
+  await act(async () => { root.render(<ValidateTokenForm {...handoff} canValidate />); window.dispatchEvent(new Event("offline")); });
   expect(button("Start camera").disabled).toBe(true); expect(button("Validate reward")).toBeUndefined();
   Object.defineProperty(navigator,"onLine",{configurable:true,value:true});
   await act(async () => { window.dispatchEvent(new Event("online")); }); await start();
@@ -49,15 +54,46 @@ it("disables camera and validation offline; viewers never request camera access"
 });
 it("offers manual fallback on camera denial and supports Dutch", async () => {
   media.mockRejectedValue(new DOMException("denied", "NotAllowedError"));
-  await act(async () => root.render(<ValidateTokenForm canValidate />)); await start();
+  await act(async () => root.render(<ValidateTokenForm {...handoff} canValidate />)); await start();
   expect(host.textContent).toContain("Camera unavailable");
-  await act(async () => root.render(<ValidateTokenForm canValidate initialLocale="nl" />));
+  await act(async () => root.render(<ValidateTokenForm {...handoff} canValidate initialLocale="nl" />));
   expect(host.textContent).toContain("Camera niet beschikbaar"); expect(host.textContent).toContain("Voer een code in");
 });
 it("releases a camera permission request that resolves after navigation", async () => {
   let grant!: (stream: unknown) => void;
   media.mockReturnValue(new Promise(resolve => { grant=resolve; }));
-  await act(async () => root.render(<ValidateTokenForm canValidate />)); await start();
+  await act(async () => root.render(<ValidateTokenForm {...handoff} canValidate />)); await start();
   await act(async () => root.render(<p>Another page</p>));
   await act(async () => grant({ getTracks: () => [{ stop }] })); expect(stop).toHaveBeenCalled();
+});
+
+it("directs desktop users to their phone without camera or token entry, including Dutch", async () => {
+  mobile = false;
+  await act(async () => root.render(<ValidateTokenForm {...handoff} canValidate />));
+  expect(host.textContent).toContain("Continue on your phone");
+  expect(host.querySelector('video,form,[name="token"]')).toBeNull();
+  expect(button("Start camera")).toBeUndefined(); expect(media).not.toHaveBeenCalled();
+  expect(host.querySelector<HTMLInputElement>('#phone-scanner-link')?.value).toBe(handoff.handoffUrl);
+  const writeText = vi.fn().mockResolvedValue(undefined);
+  Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+  await act(async () => button("Copy link").click());
+  expect(writeText).toHaveBeenCalledWith(handoff.handoffUrl); expect(host.textContent).toContain("Link copied.");
+  await act(async () => root.render(<ValidateTokenForm {...handoff} canValidate initialLocale="nl" />));
+  expect(host.textContent).toContain("Ga verder op je telefoon");
+});
+it("provides a selectable link when clipboard access fails", async () => {
+  mobile = false;
+  Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: vi.fn().mockRejectedValue(new Error("denied")) } });
+  await act(async () => root.render(<ValidateTokenForm {...handoff} canValidate />));
+  await act(async () => button("Copy link").click());
+  expect(host.textContent).toContain("Select and copy"); expect(document.activeElement?.id).toBe("phone-scanner-link");
+});
+it("releases an active camera when the device no longer supports the mobile scanner", async () => {
+  state.decode.mockReturnValue(null);
+  await act(async () => root.render(<ValidateTokenForm {...handoff} canValidate />)); await start();
+  expect(media).toHaveBeenCalledTimes(1); stop.mockClear();
+  await act(async () => { mobile = false; deviceListeners.forEach(change => change()); });
+  expect(stop).toHaveBeenCalled(); expect(host.querySelector('video')).toBeNull(); expect(host.textContent).toContain("Continue on your phone");
+  await act(async () => { mobile = true; deviceListeners.forEach(change => change()); });
+  expect(media).toHaveBeenCalledTimes(1); expect(button("Start camera")).toBeDefined();
 });

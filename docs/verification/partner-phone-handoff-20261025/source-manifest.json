@@ -1,0 +1,20 @@
+{
+  "baseline": "28e01614d3ec9d2ee75bf5a87c12be9bc8e369ee",
+  "candidate": "commit containing this evidence; not deployed",
+  "sourceHashes": {
+    "components/partner/ValidateTokenForm.tsx": "59c7603c6881a33292df841acaad0637b9578bbc611c1965f19e40a447c013bd",
+    "app/dashboard/validate/page.tsx": "8ef560b9b426ba58f203b024c850e73c3d8d762cd313a953a2c8dd9433236587",
+    "lib/partnerVoucher.ts": "5fd0bf2cb9a33ceac857e4472f2083e50c0865a5761c659102acd90a9e98d0ce",
+    "proxy.ts": "942332727bbbf586588a5801ea77ecbaaed2f24ef5e1433f882acc4b8a92eb5f",
+    "__tests__/partnerScanner.test.tsx": "10699368ef71c2e9a5faa9577fd72b84f427e2fb81ddfdf5040f5fb5fda9ae6f",
+    "__tests__/partnerScanHandoff.test.ts": "74e0c0565dcc76a0b4f5aef2b158ceff3e93ab856b3d5d0360f07391bb22af63"
+  },
+  "tests": {
+    "suites": 23,
+    "passed": 136,
+    "typeScript": true,
+    "build": true,
+    "changedSourceLint": true
+  },
+  "authorization": "Existing server capabilities, voucher commands, tenant isolation and financial behavior unchanged. Device capability selection is presentation only."
+}

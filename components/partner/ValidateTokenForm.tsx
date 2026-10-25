@@ -1,7 +1,8 @@
 "use client";
-import { useActionState, useCallback, useEffect, useRef, useState } from "react";
+import { useActionState, useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { Camera, ScanLine } from "lucide-react";
+import Image from "next/image";
+import { Camera, Copy, ScanLine, Smartphone } from "lucide-react";
 import { validateTokenAction } from "@/app/actions/partner";
 import { voucherCopy, type VoucherValidationState } from "@/lib/partnerVoucher";
 import { useOnline } from "@/lib/useOnline";
@@ -9,12 +10,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export function ValidateTokenForm({ canValidate, initialLocale = "en" }: { canValidate: boolean; initialLocale?: "en" | "nl" }) {
+// A small desktop window is still a desktop: use the primary input capabilities too.
+const PHONE_QUERY = "(max-width: 1023px) and (pointer: coarse) and (hover: none)";
+function subscribeToDevice(change: () => void) {
+  const query = window.matchMedia(PHONE_QUERY);
+  query.addEventListener("change", change);
+  return () => query.removeEventListener("change", change);
+}
+
+export function ValidateTokenForm({ canValidate, initialLocale = "en", handoffUrl, handoffQr }: {
+  canValidate: boolean; initialLocale?: "en" | "nl"; handoffUrl: string; handoffQr: string;
+}) {
   const locale = initialLocale;
   const copy = voucherCopy[locale];
+  const [linkStatus, setLinkStatus] = useState<"copied" | "copyFailed" | null>(null);
+  const linkInput = useRef<HTMLInputElement>(null);
+  async function copyLink() {
+    try { await navigator.clipboard.writeText(handoffUrl); setLinkStatus("copied"); }
+    catch { linkInput.current?.focus(); linkInput.current?.select(); setLinkStatus("copyFailed"); }
+  }
   const [token, setToken] = useState("");
   const [operation, setOperation] = useState("");
   const [scanning, setScanning] = useState(false);
+  const subscribe = useCallback((change: () => void) => subscribeToDevice(() => { setScanning(false); change(); }), []);
+  const mobile = useSyncExternalStore(subscribe, () => window.matchMedia(PHONE_QUERY).matches, () => null);
   const [cameraError, setCameraError] = useState(false);
   const [state, action, pending] = useActionState<VoucherValidationState, FormData>(validateTokenAction, {});
   const video = useRef<HTMLVideoElement>(null);
@@ -28,7 +47,7 @@ export function ValidateTokenForm({ canValidate, initialLocale = "en" }: { canVa
   }, []);
   useEffect(() => { if (state.outcome) feedback.current?.focus(); }, [state]);
   useEffect(() => {
-    if (!scanning || !online || !canValidate || pending || accepted) return;
+    if (!mobile || !scanning || !online || !canValidate || pending || accepted) return;
     let disposed = false;
     let stream: MediaStream | undefined;
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -71,15 +90,37 @@ export function ValidateTokenForm({ canValidate, initialLocale = "en" }: { canVa
       }
     })();
     return () => { disposed = true; if (timer) clearTimeout(timer); release(); document.removeEventListener("visibilitychange", hidden); window.removeEventListener("offline", stop); };
-  }, [scanning, online, canValidate, pending, accepted, setCode]);
+  }, [mobile, scanning, online, canValidate, pending, accepted, setCode]);
 
   return <Card lang={locale} className="mx-auto w-full max-w-2xl overflow-hidden border-border">
     <CardHeader><div className="flex items-start justify-between gap-4">
-      <div className="space-y-2"><CardTitle>{copy.title}</CardTitle><CardDescription>{copy.description}</CardDescription></div>
+      <div className="space-y-2"><CardTitle>{mobile === false ? copy.phoneTitle : copy.title}</CardTitle><CardDescription>{mobile === false ? copy.phoneDescription : copy.description}</CardDescription></div>
 
     </div></CardHeader>
     <CardContent className="space-y-5" lang={locale}>
-      {!canValidate ? <p role="status">{copy.restricted}</p> : <>
+      {!canValidate ? <p role="status">{copy.restricted}</p> : mobile === null ? <p role="status">{copy.preparing}</p> : !mobile ? <div className="space-y-6">
+        <div className="grid items-center gap-6 sm:grid-cols-[240px_1fr]">
+          <div className="mx-auto rounded-2xl border border-border bg-white p-3">
+            <Image src={handoffQr} alt={copy.phoneQr} width={216} height={216} unoptimized />
+          </div>
+          <div className="space-y-5">
+            <Smartphone className="size-9 text-primary" aria-hidden="true" />
+            <ol className="list-decimal space-y-3 pl-5 text-sm leading-relaxed text-muted-foreground">
+              <li>{copy.phoneStep1}</li><li>{copy.phoneStep2}</li><li>{copy.phoneStep3}</li>
+            </ol>
+          </div>
+        </div>
+        <div className="space-y-2 border-t border-border pt-5">
+          <label htmlFor="phone-scanner-link" className="text-sm font-medium">{copy.phoneLink}</label>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input ref={linkInput} id="phone-scanner-link" value={handoffUrl} readOnly onFocus={event => event.currentTarget.select()} className="min-w-0 text-sm" />
+            <Button type="button" variant="outline" onClick={copyLink}><Copy className="mr-2 size-4" aria-hidden="true" />{copy.copyLink}</Button>
+          </div>
+          {linkStatus && <p role="status" className="text-sm text-muted-foreground">{copy[linkStatus]}</p>}
+        </div>
+        <p className="text-xs leading-relaxed text-muted-foreground">{copy.phonePrivacy}</p>
+        <Button asChild variant="outline"><Link href="/dashboard/collections">{copy.viewCollections}</Link></Button>
+      </div> : <>
         {!online && <p role="alert" className="rounded-xl border border-border bg-muted p-4">{copy.offline}</p>}
         {!accepted && <>
           <div className="partner-camera relative flex aspect-square max-h-96 items-center justify-center overflow-hidden rounded-2xl border border-border bg-movrr-bg-primary text-white">

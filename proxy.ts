@@ -26,7 +26,10 @@ export async function proxy(request: NextRequest) {
   const isProtectedPath = protectedPrefixes.some((prefix) => pathname.startsWith(prefix));
 
   if (!user && isProtectedPath) {
-    return NextResponse.redirect(new URL("/auth/signin", request.url));
+    const signIn = new URL("/auth/signin", request.url);
+    // Preserve only this known scanner destination for the phone handoff.
+    if (pathname === "/dashboard/validate") signIn.searchParams.set("redirectTo", pathname);
+    return NextResponse.redirect(signIn);
   }
 
   return response;

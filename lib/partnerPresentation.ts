@@ -1,6 +1,7 @@
 import { partnerText } from "@/lib/partnerLocale";
 export function partnerLabel(value?: string | null, locale: "en" | "nl" = "en") {
   const labels: Record<string, string> = {
+    draft: "Draft", active: "Active", paused: "Paused", archived: "Archived",
     collected: "Collected", delivered: "Delivered", dispatched: "Dispatched", failed: "Failed", processing: "Processing", created: "Created",
     qr_barcode: "QR voucher", instant_digital: "Digital voucher", physical_collection: "Collect in store",
     awaiting_collection: "Ready to scan", ready: "Preparing", reserved: "Reserved", validated: "Ready for handover",

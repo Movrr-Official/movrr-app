@@ -1,0 +1,116 @@
+[
+  {
+    "theme": "light",
+    "state": "normal",
+    "text": [
+      252,
+      252,
+      252,
+      255
+    ],
+    "bg": [
+      4,
+      119,
+      53,
+      255
+    ],
+    "worstWhiteBackdropContrast": 5.539171442183143,
+    "height": 36,
+    "fontSize": "14px"
+  },
+  {
+    "theme": "light",
+    "state": "hover",
+    "text": [
+      252,
+      252,
+      252,
+      255
+    ],
+    "bg": [
+      4,
+      119,
+      53,
+      230
+    ],
+    "worstWhiteBackdropContrast": 4.58387897554604,
+    "height": 36,
+    "fontSize": "14px"
+  },
+  {
+    "theme": "light",
+    "state": "focus",
+    "text": [
+      252,
+      252,
+      252,
+      255
+    ],
+    "bg": [
+      4,
+      119,
+      53,
+      255
+    ],
+    "worstWhiteBackdropContrast": 5.539171442183143,
+    "height": 36,
+    "fontSize": "14px"
+  },
+  {
+    "theme": "dark",
+    "state": "normal",
+    "text": [
+      252,
+      252,
+      252,
+      255
+    ],
+    "bg": [
+      4,
+      119,
+      53,
+      255
+    ],
+    "worstWhiteBackdropContrast": 5.539171442183143,
+    "height": 36,
+    "fontSize": "14px"
+  },
+  {
+    "theme": "dark",
+    "state": "hover",
+    "text": [
+      252,
+      252,
+      252,
+      255
+    ],
+    "bg": [
+      4,
+      119,
+      53,
+      230
+    ],
+    "worstWhiteBackdropContrast": 4.58387897554604,
+    "height": 36,
+    "fontSize": "14px"
+  },
+  {
+    "theme": "dark",
+    "state": "focus",
+    "text": [
+      252,
+      252,
+      252,
+      255
+    ],
+    "bg": [
+      4,
+      119,
+      53,
+      255
+    ],
+    "worstWhiteBackdropContrast": 5.539171442183143,
+    "height": 36,
+    "fontSize": "14px"
+  }
+]

@@ -1,3 +1,4 @@
+import { RewardImageField } from "@/components/partner/RewardImageField";
 import { getPartnerLocale } from "@/lib/partnerLocaleServer";
 import { partnerText } from "@/lib/partnerLocale";
 import Link from "next/link";
@@ -6,6 +7,7 @@ import { StatusToast } from "@/components/form/StatusToast";
 import { SubmitButton } from "@/components/form/SubmitButton";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Select } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -63,6 +65,7 @@ export default async function PartnerEditRewardPage({
           <CardContent>
             <form action={updateRewardCatalogAction} className="grid gap-4 md:grid-cols-2">
               <input type="hidden" name="catalogItemId" value={id} /><input type="hidden" name="expectedUpdatedAt" value={item.updatedAt ?? ""} />
+              <RewardImageField locale={locale} initialUrl={item.thumbnailUrl} />
               <label className="partner-form-label md:col-span-2">{t("Title")}<Input
                 name="title"
                 defaultValue={item.title ?? ""}
@@ -97,10 +100,7 @@ export default async function PartnerEditRewardPage({
               <label className="partner-form-label md:col-span-2">{t("Status")}<Select name="status" aria-label={t("Status")} defaultValue={item.status ?? "draft"} options={[{ value: "draft", label: t("Draft") }, { value: "active", label: t("Active") }, { value: "paused", label: t("Paused") }, { value: "archived", label: t("Archived") }]} /></label>
               <div className="flex gap-3 md:col-span-2">
                 <SubmitButton type="submit" pendingLabel={t("Saving")}>{t("Save changes")}</SubmitButton>
-                <Link
-                  href="/dashboard/rewards"
-                  className="inline-flex h-10 items-center rounded-md border border-input px-4 text-sm"
-                >{t("Back to rewards")}</Link>
+                <Button asChild variant="outline"><Link href="/dashboard/rewards">{t("Back to rewards")}</Link></Button>
               </div>
             </form>
           </CardContent>

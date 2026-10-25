@@ -22,6 +22,8 @@ export type PartnerCatalogInput = {
 };
 
 export type PartnerCatalogItem = {
+  thumbnailUrl?: string | null;
+  imageUploadFailed?: boolean;
   updatedAt?: string;
   id: string;
   title?: string;
@@ -37,6 +39,9 @@ function mapCatalogItem(raw: unknown): PartnerCatalogItem {
   const row = asRecord(raw);
   return {
     id: String(row.id ?? ""),
+    updatedAt: typeof row.updated_at === "string" ? row.updated_at : typeof row.updatedAt === "string" ? row.updatedAt : undefined,
+    thumbnailUrl: typeof row.thumbnail_url === "string" ? row.thumbnail_url : typeof row.thumbnailUrl === "string" ? row.thumbnailUrl : null,
+    imageUploadFailed: row.imageUploadFailed === true,
     title:
       typeof row.title === "string"
         ? row.title
@@ -63,11 +68,21 @@ function mapCatalogItem(raw: unknown): PartnerCatalogItem {
   };
 }
 
-export async function createPartnerCatalogItem(input: PartnerCatalogInput) {
+function catalogBody(input: unknown, media?: FormData) {
+  if (!media) return input;
+  const form = new FormData();
+  form.set("payload", JSON.stringify(input));
+  const file = media.get("imageFile");
+  if (file instanceof File && file.size > 0) form.set("imageFile", file);
+  if (media.get("removeImage") === "true") form.set("removeImage", "true");
+  return form;
+}
+
+export async function createPartnerCatalogItem(input: PartnerCatalogInput, media?: FormData) {
   await requirePartnerSession();
   const data = await platformFetch<unknown>("/partners/rewards", {
     method: "POST",
-    body: input,
+    body: catalogBody(input, media),
     idempotencyKey: createCorrelationId(),
   });
   return mapCatalogItem(data);
@@ -76,11 +91,12 @@ export async function createPartnerCatalogItem(input: PartnerCatalogInput) {
 export async function updatePartnerCatalogItem(
   id: string,
   input: Partial<PartnerCatalogInput> & { expectedUpdatedAt: string },
+  media?: FormData,
 ) {
   await requirePartnerSession();
   const data = await platformFetch<unknown>(`/partners/rewards/${id}`, {
     method: "PATCH",
-    body: input,
+    body: catalogBody(input, media),
     idempotencyKey: createCorrelationId(),
   });
   return mapCatalogItem(data);
@@ -97,6 +113,7 @@ export async function getPartnerCatalogItem(
   return {
     id: found.id,
     updatedAt: found.updatedAt,
+    thumbnailUrl: found.thumbnailUrl,
     description: found.description, category: found.category, sku: found.sku, stockAvailable: found.stockAvailable ?? undefined,
     title: found.name ?? undefined,
     pointsCost: found.pointsCost ?? undefined,

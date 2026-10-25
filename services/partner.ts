@@ -94,6 +94,7 @@ function mapResource(raw: unknown): PartnerResource {
 function mapReward(raw: unknown): PartnerReward {
   const row = asRecord(raw);
   return {
+    thumbnailUrl: typeof row.thumbnailUrl === "string" ? row.thumbnailUrl : null,
     id: String(row.id ?? ""),
     updatedAt: typeof row.updatedAt === "string" ? row.updatedAt : undefined,
     description: typeof row.description === "string" ? row.description : undefined,

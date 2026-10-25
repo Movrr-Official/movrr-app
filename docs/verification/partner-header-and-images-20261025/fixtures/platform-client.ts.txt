@@ -1,0 +1,7 @@
+import { PlatformApiError } from '@/lib/platform/types';
+export const createCorrelationId=()=>crypto.randomUUID();
+export type PlatformFetchOptions={method?:string;body?:unknown;idempotencyKey?:string;correlationId?:string};
+export async function platformFetch<T>(route:string,options:PlatformFetchOptions={}):Promise<T>{if(options.method&&options.method!=='GET')throw new PlatformApiError({kind:'not_found',status:404,message:'Isolated visual fixture has no inventory'}); if(route==='/me/memberships')return {rider:false,memberships:[{id:'fixture-membership',organisationId:'00000000-0000-4000-8000-000000000002',name:'Visual fixture workspace',domain:'partner',role:'manager',capabilities:[]}]} as T;
+ if(route==='/partners/resources')return [{id:'fixture-pool',name:'Visual fixture with image',status:'active',availableCount:0,thumbnailUrl:'http://127.0.0.1:3317/movrr-icon-mark.png'},{id:'fixture-no-image',name:'Visual fixture without image',status:'inactive',availableCount:0},{id:'fixture-broken',name:'Visual fixture unavailable image',status:'inactive',availableCount:0,thumbnailUrl:'http://127.0.0.1:3317/nonexistent-fixture.png'}] as T;
+ if(route==='/partners/rewards') return [{id:'00000000-0000-4000-8000-000000000003',name:'Visual fixture reward',title:'Visual fixture reward',status:'draft',pointsPrice:100,updatedAt:'2026-10-25T12:00:00.000Z',thumbnailUrl:'http://127.0.0.1:3318/movrr-icon-mark.png'}] as T;
+ if(route==='/partners/analytics')return {series:[]} as T; if(route==='/partners/settings')return {} as T; return [] as T;}

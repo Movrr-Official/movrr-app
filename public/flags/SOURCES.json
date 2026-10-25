@@ -1,0 +1,17 @@
+{
+  "project": "lipis/flag-icons",
+  "commit": "ac7e0eb3259eb62aa6100c435607e2fe03896a97",
+  "license": "MIT",
+  "assets": [
+    {
+      "file": "gb.svg",
+      "source": "https://raw.githubusercontent.com/lipis/flag-icons/ac7e0eb3259eb62aa6100c435607e2fe03896a97/flags/4x3/gb.svg",
+      "sha256": "c8be1e7208798a4ae692ee1e937065d498bb29e741943f6172b29118b8ed8066"
+    },
+    {
+      "file": "nl.svg",
+      "source": "https://raw.githubusercontent.com/lipis/flag-icons/ac7e0eb3259eb62aa6100c435607e2fe03896a97/flags/4x3/nl.svg",
+      "sha256": "8f691f17fe70894537af8e92f2ca47761d353639b0defc15cbe561eb503ab010"
+    }
+  ]
+}

@@ -65,6 +65,7 @@ export const partnerResourceSchema = z.object({
 });
 
 export const partnerRewardSchema = z.object({
+  thumbnailUrl: z.string().nullable().optional(),
   updatedAt: z.string().optional(),
   description: z.string().optional(),
   category: z.string().optional(),

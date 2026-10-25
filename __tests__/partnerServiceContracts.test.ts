@@ -36,3 +36,9 @@ it("preserves the canonical inventory thumbnail and tolerates older API response
   state.fetch.mockResolvedValue([{ id: "pool", name: "Pool", thumbnailUrl: "https://images.example/pool.jpg" }, { id: "legacy" }]);
   expect((await listPartnerResources()).map(row => row.thumbnailUrl)).toEqual(["https://images.example/pool.jpg", null]);
 });
+
+it("preserves the tenant-scoped catalog image for reward banners", async () => {
+  state.fetch.mockResolvedValue([{ id: "reward", title: "Coffee", thumbnailUrl: "https://images.example/coffee.jpg" }]);
+  expect((await listPartnerRewards())[0].thumbnailUrl).toBe("https://images.example/coffee.jpg");
+  expect(state.fetch).toHaveBeenLastCalledWith("/partners/rewards");
+});

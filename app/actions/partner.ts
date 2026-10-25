@@ -9,6 +9,7 @@ import { requirePartnerSession } from "@/lib/appUser";
 import { hasPartnerCapability } from "@/lib/platform/capabilities";
 import { PlatformApiError } from "@/lib/platform/types";
 import {
+  listUserNotifications,
   markSingleNotificationRead,
   markUserNotificationsRead,
   persistNotificationsPreference,
@@ -36,6 +37,7 @@ function lifecycleVersion(form:FormData) {
 
 function mapPlatformError(error: unknown): string {
   if (error instanceof PlatformApiError) {
+    if (["Choose a valid JPEG, PNG or WebP image up to 3 MB.", "Image could not be uploaded. Please try again."].includes(error.message)) return error.message;
     if (error.status === 401 || error.status === 403) return "Your account cannot perform this action. Ask your manager for access.";
     if (error.kind === "AlreadyConfirmed") return "This collection was already confirmed.";
     if (error.kind === "ConcurrencyConflict" || error.status === 409) return "This reward changed. Refresh before trying again.";
@@ -257,6 +259,7 @@ export async function createRewardCatalogAction(formData: FormData) {
   );
 
   let createdId: string;
+  let imageUploadFailed = false;
   try {
     const item = await createPartnerCatalogItem({
       title,
@@ -266,15 +269,16 @@ export async function createRewardCatalogAction(formData: FormData) {
       sku: String(formData.get("sku") ?? "").trim() || undefined,
       category: String(formData.get("category") ?? "").trim() || undefined,
       stockAvailable: formData.get("stockAvailable") ? Number(formData.get("stockAvailable")) : undefined,
-    });
+    }, formData);
     createdId = item.id;
+    imageUploadFailed = item.imageUploadFailed === true;
   } catch (error) {
     await redirectWithStatus("/dashboard/rewards/create", {
       error: mapPlatformError(error),
     });
   }
   revalidatePath("/dashboard/rewards");
-  await redirectWithStatus(`/dashboard/rewards/${createdId!}/edit`, { success: "Reward created." });
+  await redirectWithStatus(`/dashboard/rewards/${createdId!}/edit`, imageUploadFailed ? { error: "Reward saved, but the image could not be uploaded. Please choose the image again." } : { success: "Reward created." });
 }
 
 export async function updateRewardCatalogAction(formData: FormData) {
@@ -319,7 +323,7 @@ export async function updateRewardCatalogAction(formData: FormData) {
       stockAvailable: formData.get("stockAvailable")
         ? Number(formData.get("stockAvailable"))
         : undefined,
-    });
+    }, formData);
   } catch (error) {
     await redirectWithStatus(`/dashboard/rewards/${id}/edit`, {
       error: mapPlatformError(error),
@@ -364,4 +368,10 @@ export async function changePartnerLanguageAction(formData: FormData) {
     httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/dashboard", maxAge: 31536000,
   });
   revalidatePath("/dashboard", "layout");
+}
+
+/** Preview the same account inbox, without updating read state or accepting an identity. */
+export async function getPartnerNotificationPreviewAction() {
+  const session = await requirePartnerSession();
+  return listUserNotifications(session.appUser.id, "partner", 5);
 }

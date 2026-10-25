@@ -36,7 +36,13 @@ it("does not claim validation from a malformed success payload", async () => {
 it("creates explicit Free drafts with zero stock without catching the successful redirect", async () => {
   state.catalog.mockResolvedValue({ id }); const f = new FormData(); f.set("title", "Free coffee"); f.set("pointsCost", "0"); f.set("stockAvailable", "0"); f.set("status", "active");
   await expect(createRewardCatalogAction(f)).rejects.toThrow(`REDIRECT:/dashboard/rewards/${id}/edit?success=`);
-  expect(state.catalog).toHaveBeenCalledWith(expect.objectContaining({ pointsCost: 0, stockAvailable: 0, status: "draft" }));
+  expect(state.catalog).toHaveBeenCalledWith(expect.objectContaining({ pointsCost: 0, stockAvailable: 0, status: "draft" }), f);
+});
+it("opens the saved draft for an image retry instead of sending the merchant back to create another reward", async () => {
+  state.catalog.mockResolvedValue({ id, imageUploadFailed: true });
+  const f = new FormData(); f.set("title", "Reward with image"); f.set("pointsCost", "100");
+  await expect(createRewardCatalogAction(f)).rejects.toThrow(`REDIRECT:/dashboard/rewards/${id}/edit?error=`);
+  expect(state.catalog).toHaveBeenCalledTimes(1);
 });
 it("imports codes without treating a successful redirect as an error", async () => {
   state.resources.mockResolvedValue({ imported: 2 }); const f = new FormData(); f.set("resourceId", id); f.set("codes", "ONE,TWO");

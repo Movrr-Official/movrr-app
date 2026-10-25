@@ -100,7 +100,8 @@ export async function platformFetch<T>(
     if (selected && selected !== "rider") headers["x-organisation-id"] = selected;
   }
 
-  if (body !== undefined) {
+  const multipart = body instanceof FormData;
+  if (body !== undefined && !multipart) {
     headers["Content-Type"] = "application/json";
   }
   if (idempotencyKey) {
@@ -113,7 +114,7 @@ export async function platformFetch<T>(
       method,
       cache: "no-store",
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: multipart ? body : body !== undefined ? JSON.stringify(body) : undefined,
     });
   } catch (error) {
     logger.warn("[PlatformAPI] Network failure", {

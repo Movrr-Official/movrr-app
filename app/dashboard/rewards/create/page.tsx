@@ -1,3 +1,4 @@
+import { RewardImageField } from "@/components/partner/RewardImageField";
 import { getPartnerLocale } from "@/lib/partnerLocaleServer";
 import { partnerText } from "@/lib/partnerLocale";
 import Link from "next/link";
@@ -6,6 +7,7 @@ import { StatusToast } from "@/components/form/StatusToast";
 import { SubmitButton } from "@/components/form/SubmitButton";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Select } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -55,6 +57,7 @@ export default async function PartnerCreateRewardPage({
           </CardHeader>
           <CardContent>
             <form action={createRewardCatalogAction} className="grid gap-4 md:grid-cols-2">
+              <RewardImageField locale={locale} />
               <label className="partner-form-label md:col-span-2">{t("Title")}<Input name="title" placeholder={t("Title")} required className="md:col-span-2" /></label>
               <label className="partner-form-label md:col-span-2">{t("Description")}<Textarea
                 name="description"
@@ -68,10 +71,7 @@ export default async function PartnerCreateRewardPage({
               <label className="partner-form-label md:col-span-2">{t("Status")}<Select name="status" aria-label={t("Status")} defaultValue="draft" options={[{ value: "draft", label: t("Draft") }]} /></label>
               <div className="flex gap-3 md:col-span-2">
                 <SubmitButton type="submit" pendingLabel={t("Creating")}>{t("Create item")}</SubmitButton>
-                <Link
-                  href="/dashboard/rewards"
-                  className="inline-flex h-10 items-center rounded-md border border-input px-4 text-sm"
-                >{t("Cancel")}</Link>
+                <Button asChild variant="outline"><Link href="/dashboard/rewards">{t("Cancel")}</Link></Button>
               </div>
             </form>
           </CardContent>

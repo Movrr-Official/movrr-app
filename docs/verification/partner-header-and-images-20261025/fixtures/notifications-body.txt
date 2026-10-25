@@ -1,0 +1,7 @@
+{
+ const mode=(await cookies()).get("visual-notifications")?.value;
+ if(mode==="error") throw new Error("Isolated failure");
+ if(mode==="slow") await new Promise(r=>setTimeout(r,1500));
+ if(mode==="items"||mode==="slow") return Array.from({length:Math.min(limit,5)},(_,i)=>({id:`fixture-${i}`,title:`Visual fixture notification ${i+1}`,message:"Isolated preview content. No production notification.",type:"partner",category:"account",isRead:i>0,createdAt:"2026-10-25T12:00:00.000Z"}));
+ return [];
+}

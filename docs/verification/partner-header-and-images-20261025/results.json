@@ -1,0 +1,36 @@
+[
+  {
+    "stage": "before",
+    "size": "desktop",
+    "overflow": false
+  },
+  {
+    "stage": "before",
+    "size": "mobile",
+    "overflow": false
+  },
+  {
+    "stage": "after",
+    "size": "desktop",
+    "uploadPreview": true,
+    "remove": true,
+    "invalidType": true,
+    "editExistingImage": true,
+    "languageOutsideEscape": true,
+    "notificationsEmptyViewAll": true,
+    "dutch": true,
+    "axeViolations": []
+  },
+  {
+    "stage": "after",
+    "size": "mobile",
+    "uploadPreview": true,
+    "remove": true,
+    "invalidType": true,
+    "editExistingImage": true,
+    "languageOutsideEscape": true,
+    "notificationsEmptyViewAll": true,
+    "dutch": true,
+    "axeViolations": []
+  }
+]

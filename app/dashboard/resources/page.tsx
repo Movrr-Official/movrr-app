@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { Select } from "@/components/ui/select";
 import { InventoryThumbnail } from "@/components/partner/InventoryThumbnail";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -62,7 +63,7 @@ export default async function PartnerResourcesPage({
             description={t("Your membership role cannot manage fulfilment resources.")}
             iconName="file"
           />
-        ) : listError ? <a href="/dashboard/resources" className="inline-flex min-h-11 items-center text-sm font-semibold underline">{t("Retry")}</a> : !resources.length ? <Card><CardContent><EmptyState title={t("No voucher codes to manage yet.")} description={t("Contact MOVRR to set up the voucher inventory for your rewards.")} iconName="rewards" /><div className="pb-6 text-center"><a href="mailto:support@movrr.nl" className="inline-flex min-h-11 items-center rounded-lg border border-border px-5 text-sm font-semibold">{t("Contact MOVRR")}</a></div></CardContent></Card> : (
+        ) : listError ? <a href="/dashboard/resources" className="inline-flex min-h-11 items-center text-sm font-semibold underline">{t("Retry")}</a> : !resources.length ? <Card><CardContent><EmptyState title={t("No voucher codes to manage yet.")} description={t("Contact MOVRR to set up the voucher inventory for your rewards.")} iconName="rewards" /><div className="pb-6 text-center"><Button asChild variant="outline"><a href="mailto:support@movrr.nl">{t("Contact MOVRR")}</a></Button></div></CardContent></Card> : (
           <>
             <Card className="border-border">
               <CardHeader>

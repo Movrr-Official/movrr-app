@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "./partner.css";
+@import "./partner-mobile.css";
 
 @custom-variant dark (&:is(.dark *));
 

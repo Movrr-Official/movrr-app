@@ -41,7 +41,7 @@ export async function CollectionsTable({
           <Link
             key={item.id}
             href={`/dashboard/collections/${item.id}`}
-            className="flex flex-col gap-2 rounded-xl border border-border/60 bg-background/70 p-4 transition-colors hover:bg-muted/40 sm:flex-row sm:items-center sm:justify-between"
+            className="partner-collection-row flex flex-col gap-2 rounded-xl border border-border/60 bg-background/70 p-4 transition-colors hover:bg-muted/40 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="min-w-0 space-y-1">
               <p className="truncate text-sm font-semibold">{item.rewardTitle ?? t("Reward collection")}</p>

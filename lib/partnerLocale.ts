@@ -1,6 +1,12 @@
 export type PartnerLocale = "en" | "nl";
 
 export const partnerDutch: Record<string, string> = {
+  "Account": "Account",
+  "Your account": "Je account",
+  "Appearance": "Weergave",
+  "Performance": "Prestaties",
+  "View all": "Alles bekijken",
+  "Check the QR. Confirm the handover.": "Controleer de QR. Bevestig de overdracht.",
   "Your reference (optional)": "Je eigen referentie (optioneel)",
   "Your rewards and customer collections.": "Je beloningen en ophaalmomenten voor klanten.",
   "Back": "Terug",

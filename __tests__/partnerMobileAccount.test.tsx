@@ -1,0 +1,20 @@
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { beforeEach, expect, it, vi } from "vitest";
+const mocks = vi.hoisted(() => ({ guard: vi.fn() }));
+vi.mock("@/lib/appUser", () => ({ requirePartnerSession: mocks.guard }));
+vi.mock("@/lib/partnerLocaleServer", () => ({ getPartnerLocale: async () => "nl" }));
+vi.mock("@/components/ThemeToggle", () => ({ ThemeToggle: () => <button>Theme</button> }));
+import Account from "@/app/dashboard/more/page";
+beforeEach(() => vi.clearAllMocks());
+it("guards the mobile Account route and hides management links without capabilities", async () => {
+  mocks.guard.mockRejectedValueOnce(new Error("Partner membership required"));
+  await expect(Account()).rejects.toThrow("Partner membership required");
+  mocks.guard.mockResolvedValue({ appUser: { name: "Partner", email: "isolated@invalid.test" }, partnerContext: { capabilities: [] } });
+  const html = renderToStaticMarkup(await Account());
+  expect(html).toContain("Je account"); expect(html).toContain('/workspaces?lang=nl'); expect(html).toContain('/api/auth/signout');
+  for (const path of ["staff", "resources", "analytics"]) expect(html).not.toContain(`href="/dashboard/${path}"`);
+  mocks.guard.mockResolvedValue({ appUser: { name: "Partner", email: "isolated@invalid.test" }, partnerContext: { capabilities: ["staff.manage", "resources.manage", "analytics.view"] } });
+  const owner = renderToStaticMarkup(await Account());
+  for (const path of ["staff", "resources", "analytics"]) expect(owner).toContain(`href="/dashboard/${path}"`);
+});

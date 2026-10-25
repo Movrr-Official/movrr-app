@@ -4,6 +4,7 @@ import { createContext, useContext } from "react";
 import type { ProductRole } from "@/lib/constants";
 
 export type AppSessionValue = {
+  partnerOrganisationId?: string;
   partnerLocale?: "en" | "nl";
   authUserId: string;
   role: ProductRole;

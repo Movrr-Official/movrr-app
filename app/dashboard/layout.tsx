@@ -3,6 +3,11 @@ import { getPartnerLocale } from "@/lib/partnerLocaleServer";
 import { PageShell } from "@/components/shared/PageShell";
 import { requireProductSession } from "@/lib/appUser";
 
+export async function generateMetadata() {
+  const session = await requireProductSession(["rider", "advertiser", "partner", "government"]);
+  return session.appUser.role === "partner" ? { manifest: "/partner/manifest.webmanifest", appleWebApp: { capable: true, statusBarStyle: "default" as const, title: "MOVRR Partner" } } : {};
+}
+
 export default async function DashboardLayout({
   children,
 }: {
@@ -15,6 +20,7 @@ export default async function DashboardLayout({
     "government",
   ]);
   const shellSession = {
+    partnerOrganisationId: session.partnerContext?.organisationId,
     partnerLocale: session.appUser.role === "partner" ? await getPartnerLocale() : undefined,
     authUserId: session.authUser.id,
     role: session.appUser.role,

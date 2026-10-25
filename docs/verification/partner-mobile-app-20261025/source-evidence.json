@@ -1,0 +1,27 @@
+{
+  "normalization": "UTF-8 text with LF line endings; PNG bytes unchanged",
+  "baseline": "add3f66ed6fd4c7654239fb73ee99eaceef946c8",
+  "desktop": {
+    "home": {
+      "before": "ef2e8d5337d3d58708d0dc9f3fb740782a393ec96834a6ab7424e2e2278f6336",
+      "after": "ef2e8d5337d3d58708d0dc9f3fb740782a393ec96834a6ab7424e2e2278f6336"
+    },
+    "scan": {
+      "before": "e5cb9ddd1638f9d498209ca0007df86bad0d37ea80edfe1a05f098967e388a5f",
+      "after": "e5cb9ddd1638f9d498209ca0007df86bad0d37ea80edfe1a05f098967e388a5f"
+    },
+    "rewards": {
+      "before": "630c766e512dc24aeb5a44e9b6cee627202cd4864a751aa13bc7fe8f0f1bfd6d",
+      "after": "630c766e512dc24aeb5a44e9b6cee627202cd4864a751aa13bc7fe8f0f1bfd6d"
+    }
+  },
+  "rider": {
+    "movrr-mobile/components/ui/Button.tsx": "2fed5fe003ed0ef634e47cfa532f8b6f5c132b91e75158617a9e473dd11a5ec4",
+    "movrr-mobile/components/layout/ScreenHeader.tsx": "b629540e7af1b65826b7f23c2f3835eb60b784436e4f3140eb2cd7208abeb642",
+    "movrr-mobile/styles/fonts.ts": "808650700ab5818a859df0b579c3e2f2d3d05124b3dc291b96a38d1225f14284",
+    "movrr-mobile/styles/spacing.ts": "1edb7e28a3d2fcec3189181cf8b49e10615faaec0f8e929c480d8ae1fd627072",
+    "movrr-mobile/styles/radii.ts": "a85a28e6c297b0d7144db3a14d358a01714ca89e22749b277d06a6c2651fdbb4",
+    "movrr-mobile/styles/colors.ts": "a26058d6ee6ca46fba857f5e0e97505da8494adf419c21cf1b03da8abd62ec62",
+    "movrr-mobile/styles/brandGreen.ts": "28af2cce3e1156175d3a4d9f188161106295909b0c5091b2436c2f92f4b9e226"
+  }
+}

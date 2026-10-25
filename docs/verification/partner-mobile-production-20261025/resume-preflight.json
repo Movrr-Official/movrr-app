@@ -1,0 +1,42 @@
+{
+  "status": "WAITING_FOR_SOURCE_PUBLICATION_APPROVAL",
+  "approvedCandidate": "9f1660c24ad8d03fceef40d3f4a67f0dfa0857e6",
+  "establishedMechanism": "Vercel REST POST /v13/deployments with target production and exact GitHub gitSource ref; READY and production alias verified with read-only API",
+  "existingVercelAccessVerified": true,
+  "newLoginOrCredentialsCreated": false,
+  "configurationChanged": false,
+  "liveBaseline": {
+    "partner": {
+      "id": "dpl_2LvsRMQYFMQHGrzGCjQ2wtLmBY7t",
+      "sha": "b33e34dec03fcc757a7e4423989d49b065abacce"
+    },
+    "admin": {
+      "id": "dpl_n2M4CuqU8hCcv4Na3nKZJQJiDqCJ",
+      "sha": "19790c43a92b9ba11996a8e23bd8cb091397855c"
+    }
+  },
+  "shop": {
+    "state": "disabled",
+    "version": "0",
+    "redemption_enabled": false
+  },
+  "migration": {
+    "version": "20261025150000",
+    "name": "085_canonical_debit_refund_compatibility",
+    "checksum": "c45e511cc771382b34dec6d3306343e17a9e66a22f33c415299ccb961896fb24"
+  },
+  "financialHealth": {
+    "wallet_mismatches": 0,
+    "unpaired_paid_claims": 0,
+    "pending_delivery": 0,
+    "delivery_failures": 0
+  },
+  "githubApprovedCommitAvailable": false,
+  "remoteMainObserved": "add3f66ed6fd4c7654239fb73ee99eaceef946c8",
+  "sourcePublicationAttemptExecuted": false,
+  "deploymentCreated": false,
+  "blocker": "Automatic approval review rejected a shared main branch push without explicit source-publication authorization",
+  "requestedOwnerAction": "Approve the exact fast-forward add3f66 to 9f1660c, or publish that same commit to the linked GitHub repository. Deployment authorization remains valid.",
+  "historicalCheckpoint": true,
+  "supersededBy": "deployment.json"
+}

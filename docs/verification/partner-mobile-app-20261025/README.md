@@ -1,5 +1,8 @@
 # Dedicated MOVRR Partner mobile PWA — 25 October 2026
 
+**Now deployed and verified:** see the [production closure](../partner-mobile-production-20261025/README.md).
+The implementation and initial readiness evidence below are retained as history.
+
 Implemented in `movrr-app`. No Rider Mobile or Admin source changes, deployment,
 production mutation, account creation, inventory creation or dependency changes.
 Baseline: `add3f66ed6fd4c7654239fb73ee99eaceef946c8`.

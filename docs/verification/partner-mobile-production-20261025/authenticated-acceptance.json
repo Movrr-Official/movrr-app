@@ -1,0 +1,83 @@
+{
+  "production": true,
+  "origin": "https://app.movrr.nl",
+  "sha": "9f1660c24ad8d03fceef40d3f4a67f0dfa0857e6",
+  "method": "Existing signed-in Chrome profile through native UI Automation and visual inspection; no session credentials copied",
+  "physicalDevice": false,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "browserEmulation": true
+  },
+  "desktop": {
+    "originalShellAndAppearancePreserved": true,
+    "routesObserved": [
+      "/dashboard",
+      "/dashboard/validate",
+      "/dashboard/rewards",
+      "/dashboard/resources",
+      "/dashboard/staff",
+      "/dashboard/settings",
+      "/dashboard/analytics",
+      "/dashboard/collections",
+      "/dashboard/collections?view=history"
+    ],
+    "phoneHandoff": {
+      "visible": true,
+      "canonicalUrl": "https://app.movrr.nl/dashboard/validate",
+      "noDesktopCameraOffered": true
+    }
+  },
+  "mobile": {
+    "dedicatedShell": true,
+    "desktopSidebarAbsent": true,
+    "tabs": [
+      "Home",
+      "Activity",
+      "Scan",
+      "Rewards",
+      "Account"
+    ],
+    "allDestinationsObserved": true,
+    "englishAndDutch": true,
+    "lightAndDarkObserved": true,
+    "cameraFirstPresentation": true,
+    "cameraPermissionRequested": false,
+    "voucherEntered": false,
+    "voucherValidated": false,
+    "handoverSubmitted": false,
+    "backBetweenDestinations": true,
+    "backDismissesLanguageOverlayWithoutLeavingScan": true,
+    "notificationPreviewAndDeepLink": true,
+    "notificationBackReturnsHome": true
+  },
+  "session": {
+    "existingIdentityRetained": true,
+    "onlyExistingAuthorizedWorkspaceOffered": true,
+    "workspaceChooserAndReentryPassed": true,
+    "dutchRetainedAcrossWorkspaceSelection": true,
+    "accountCreated": false,
+    "membershipChanged": false
+  },
+  "tenantIsolation": {
+    "existingForeignOrganisationRecordVerifiedByReadOnlyQuery": true,
+    "foreignRewardEditorReturned": "Page not found",
+    "foreignDetailsExposed": false
+  },
+  "restoration": {
+    "originalLanguage": "en",
+    "languageRestored": true,
+    "originalTheme": "dark",
+    "themeRestored": true,
+    "originalRoute": "/dashboard/validate",
+    "routeRestored": true,
+    "desktopViewportRestored": true,
+    "temporaryDevtoolsClosed": true
+  },
+  "operationalLimits": [
+    "No physical iOS/Android installation or camera acceptance claimed",
+    "No production redemption or financial command submitted",
+    "No notification preference/read-state command submitted"
+  ],
+  "rawEvidence": "Private task-specific ignored storage; not published with identities or unrelated browser tabs"
+}

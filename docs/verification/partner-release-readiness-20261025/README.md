@@ -1,5 +1,9 @@
 # Final Partner Mobile PWA release readiness — 25 October 2026
 
+The separately authorized controlled deployment is now complete:
+[DEPLOYED & VERIFIED production closure](../partner-mobile-production-20261025/README.md).
+The pre-deployment assessment below is retained as history.
+
 Deployment candidate: **`9f1660c24ad8d03fceef40d3f4a67f0dfa0857e6`**.
 No application correction was required; the exact mobile implementation is retained.
 This follow-up changes release documentation and evidence only.

@@ -1,0 +1,111 @@
+{
+  "status": "STOPPED",
+  "reason": "Vercel preflight rejected the existing CLI credential: forbidden / Not authorized / invalidToken=true",
+  "approvedCandidate": "9f1660c24ad8d03fceef40d3f4a67f0dfa0857e6",
+  "documentationRevision": "ab5dcdeff02594ab31cb7df152d06d24ac455617",
+  "target": "https://app.movrr.nl",
+  "newDeploymentCreated": false,
+  "sourcePushed": false,
+  "remoteMainObserved": "add3f66ed6fd4c7654239fb73ee99eaceef946c8",
+  "recordedBaseline": {
+    "sha": "b33e34dec03fcc757a7e4423989d49b065abacce",
+    "deploymentId": "dpl_2LvsRMQYFMQHGrzGCjQ2wtLmBY7t",
+    "liveVercelVerificationCompleted": false
+  },
+  "readOnlyProductionPreflight": {
+    "at": "2026-10-25T21:44:44.071Z",
+    "productionProject": "kzdvunpuxaxlphqvmzxw",
+    "shop": {
+      "state": "disabled",
+      "version": "0",
+      "redemption_enabled": false
+    },
+    "migration": {
+      "version": "20261025150000",
+      "name": "085_canonical_debit_refund_compatibility",
+      "checksum": "c45e511cc771382b34dec6d3306343e17a9e66a22f33c415299ccb961896fb24"
+    },
+    "health": {
+      "wallet_mismatches": 0,
+      "unpaired_paid_claims": 0,
+      "pending_delivery": 0,
+      "delivery_failures": 0
+    },
+    "fingerprints": {
+      "fulfilment": {
+        "records": 0,
+        "digest": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "fulfilment_event": {
+        "records": 0,
+        "digest": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "fulfilment_resource": {
+        "records": 38,
+        "digest": "df2608f89d7b837dc5ec955f37c6b843"
+      },
+      "fulfilment_resource_allocation": {
+        "records": 0,
+        "digest": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "fulfilment_resource_item": {
+        "records": 25,
+        "digest": "823d32b14d24e77c6706b3a22b366fa1"
+      },
+      "fulfilment_token": {
+        "records": 0,
+        "digest": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "reward_catalog": {
+        "records": 38,
+        "digest": "c3f14591ec90686435cd6233dd930d1b"
+      },
+      "reward_catalog_location": {
+        "records": 0,
+        "digest": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "reward_catalog_sync_log": {
+        "records": 0,
+        "digest": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "reward_partner": {
+        "records": 10,
+        "digest": "695b6e8e52229ff1e97f862ecc3df126"
+      },
+      "reward_partner_location": {
+        "records": 0,
+        "digest": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "reward_redemptions": {
+        "records": 1,
+        "digest": "591e56594056cd865ffb5e50d114658e"
+      },
+      "reward_transactions": {
+        "records": 33,
+        "digest": "e875a009260b43a222a997a7ea14048d"
+      },
+      "rider_reward_balance": {
+        "records": 11,
+        "digest": "d9372a154e77ff32a436b09e7ddc811a"
+      }
+    },
+    "functionsHash": "ecfd412ad71593398a3c47f370c95e366b31177ee574d3289bfecf6db5dd195a",
+    "policiesRlsGrantsHash": "e49af71736b2f7f659ad7f90523bffdba2b0c72f71ea68fb89145275ef0f2940",
+    "journalHash": "92866a69bbb8326b591ce649c2546657acd6a447633fda6e1d771c44a2803614"
+  },
+  "productionAcceptanceCompleted": false,
+  "adminDeploymentVerificationCompleted": false,
+  "mutations": {
+    "financial": false,
+    "merchant": false,
+    "inventory": false,
+    "permissions": false,
+    "migrations": false,
+    "admin": false,
+    "rider": false
+  },
+  "physicalDeviceAcceptance": false,
+  "nextStep": "Restore Vercel CLI authentication, then resume with fresh deployment and integrity preflight. No new deployment permission is required.",
+  "historicalCheckpoint": true,
+  "supersededBy": "deployment.json"
+}

@@ -1,0 +1,38 @@
+{
+  "at": "2026-10-25T22:14:39.948Z",
+  "projects": {
+    "partner": {
+      "id": "prj_I89dOyt1njax9XYP3aZBHNtprqwF",
+      "deploymentId": "dpl_B7zLyuPVEtABToomS2Ygb6tJ2xLX",
+      "sha": "9f1660c24ad8d03fceef40d3f4a67f0dfa0857e6",
+      "alias": "app.movrr.nl",
+      "existingSettingsPreserved": true,
+      "bindings": {
+        "NEXT_PUBLIC_SUPABASE_URL": "https://kzdvunpuxaxlphqvmzxw.supabase.co",
+        "PLATFORM_API_URL": "https://admin.movrr.nl/api",
+        "NEXT_PUBLIC_APP_URL": "https://app.movrr.nl",
+        "APP_URL": "https://app.movrr.nl",
+        "NEXT_PUBLIC_USE_MOCK_DATA": "false"
+      }
+    },
+    "admin": {
+      "id": "prj_VdWMMAnBPo7u5G9RPmlA6t9hMgCT",
+      "deploymentId": "dpl_n2M4CuqU8hCcv4Na3nKZJQJiDqCJ",
+      "sha": "19790c43a92b9ba11996a8e23bd8cb091397855c",
+      "alias": "admin.movrr.nl",
+      "existingSettingsPreserved": true,
+      "bindings": {
+        "NEXT_PUBLIC_SUPABASE_URL": "https://kzdvunpuxaxlphqvmzxw.supabase.co",
+        "NEXT_PUBLIC_APP_URL": "https://admin.movrr.nl",
+        "APP_URL": "https://admin.movrr.nl",
+        "NEXT_PUBLIC_USE_MOCK_DATA": "false"
+      }
+    }
+  },
+  "rollback": {
+    "id": "dpl_2LvsRMQYFMQHGrzGCjQ2wtLmBY7t",
+    "sha": "b33e34dec03fcc757a7e4423989d49b065abacce",
+    "state": "READY",
+    "url": "https://movrr-3yghievct-movrrops-projects.vercel.app"
+  }
+}

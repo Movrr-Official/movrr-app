@@ -1,0 +1,59 @@
+{
+  "at": "2026-10-25T22:07:16.239Z",
+  "origin": "https://app.movrr.nl",
+  "mobileViewport": {
+    "width": 390,
+    "height": 844
+  },
+  "physicalDevice": false,
+  "session": "isolated anonymous; no identity copied",
+  "serviceWorkerControlled": true,
+  "cache": [
+    {
+      "name": "movrr-partner-offline-v3",
+      "urls": [
+        "https://app.movrr.nl/offline.html",
+        "https://app.movrr.nl/fonts/jakarta-400.ttf",
+        "https://app.movrr.nl/fonts/lexend-700.ttf"
+      ]
+    }
+  ],
+  "offlineNavigationFallback": true,
+  "offlineForms": 0,
+  "noPrivateCache": true,
+  "offlineDutch": true,
+  "retryDiscardsQuery": true,
+  "reconnectToProtectedSignIn": true,
+  "manifest": {
+    "id": "/",
+    "name": "MOVRR Partner",
+    "short_name": "MOVRR Partner",
+    "description": "Scan rewards and manage your MOVRR partner workspace.",
+    "start_url": "/dashboard",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#f5f5f3",
+    "theme_color": "#123c2c",
+    "icons": [
+      {
+        "src": "/pwa/icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "/pwa/icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "/pwa/icon-maskable-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "maskable"
+      }
+    ]
+  },
+  "errors": []
+}

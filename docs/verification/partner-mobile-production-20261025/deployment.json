@@ -1,0 +1,48 @@
+{
+  "status": "DEPLOYED & VERIFIED",
+  "sha": "9f1660c24ad8d03fceef40d3f4a67f0dfa0857e6",
+  "id": "dpl_B7zLyuPVEtABToomS2Ygb6tJ2xLX",
+  "state": "READY",
+  "target": "production",
+  "domain": "https://app.movrr.nl",
+  "domainVerified": true,
+  "immutableUrl": "https://movrr-ocfjv8ysr-movrrops-projects.vercel.app",
+  "regions": [
+    "fra1"
+  ],
+  "createdAt": 1792965933015,
+  "readyAt": 1792965994534,
+  "mechanism": "Existing Vercel REST API: POST /v13/deployments with target production and exact GitHub gitSource SHA; READY and /v4/aliases/app.movrr.nl verified",
+  "existingManagedSessionUsed": true,
+  "newCredentialsCreated": false,
+  "permissionsChanged": false,
+  "configurationChanged": false,
+  "sourcePublication": {
+    "from": "add3f66ed6fd4c7654239fb73ee99eaceef946c8",
+    "to": "9f1660c24ad8d03fceef40d3f4a67f0dfa0857e6",
+    "fastForward": true,
+    "explicitOwnerApproval": true,
+    "gitAutoDeploymentUnchanged": true
+  },
+  "rollback": {
+    "id": "dpl_2LvsRMQYFMQHGrzGCjQ2wtLmBY7t",
+    "sha": "b33e34dec03fcc757a7e4423989d49b065abacce",
+    "state": "READY",
+    "url": "https://movrr-3yghievct-movrrops-projects.vercel.app"
+  },
+  "admin": {
+    "id": "prj_VdWMMAnBPo7u5G9RPmlA6t9hMgCT",
+    "deploymentId": "dpl_n2M4CuqU8hCcv4Na3nKZJQJiDqCJ",
+    "sha": "19790c43a92b9ba11996a8e23bd8cb091397855c",
+    "alias": "admin.movrr.nl",
+    "existingSettingsPreserved": true,
+    "bindings": {
+      "NEXT_PUBLIC_SUPABASE_URL": "https://kzdvunpuxaxlphqvmzxw.supabase.co",
+      "NEXT_PUBLIC_APP_URL": "https://admin.movrr.nl",
+      "APP_URL": "https://admin.movrr.nl",
+      "NEXT_PUBLIC_USE_MOCK_DATA": "false"
+    }
+  },
+  "migrationsApplied": false,
+  "financialMutations": false
+}

@@ -44,3 +44,9 @@ Await approval of the exact resulting Admin and Partner commits. Deploy Admin fi
 Rollback on authorization/tenant leakage, catalog version protection regression, upload/save failures outside the documented recoverable image failure, broken authentication or material UI failure. Restore Partner to `9c2db98` before Admin to `6c825a5`; do not erase media/catalog records written by legitimate use, revert financial data or change roles. Existing clients still use JSON commands and remain compatible.
 
 Notification preview follows [PatternFly notification guidelines](https://www.patternfly.org/components/notification-drawer/design-guidelines/). Keyboard dismissal follows [WAI-ARIA disclosure guidance](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/). Flag source/license/provenance is preserved in `public/flags/` from [flag-icons](https://github.com/lipis/flag-icons).
+
+## Live acceptance correction
+
+The authorized runtime candidate bc16e2c was deployed. Native Chrome acceptance found that its deeper primary green also affected the dark workspace picker's account caption and Current workspace label. The narrowly scoped `.dark .workspace-picker .text-primary` correction restores the existing light MOVRR accent for these labels; white CTA text/background and Admin component/sizing remain unchanged. No authentication, business command or data change.
+
+Production build passes. Additional actual-route browser checks at desktop 1440 and mobile 390 px in both themes report zero WCAG A/AA violations and no horizontal overflow; see workspace-contrast.json, verify-workspaces.mjs and workspaces-dark captures. This CSS follow-up requires approval of its own commit before deployment because authorization pinned bc16e2c.

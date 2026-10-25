@@ -1,0 +1,26 @@
+[
+  {
+    "theme": "light",
+    "width": 1440,
+    "axeViolations": [],
+    "overflow": false
+  },
+  {
+    "theme": "light",
+    "width": 390,
+    "axeViolations": [],
+    "overflow": false
+  },
+  {
+    "theme": "dark",
+    "width": 1440,
+    "axeViolations": [],
+    "overflow": false
+  },
+  {
+    "theme": "dark",
+    "width": 390,
+    "axeViolations": [],
+    "overflow": false
+  }
+]

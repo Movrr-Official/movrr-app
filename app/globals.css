@@ -449,3 +449,6 @@
   --primary:color-mix(in oklab,var(--movrr-green-text) 50%,var(--movrr-green));
   --primary-foreground:var(--movrr-white);
 }
+
+/* Preserve readable accent labels independently of the white-label CTA green. */
+.dark .workspace-picker .text-primary { color:var(--movrr-accent); }

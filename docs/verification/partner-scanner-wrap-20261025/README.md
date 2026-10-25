@@ -1,5 +1,7 @@
 # Scanner instruction containment — 25 October 2026
 
+Production update: the owner-authorised correction is [deployed and verified](../partner-scanner-production-20261025/README.md). The source verification record below is retained as release history.
+
 The owner reported Dutch instruction text extending beyond the inner scan frame on the deployed Phase 4 candidate. The idle guidance now participates in the frame's layout with padded, wrapping text. A grid spacer preserves a square at normal size while allowing the frame to grow when enlarged text needs additional height. The live camera overlay and validation/fulfilment commands are unchanged.
 
 **Verified source correction; not deployed by this record.** Production remains on `48d32c361c6da7c8cd5a27d6bd02b1230ebce639` until separately authorised.

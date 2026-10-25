@@ -1,5 +1,7 @@
 # Partner Phase 4 production execution — 25 October 2026
 
+Follow-up closure: the owner-authorised [Dutch scanner correction](../partner-scanner-production-20261025/README.md) is now deployed and verified. The initial release record below is retained as deployment history.
+
 **Approved candidate DEPLOYED & VERIFIED. Phase 4 software milestone CLOSED.** A newly reported Dutch scanner instruction overflow is tracked as a separate presentation correction below; it is not represented as already deployed.
 
 - Source: `48d32c361c6da7c8cd5a27d6bd02b1230ebce639`.

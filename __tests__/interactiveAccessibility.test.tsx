@@ -17,6 +17,16 @@ afterEach(async () => {
   await act(async () => root.unmount());
   host.remove();
 });
+it("submits exactly one selected value and respects required and disabled fields", async () => {
+  const options = [{ value: "draft", label: "Draft" }, { value: "active", label: "Active" }];
+  await act(async () => root.render(<form key="empty"><Select name="status" required options={options} /></form>));
+  expect(host.querySelector("form")!.checkValidity()).toBe(false);
+  await act(async () => root.render(<form key="selected"><Select name="status" required value="active" options={options} /></form>));
+  expect(host.querySelector("form")!.checkValidity()).toBe(true);
+  expect(new FormData(host.querySelector("form")!).getAll("status")).toEqual(["active"]);
+  await act(async () => root.render(<form key="disabled"><Select name="status" disabled value="active" options={options} /></form>));
+  expect(new FormData(host.querySelector("form")!).has("status")).toBe(false);
+});
 it("focuses visible validation feedback and keeps it out of the regular tab order", async () => {
   await act(async () => root.render(<StatusToast error="Check your profile" />));
   const alert = host.querySelector('[role="alert"]');

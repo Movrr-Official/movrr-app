@@ -56,6 +56,7 @@ export const partnerPendingFulfilmentSchema = z.object({
 });
 
 export const partnerResourceSchema = z.object({
+  thumbnailUrl: z.string().nullable().optional(),
   id: z.string(),
   name: z.string().optional().nullable(),
   poolCount: z.number().optional().nullable(),

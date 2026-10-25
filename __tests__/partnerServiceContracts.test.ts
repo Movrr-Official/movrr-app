@@ -2,7 +2,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 const state = vi.hoisted(() => ({ fetch: vi.fn() }));
 vi.mock("@/lib/appUser", () => ({ requirePartnerSession: async () => ({ partnerContext: { capabilities: ["fulfilment.read", "analytics.view"], organisationId: "tenant" } }) }));
 vi.mock("@/lib/platform/client", () => ({ platformFetch: state.fetch, createCorrelationId: () => "correlation" }));
-import { getPartnerPendingFulfilment, listPartnerFulfilmentHistory, getPartnerDashboard, listPartnerRewards, getPartnerAnalytics, validatePartnerToken, invitePartnerStaff } from "@/services/partner";
+import { getPartnerPendingFulfilment, listPartnerFulfilmentHistory, getPartnerDashboard, listPartnerResources, listPartnerRewards, getPartnerAnalytics, validatePartnerToken, invitePartnerStaff } from "@/services/partner";
 import { getPartnerCatalogItem, updatePartnerCatalogItem } from "@/lib/platform/partnerCatalogPlatform";
 beforeEach(() => vi.clearAllMocks());
 it("maps canonical title, Free price, stock and version into the editor", async () => {
@@ -30,4 +30,9 @@ it("reopens a completed collection through the canonical tenant-scoped history r
   state.fetch.mockImplementation(async path => path.endsWith("/history") ? [{id:"closed",state:"completed",rewardTitle:"Isolated reward",version:3}] : []);
   expect(await getPartnerPendingFulfilment("closed")).toMatchObject({id:"closed",state:"completed",version:3});
   expect(await listPartnerFulfilmentHistory()).toHaveLength(1);expect(state.fetch).toHaveBeenCalledWith("/partners/fulfilments/history");
+});
+
+it("preserves the canonical inventory thumbnail and tolerates older API responses", async () => {
+  state.fetch.mockResolvedValue([{ id: "pool", name: "Pool", thumbnailUrl: "https://images.example/pool.jpg" }, { id: "legacy" }]);
+  expect((await listPartnerResources()).map(row => row.thumbnailUrl)).toEqual(["https://images.example/pool.jpg", null]);
 });

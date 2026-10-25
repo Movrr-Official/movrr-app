@@ -1,6 +1,22 @@
 export type PartnerLocale = "en" | "nl";
 
 export const partnerDutch: Record<string, string> = {
+  "Choose your workspace": "Kies je werkruimte",
+  "Your MOVRR account": "Je MOVRR-account",
+  "Welcome to MOVRR": "Welkom bij MOVRR",
+  "Choose where you want to work. Each workspace keeps its own tools and access.": "Kies waar je wilt werken. Elke werkruimte heeft eigen functies en toegangsrechten.",
+  "Your account is ready. If you received an invitation, follow its link to join your organisation.": "Je account is klaar. Heb je een uitnodiging ontvangen? Open de link om je bij je organisatie aan te sluiten.",
+  "Rider": "Fietser",
+  "Personal workspace": "Persoonlijke werkruimte",
+  "Advertiser workspace": "Adverteerderswerkruimte",
+  "Government workspace": "Overheidswerkruimte",
+  "Opening workspace?": "Werkruimte openen?",
+  "Open workspace": "Werkruimte openen",
+  "Current workspace": "Huidige werkruimte",
+  "Your access will appear here": "Je toegang verschijnt hier",
+  "Contact your organisation if you need an invitation or help with access.": "Neem contact op met je organisatie voor een uitnodiging of hulp bij toegang.",
+  "Your workspace. Your next move.": "Jouw werkruimte. Jouw volgende stap.",
+  "Sign out": "Uitloggen",
   "Overview": "Overzicht",
   "Dashboard": "Overzicht",
   "Collections": "Ophalen",

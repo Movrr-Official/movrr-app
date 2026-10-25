@@ -1,4 +1,5 @@
 "use client";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { cancelCollectionAction, confirmCollectionAction } from "@/app/actions/partner";
 import { SubmitButton } from "@/components/form/SubmitButton";
@@ -34,7 +35,7 @@ export function CollectionDetail({ item, canConfirm, canCancel = false, operatio
       {!validated && !terminal && canConfirm && <Link href="/dashboard/validate" className="inline-block rounded-lg border border-input px-4 py-3 text-sm">{nl ? "QR-code scannen" : "Scan QR code"}</Link>}
       {canCancel && item.version != null && !terminal && <form action={cancelCollectionAction} className="space-y-3 border-t border-border pt-5" onSubmit={event => { if (!window.confirm(nl ? "Deze beloning annuleren? De fietser ontvangt je reden." : "Cancel this reward? The rider will receive your reason.")) event.preventDefault(); }}>
         <input type="hidden" name="fulfilmentId" value={item.id} /><input type="hidden" name="expectedVersion" value={item.version} /><input type="hidden" name="operationId" value={operationId + ":cancel"} />
-        <label className="block text-sm">{nl ? "Reden voor de fietser" : "Cancellation reason for the rider"}<input name="reason" required maxLength={1000} className="mt-2 w-full rounded-md border border-input bg-background p-3" /></label>
+        <label className="block text-sm">{nl ? "Reden voor de fietser" : "Cancellation reason for the rider"}<Input name="reason" required maxLength={1000} className="mt-2" /></label>
         <SubmitButton disabled={!online} variant="outline" pendingLabel={nl ? "Annuleren..." : "Cancelling..."}>{nl ? "Beloning annuleren" : "Cancel reward"}</SubmitButton>
       </form>}
     </CardContent>

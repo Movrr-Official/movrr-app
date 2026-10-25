@@ -5,6 +5,7 @@ import { createRewardCatalogAction } from "@/app/actions/partner";
 import { StatusToast } from "@/components/form/StatusToast";
 import { SubmitButton } from "@/components/form/SubmitButton";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { Select } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -64,13 +65,7 @@ export default async function PartnerCreateRewardPage({
               <label className="partner-form-label ">{t("Stock available")}<Input name="stockAvailable" type="number" placeholder={t("Stock available")} min={0} /></label>
               <label className="partner-form-label ">{t("Internal reference")}<Input name="sku" placeholder={t("Internal reference")} /></label>
               <label className="partner-form-label ">{t("Category")}<Input name="category" placeholder={t("Category")} /></label>
-              <label className="partner-form-label md:col-span-2">{t("Status")}<select
-                name="status"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm md:col-span-2"
-                defaultValue="draft"
-              >
-                <option value="draft">{t("Draft")}</option>
-              </select></label>
+              <label className="partner-form-label md:col-span-2">{t("Status")}<Select name="status" aria-label={t("Status")} defaultValue="draft" options={[{ value: "draft", label: t("Draft") }]} /></label>
               <div className="flex gap-3 md:col-span-2">
                 <SubmitButton type="submit" pendingLabel={t("Creating")}>{t("Create item")}</SubmitButton>
                 <Link

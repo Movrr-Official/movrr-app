@@ -5,6 +5,8 @@ import { SubmitButton } from "@/components/form/SubmitButton";
 import { StatusToast } from "@/components/form/StatusToast";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { Select } from "@/components/ui/select";
+import { InventoryThumbnail } from "@/components/partner/InventoryThumbnail";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -74,8 +76,9 @@ export default async function PartnerResourcesPage({
                       key={resource.id}
                       className="flex flex-col gap-2 rounded-xl border border-border/60 p-4 sm:flex-row sm:items-center sm:justify-between"
                     >
-                      <div>
-                        <p className="text-sm font-semibold">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <InventoryThumbnail src={resource.thumbnailUrl} />
+                        <p className="min-w-0 break-words text-sm font-semibold">
                           {resource.name ?? t("Voucher pool")}
                         </p>
                       </div>
@@ -104,10 +107,7 @@ export default async function PartnerResourcesPage({
                   action={importResourceCodesAction}
                   className="grid gap-4 md:grid-cols-2"
                 >
-                  <label className="space-y-2 text-sm">{t("Voucher pool")}<select name="resourceId" required aria-label={t("Voucher pool")} className="block h-12 w-full rounded-md border border-input bg-background px-3" defaultValue="">
-                      <option value="" disabled>{t("Select a voucher pool")}</option>
-                      {resources.map(resource => <option key={resource.id} value={resource.id}>{resource.name ?? t("Voucher pool")}</option>)}
-                    </select>
+                  <label className="space-y-2 text-sm">{t("Voucher pool")}<Select name="resourceId" required aria-label={t("Voucher pool")} placeholder={t("Select a voucher pool")} options={resources.map(resource => ({ value: resource.id, label: resource.name ?? t("Voucher pool") }))} />
                   </label>
                   <div className="md:col-span-2">
                     <Textarea

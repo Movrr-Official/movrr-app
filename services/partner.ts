@@ -72,6 +72,7 @@ function mapPendingItem(raw: unknown): PartnerPendingFulfilment {
 function mapResource(raw: unknown): PartnerResource {
   const row = asRecord(raw);
   return {
+    thumbnailUrl: typeof row.thumbnailUrl === "string" ? row.thumbnailUrl : null,
     id: String(row.id ?? ""),
     name: typeof row.name === "string" ? row.name : null,
     poolCount:

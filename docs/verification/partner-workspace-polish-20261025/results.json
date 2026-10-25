@@ -1,0 +1,615 @@
+{
+  "production": false,
+  "physicalDevice": false,
+  "boundaries": "Actual routes, components and form actions; isolated account, inventory and membership read fixtures. All business commands rejected. Fixture images are layout samples, not merchant supply.",
+  "fontSha256": "e310b55a7fd9677f5e3555e6c6c4d064fa1f1d24393f0ddbe217cea12a8c432f",
+  "results": [
+    {
+      "stage": "before",
+      "slug": "collections",
+      "size": "desktop",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 1000,
+        "viewport": 1000,
+        "footer": {
+          "visible": true,
+          "top": 597.90625,
+          "bottom": 636.90625
+        },
+        "fields": []
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "before",
+      "slug": "fields",
+      "size": "desktop",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 1000,
+        "viewport": 1000,
+        "footer": {
+          "visible": true,
+          "top": 898.09375,
+          "bottom": 937.09375
+        },
+        "fields": [
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "oklch(1 0 0)"
+          },
+          {
+            "slot": "textarea",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "oklch(1 0 0)"
+          },
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "oklch(1 0 0)"
+          },
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "oklch(1 0 0)"
+          },
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "oklch(1 0 0)"
+          },
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "oklch(1 0 0)"
+          }
+        ]
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "before",
+      "slug": "inventory",
+      "size": "desktop",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 1000,
+        "viewport": 1000,
+        "footer": {
+          "visible": true,
+          "top": 932.234375,
+          "bottom": 971.234375
+        },
+        "fields": [
+          {
+            "slot": "textarea",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "oklch(1 0 0)"
+          }
+        ]
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "before",
+      "slug": "workspaces",
+      "size": "desktop",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 1000,
+        "viewport": 1000,
+        "footer": {
+          "visible": null
+        },
+        "fields": []
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "before",
+      "slug": "collections",
+      "size": "mobile",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 844,
+        "viewport": 844,
+        "footer": {
+          "visible": false,
+          "top": 0,
+          "bottom": 0
+        },
+        "fields": []
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "before",
+      "slug": "fields",
+      "size": "mobile",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 1158,
+        "viewport": 844,
+        "footer": {
+          "visible": false,
+          "top": 0,
+          "bottom": 0
+        },
+        "fields": [
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "oklch(1 0 0)"
+          },
+          {
+            "slot": "textarea",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "oklch(1 0 0)"
+          },
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "oklch(1 0 0)"
+          },
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "oklch(1 0 0)"
+          },
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "oklch(1 0 0)"
+          },
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "oklch(1 0 0)"
+          }
+        ]
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "before",
+      "slug": "inventory",
+      "size": "mobile",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 1078,
+        "viewport": 844,
+        "footer": {
+          "visible": false,
+          "top": 0,
+          "bottom": 0
+        },
+        "fields": [
+          {
+            "slot": "textarea",
+            "height": 66,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "oklch(1 0 0)"
+          }
+        ]
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "before",
+      "slug": "workspaces",
+      "size": "mobile",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 844,
+        "viewport": 844,
+        "footer": {
+          "visible": null
+        },
+        "fields": []
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "after",
+      "slug": "collections",
+      "size": "desktop",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 1000,
+        "viewport": 1000,
+        "footer": {
+          "visible": true,
+          "top": 961,
+          "bottom": 1000
+        },
+        "fields": []
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "after",
+      "slug": "fields",
+      "size": "desktop",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 1000,
+        "viewport": 1000,
+        "footer": {
+          "visible": true,
+          "top": 961,
+          "bottom": 1000
+        },
+        "fields": [
+          {
+            "slot": "input",
+            "height": 36,
+            "radius": "10px",
+            "font": "14px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "slot": "textarea",
+            "height": 64,
+            "radius": "10px",
+            "font": "14px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "slot": "input",
+            "height": 36,
+            "radius": "10px",
+            "font": "14px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "slot": "input",
+            "height": 36,
+            "radius": "10px",
+            "font": "14px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "slot": "input",
+            "height": 36,
+            "radius": "10px",
+            "font": "14px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "slot": "input",
+            "height": 36,
+            "radius": "10px",
+            "font": "14px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "slot": "select-trigger",
+            "height": 36,
+            "radius": "10px",
+            "font": "14px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          }
+        ]
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "after",
+      "slug": "inventory",
+      "size": "desktop",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 1059,
+        "viewport": 1000,
+        "footer": {
+          "visible": true,
+          "top": 1019.984375,
+          "bottom": 1058.984375
+        },
+        "fields": [
+          {
+            "slot": "select-trigger",
+            "height": 36,
+            "radius": "10px",
+            "font": "14px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "slot": "textarea",
+            "height": 64,
+            "radius": "10px",
+            "font": "14px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          }
+        ]
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "after",
+      "slug": "workspaces",
+      "size": "desktop",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 1000,
+        "viewport": 1000,
+        "footer": {
+          "visible": true,
+          "top": 959.5,
+          "bottom": 1000
+        },
+        "fields": []
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "after",
+      "slug": "collections",
+      "size": "mobile",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 844,
+        "viewport": 844,
+        "footer": {
+          "visible": false,
+          "top": 0,
+          "bottom": 0
+        },
+        "fields": []
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "after",
+      "slug": "fields",
+      "size": "mobile",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 1166,
+        "viewport": 844,
+        "footer": {
+          "visible": false,
+          "top": 0,
+          "bottom": 0
+        },
+        "fields": [
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "slot": "textarea",
+            "height": 64,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "slot": "input",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "slot": "select-trigger",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          }
+        ]
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "after",
+      "slug": "inventory",
+      "size": "mobile",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 1162,
+        "viewport": 844,
+        "footer": {
+          "visible": false,
+          "top": 0,
+          "bottom": 0
+        },
+        "fields": [
+          {
+            "slot": "select-trigger",
+            "height": 48,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          },
+          {
+            "slot": "textarea",
+            "height": 66,
+            "radius": "10px",
+            "font": "16px",
+            "border": "oklch(0.922 0.001 106.45)",
+            "background": "rgba(0, 0, 0, 0)"
+          }
+        ]
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "stage": "after",
+      "slug": "workspaces",
+      "size": "mobile",
+      "status": 200,
+      "metrics": {
+        "overflow": false,
+        "documentHeight": 844,
+        "viewport": 844,
+        "footer": {
+          "visible": true,
+          "top": 803.5,
+          "bottom": 844
+        },
+        "fields": []
+      },
+      "errors": [],
+      "violations": []
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "metrics": {
+        "footerBottom": 1080,
+        "visible": true,
+        "overflow": false
+      }
+    },
+    {
+      "width": 1440,
+      "height": 650,
+      "metrics": {
+        "footerBottom": 650,
+        "visible": true,
+        "overflow": false
+      }
+    },
+    {
+      "width": 820,
+      "height": 1180,
+      "metrics": {
+        "footerBottom": 0,
+        "visible": false,
+        "overflow": false
+      }
+    },
+    {
+      "longForm": {
+        "documentHeight": 897,
+        "viewport": 650,
+        "footer": 858.09375,
+        "formBottom": 777.09375
+      }
+    },
+    {
+      "dutchWorkspace": true
+    }
+  ],
+  "supplementary": {
+    "dutchPresentationQuery": true,
+    "darkWorkspaceAxeViolations": 0,
+    "physicalDevice": false
+  }
+}

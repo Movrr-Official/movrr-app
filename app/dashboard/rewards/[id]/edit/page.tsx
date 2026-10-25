@@ -5,6 +5,7 @@ import { updateRewardCatalogAction } from "@/app/actions/partner";
 import { StatusToast } from "@/components/form/StatusToast";
 import { SubmitButton } from "@/components/form/SubmitButton";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { Select } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -93,16 +94,7 @@ export default async function PartnerEditRewardPage({
                 defaultValue={item.category ?? ""}
                 placeholder={t("Category")}
               /></label>
-              <label className="partner-form-label md:col-span-2">{t("Status")}<select
-                name="status"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm md:col-span-2"
-                defaultValue={item.status ?? "draft"}
-              >
-                <option value="draft">{t("Draft")}</option>
-                <option value="active">{t("Active")}</option>
-                <option value="paused">{t("Paused")}</option>
-                <option value="archived">{t("Archived")}</option>
-              </select></label>
+              <label className="partner-form-label md:col-span-2">{t("Status")}<Select name="status" aria-label={t("Status")} defaultValue={item.status ?? "draft"} options={[{ value: "draft", label: t("Draft") }, { value: "active", label: t("Active") }, { value: "paused", label: t("Paused") }, { value: "archived", label: t("Archived") }]} /></label>
               <div className="flex gap-3 md:col-span-2">
                 <SubmitButton type="submit" pendingLabel={t("Saving")}>{t("Save changes")}</SubmitButton>
                 <Link

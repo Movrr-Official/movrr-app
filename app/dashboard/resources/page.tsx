@@ -48,9 +48,9 @@ export default async function PartnerResourcesPage({
   return (
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
-        <StatusToast success={success ? t(success) : null} error={error ?? listError} />
+        <StatusToast success={success ? t(success) : null} error={error ? t(error) : listError ? t(listError) : null} />
         <PageHeader
-          title={t("Resources")}
+          title={t("Voucher inventory")}
           description={t("Manage the voucher codes available for your rewards.")}
         />
 
@@ -60,11 +60,11 @@ export default async function PartnerResourcesPage({
             description={t("Your membership role cannot manage fulfilment resources.")}
             iconName="file"
           />
-        ) : (
+        ) : listError ? <a href="/dashboard/resources" className="inline-flex min-h-11 items-center text-sm font-semibold underline">{t("Retry")}</a> : !resources.length ? <Card><CardContent><EmptyState title={t("No voucher codes to manage yet.")} description={t("Contact MOVRR to set up the voucher inventory for your rewards.")} iconName="rewards" /><div className="pb-6 text-center"><a href="mailto:support@movrr.nl" className="inline-flex min-h-11 items-center rounded-lg border border-border px-5 text-sm font-semibold">{t("Contact MOVRR")}</a></div></CardContent></Card> : (
           <>
             <Card className="border-border">
               <CardHeader>
-                <CardTitle>{t("Resource pools")}</CardTitle>
+                <CardTitle>{t("Voucher inventory")}</CardTitle>
                 <CardDescription>{t("Voucher inventory for your organisation.")}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -80,8 +80,6 @@ export default async function PartnerResourcesPage({
                         </p>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        <Badge variant="outline">{t("Pool")} {resource.poolCount ?? "—"}
-                        </Badge>
                         <Badge variant="secondary">{t("Available")} {resource.availableCount ?? "—"}
                         </Badge>
                         {resource.status ? (

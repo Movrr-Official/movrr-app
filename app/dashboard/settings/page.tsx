@@ -132,14 +132,12 @@ export default async function DashboardSettingsPage({
   }
 
   if (session.appUser.role === "partner") {
-  const locale = await getPartnerLocale();
-  const t = (text: string) => partnerText(locale, text);
+    const locale = await getPartnerLocale(), t = (text: string) => partnerText(locale, text);
     const settings = await getPartnerSettings();
-    return <div className="page-canvas"><div className="space-y-6 md:space-y-8">
+    return <div className="page-canvas"><div className="space-y-6">
       <PageHeader title={t("Settings")} description={t("Your organisation and workspace access.")} />
-      <Card><CardHeader><CardTitle>{String(settings.name ?? t("Partner organisation"))}</CardTitle><CardDescription>{t("Contact MOVRR to update your organisation details.")}</CardDescription></CardHeader>
-        <CardContent><dl className="space-y-3 text-sm"><div><dt>{t("Status")}</dt><dd className="capitalize">{t(String(settings.status ?? "Unavailable"))}</dd></div><div><dt>{t("Your role")}</dt><dd className="capitalize">{partnerLabel(session.partnerContext?.membershipRole, locale)}</dd></div></dl></CardContent>
-      </Card>
+      <div className="grid items-start gap-6 xl:grid-cols-2"><Card><CardHeader><CardTitle>{t("Merchant details")}</CardTitle><CardDescription>{t("Contact MOVRR to update your organisation details.")}</CardDescription></CardHeader><CardContent><dl className="divide-y divide-border text-sm"><div className="flex items-center justify-between gap-4 pb-5"><dt className="text-muted-foreground">{t("Organisation")}</dt><dd className="min-w-0 break-words text-right font-semibold">{String(settings.name ?? t("Partner organisation"))}</dd></div><div className="flex items-center justify-between gap-4 py-5"><dt className="text-muted-foreground">{t("Status")}</dt><dd><Badge variant="secondary">{t(String(settings.status ?? "Unavailable"))}</Badge></dd></div></dl><a href="mailto:support@movrr.nl" className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">{t("Contact MOVRR")}</a></CardContent></Card>
+      <Card><CardHeader><CardTitle>{t("Workspace access")}</CardTitle><CardDescription>{t("Give your team the right access.")}</CardDescription></CardHeader><CardContent className="space-y-5"><dl className="space-y-5 text-sm"><div><dt className="text-muted-foreground">{t("Signed in as")}</dt><dd className="mt-1 break-all font-medium">{session.appUser.email}</dd></div><div><dt className="text-muted-foreground">{t("Your role")}</dt><dd className="mt-1 font-medium">{partnerLabel(session.partnerContext?.membershipRole, locale)}</dd></div></dl><Link href="/dashboard/staff" className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">{t("Staff")}</Link></CardContent></Card></div>
     </div></div>;
   }
 

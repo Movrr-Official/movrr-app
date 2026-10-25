@@ -40,10 +40,10 @@ export async function StaffTable({
   const t = (text: string) => partnerText(locale, text);
   const roleOptions = actorRole === "partner_operations_manager" ? ROLE_OPTIONS.filter(option => ["staff", "viewer"].includes(option.value)) : ROLE_OPTIONS;
   return (
-    <div className="space-y-6">
+    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
       <Card className="border-border">
         <CardHeader>
-          <CardTitle>{t("Organisation staff")}</CardTitle>
+          <CardTitle>{t("Your team")}</CardTitle>
           <CardDescription>{t("Your team and their workspace access.")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -115,15 +115,15 @@ export async function StaffTable({
           <CardContent>
             <form
               action={inviteStaffAction}
-              className="grid gap-4 md:grid-cols-3"
+              className="grid gap-4"
             >
               <input type="hidden" name="operationToken" value={randomBytes(32).toString("hex")} />
-              <Input name="email" type="email" aria-label={t("Staff email")} placeholder={t("name@example.com")} required />
-              <Select
+              <label className="partner-form-label">{t("Staff email")}<Input name="email" type="email" aria-label={t("Staff email")} placeholder={t("name@example.com")} required /></label>
+<label className="partner-form-label">{t("Access role")}              <Select
                 name="role"
                 defaultValue="staff"
                 options={roleOptions.map(option => ({ ...option, label: locale === "nl" ? partnerLabel(option.value, locale) : option.label }))}
-              />
+              /></label>
               <SubmitButton pendingLabel={t("Inviting…")}>{t("Invite")}</SubmitButton>
             </form>
           </CardContent>

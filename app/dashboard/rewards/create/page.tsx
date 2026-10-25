@@ -49,28 +49,28 @@ export default async function PartnerCreateRewardPage({
 
         <Card className="border-border">
           <CardHeader>
-            <CardTitle>{t("Catalog item")}</CardTitle>
+            <CardTitle>{t("Reward details")}</CardTitle>
             <CardDescription>{t("Rewards start as drafts. MOVRR approves availability after voucher inventory and delivery details are ready.")}</CardDescription>
           </CardHeader>
           <CardContent>
             <form action={createRewardCatalogAction} className="grid gap-4 md:grid-cols-2">
-              <Input name="title" placeholder={t("Title")} required className="md:col-span-2" />
-              <Textarea
+              <label className="partner-form-label md:col-span-2">{t("Title")}<Input name="title" placeholder={t("Title")} required className="md:col-span-2" /></label>
+              <label className="partner-form-label md:col-span-2">{t("Description")}<Textarea
                 name="description"
                 placeholder={t("Description")}
                 className="md:col-span-2"
-              />
-              <Input name="pointsCost" type="number" placeholder={t("Points cost")} min={0} required />
-              <Input name="stockAvailable" type="number" placeholder={t("Stock available")} min={0} />
-              <Input name="sku" placeholder={t("SKU")} />
-              <Input name="category" placeholder={t("Category")} />
-              <select
+              /></label>
+              <label className="partner-form-label ">{t("Points cost")}<Input name="pointsCost" type="number" placeholder={t("Points cost")} min={0} required /></label>
+              <label className="partner-form-label ">{t("Stock available")}<Input name="stockAvailable" type="number" placeholder={t("Stock available")} min={0} /></label>
+              <label className="partner-form-label ">{t("Internal reference")}<Input name="sku" placeholder={t("Internal reference")} /></label>
+              <label className="partner-form-label ">{t("Category")}<Input name="category" placeholder={t("Category")} /></label>
+              <label className="partner-form-label md:col-span-2">{t("Status")}<select
                 name="status"
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm md:col-span-2"
                 defaultValue="draft"
               >
                 <option value="draft">{t("Draft")}</option>
-              </select>
+              </select></label>
               <div className="flex gap-3 md:col-span-2">
                 <SubmitButton type="submit" pendingLabel={t("Creating")}>{t("Create item")}</SubmitButton>
                 <Link

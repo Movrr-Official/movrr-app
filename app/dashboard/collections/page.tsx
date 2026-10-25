@@ -4,7 +4,8 @@ import { CollectionsTable } from "@/components/partner/CollectionsTable";
 import { StatusToast } from "@/components/form/StatusToast";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { requirePartnerSession } from "@/lib/appUser";
-import { listPartnerPendingFulfilments } from "@/services/partner";
+import Link from "next/link";
+import { listPartnerFulfilmentHistory, listPartnerPendingFulfilments } from "@/services/partner";
 
 export default async function PartnerCollectionsPage({
   searchParams,
@@ -17,7 +18,8 @@ export default async function PartnerCollectionsPage({
   const params = await searchParams;
   const success = typeof params.success === "string" ? params.success : null;
   const error = typeof params.error === "string" ? params.error : null;
-  const items = await listPartnerPendingFulfilments();
+  const history = params.view === "history";
+  const items = history ? await listPartnerFulfilmentHistory() : await listPartnerPendingFulfilments();
 
   return (
     <div className="page-canvas">
@@ -27,7 +29,11 @@ export default async function PartnerCollectionsPage({
           title={t("Collections")}
           description={t("Manage reward collections for your organisation.")}
         />
-        <CollectionsTable items={items} />
+        <nav className="inline-flex gap-1 rounded-xl border border-border bg-background p-1" aria-label={t("Collections")}>
+          <Link href="/dashboard/collections" aria-current={!history ? "page" : undefined} className={!history ? "rounded-lg bg-accent px-4 py-3 text-sm font-semibold" : "rounded-lg px-4 py-3 text-sm text-muted-foreground"}>{t("Pending collections")}</Link>
+          <Link href="/dashboard/collections?view=history" aria-current={history ? "page" : undefined} className={history ? "rounded-lg bg-accent px-4 py-3 text-sm font-semibold" : "rounded-lg px-4 py-3 text-sm text-muted-foreground"}>{t("Collection history")}</Link>
+        </nav>
+        <CollectionsTable items={items} history={history} />
       </div>
     </div>
   );

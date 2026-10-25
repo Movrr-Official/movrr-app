@@ -108,7 +108,7 @@ function RoleNotificationsInbox({
         </CardContent>
       </Card>
 
-      <Card className="border-border">
+      {(roleLabel !== "Partner" || notifications.length > 0) && (      <Card className="border-border">
         <CardHeader>
           <CardTitle>{t("Inbox filters")}</CardTitle>
           <CardDescription>{t("Filter account, programme, and fulfilment messages.")}</CardDescription>
@@ -127,7 +127,7 @@ function RoleNotificationsInbox({
             </Button>
           ))}
         </CardContent>
-      </Card>
+      </Card>)}
 
       {filtered.length ? (
         <Card className="border-border">

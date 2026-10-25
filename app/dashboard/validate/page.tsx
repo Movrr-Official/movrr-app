@@ -27,7 +27,7 @@ export default async function PartnerValidatePage({
       <div className="space-y-6 md:space-y-8">
         <StatusToast success={success ? t(success) : null} error={error ? t(error) : null} />
         <PageHeader
-          title={t("Reward redemption")}
+          title={t("Scan a reward")}
           description={t("Check a rider reward securely before handover.")}
         />
         <ValidateTokenForm initialLocale={locale} canValidate={canValidate} />

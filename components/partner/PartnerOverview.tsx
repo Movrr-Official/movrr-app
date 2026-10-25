@@ -1,85 +1,16 @@
+import Link from "next/link";
+import { ArrowRight, Gift, Package, ScanLine, Users } from "lucide-react";
 import { getPartnerLocale } from "@/lib/partnerLocaleServer";
 import { partnerText } from "@/lib/partnerLocale";
-import { partnerLabel } from "@/lib/partnerPresentation";
-import Link from "next/link";
-import { ClipboardList, QrCode, Shield } from "lucide-react";
-import { EmptyState } from "@/components/shared/EmptyState";
-import { StatsCard } from "@/components/stats/StatsCard";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { PartnerDashboard } from "@/schemas";
 
-export async function PartnerOverview({
-  dashboard,
-}: {
-  dashboard: PartnerDashboard;
-}) {
-  const locale = await getPartnerLocale();
-  const t = (text: string) => partnerText(locale, text);
-  return (
-    <div className="space-y-6 md:space-y-8">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
-        <StatsCard
-          title={t("Pending collections")}
-          value={dashboard.pendingCount}
-          description={t("Rewards waiting for collection")}
-          icon={ClipboardList}
-        />
-        <StatsCard
-          title={t("Ready for handover")}
-          value={dashboard.validatedCount}
-          description={t("Scanned rewards awaiting handover")}
-          icon={Shield}
-        />
-        <StatsCard
-          title={t("Collections completed")}
-          value={dashboard.completedCount}
-          description={t("Confirmed reward collections")}
-          icon={QrCode}
-        />
-      </div>
-
-      <Card className="border-border">
-        <CardHeader>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <CardTitle>{t("Reward Partner workspace")}</CardTitle>
-              <CardDescription>{t("Manage your team, rewards and customer collections.")}</CardDescription>
-            </div>
-            {dashboard.membershipRole ? (
-              <Badge variant="outline" className="capitalize">
-                {partnerLabel(dashboard.membershipRole, locale)}
-              </Badge>
-            ) : null}
-          </div>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-3">
-          <Button asChild>
-            <Link href="/dashboard/collections">{t("Pending collections")}</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/dashboard/validate">{t("Scan a reward")}</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/dashboard/analytics">{t("Analytics")}</Link>
-          </Button>
-        </CardContent>
-      </Card>
-
-      {dashboard.pendingCount === 0 ? (
-        <EmptyState
-          title={t("No pending collections")}
-          description={t("Rewards ready for customer collection will appear here.")}
-          iconName="dashboard"
-        />
-      ) : null}
-    </div>
-  );
+export async function PartnerOverview({ dashboard }: { dashboard: PartnerDashboard }) {
+  const locale = await getPartnerLocale(), t = (text: string) => partnerText(locale, text);
+  return <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-2"><p className="text-xs font-semibold text-muted-foreground">{t("Your workspace")}</p><h1 className="font-semibold">{t("A good day for a little reward.")}</h1><p className="max-w-xl text-sm leading-relaxed text-muted-foreground">{t("Your rewards, your team, and every customer handover. All in one place.")}</p></div>
+    <section className="partner-hero" aria-labelledby="partner-handover-title"><div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between"><div className="space-y-3"><ScanLine className="size-8 text-movrr-accent" aria-hidden="true" /><h2 id="partner-handover-title" className="font-semibold">{t("Ready for the next rider?")}</h2><p>{t("Scan their QR code, check the reward, and confirm the handover.")}</p></div><div className="flex shrink-0 flex-col gap-3"><Button asChild className="min-h-12"><Link href="/dashboard/validate"><ScanLine aria-hidden="true" className="mr-2 size-5" />{t("Scan a reward")}</Link></Button><Link href="/dashboard/collections" className="inline-flex min-h-11 items-center justify-center gap-2 text-xs font-medium text-white/90">{t("View collections")}<ArrowRight className="size-4" aria-hidden="true" /></Link></div></div></section>
+    <section aria-labelledby="partner-activity-title"><h2 id="partner-activity-title" className="mb-3 text-sm font-semibold">{t("At a glance")}</h2><dl className="partner-summary">{[{ label: "Pending collections", value: dashboard.pendingCount },{ label: "Ready for handover", value: dashboard.validatedCount },{ label: "Collections completed", value: dashboard.completedCount }].map(stat => <div key={stat.label}><dt>{t(stat.label)}</dt><dd>{stat.value.toLocaleString(locale === "nl" ? "nl-NL" : "en-GB")}</dd></div>)}</dl></section>
+    <section aria-labelledby="partner-manage-title"><h2 id="partner-manage-title" className="mb-3 text-sm font-semibold">{t("Make it yours")}</h2><div className="grid gap-3 xl:grid-cols-3">{[{ href: "/dashboard/rewards", label: "Rewards", description: "Shape what riders can look forward to.", icon: Gift },{ href: "/dashboard/resources", label: "Inventory", description: "Keep your voucher codes ready to go.", icon: Package },{ href: "/dashboard/staff", label: "Team", description: "Give your team the right access.", icon: Users }].map(({ href, label, description, icon: Icon }) => <Link key={href} href={href} className="partner-quicklink"><span className="rounded-xl bg-muted p-3"><Icon className="size-5" aria-hidden="true" /></span><div className="min-w-0 flex-1"><h3 className="text-sm font-semibold">{t(label)}</h3><p>{t(description)}</p></div><ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" /></Link>)}</div></section>
+  </div>;
 }

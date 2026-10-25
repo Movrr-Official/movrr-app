@@ -14,17 +14,17 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import type { PartnerPendingFulfilment } from "@/schemas";
 
 export async function CollectionsTable({
-  items,
+  items, history = false,
 }: {
-  items: PartnerPendingFulfilment[];
+  items: PartnerPendingFulfilment[]; history?: boolean;
 }) {
   const locale = await getPartnerLocale();
   const t = (text: string) => partnerText(locale, text);
   if (!items.length) {
     return (
       <EmptyState
-        title={t("No pending collections")}
-        description={t("Rewards ready for collection will appear here.")}
+        title={t(history ? "No collection history available" : "No pending collections")}
+        description={t(history ? "Completed and cancelled rewards will appear here." : "Rewards ready for collection will appear here.")}
         iconName="dashboard"
       />
     );
@@ -33,7 +33,7 @@ export async function CollectionsTable({
   return (
     <Card className="border-border">
       <CardHeader>
-        <CardTitle>{t("Pending collections")}</CardTitle>
+        <CardTitle>{t(history ? "Collection history" : "Pending collections")}</CardTitle>
         <CardDescription>{t("Scan the rider QR code, then open the reward to confirm handover.")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -44,7 +44,7 @@ export async function CollectionsTable({
             className="flex flex-col gap-2 rounded-xl border border-border/60 bg-background/70 p-4 transition-colors hover:bg-muted/40 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="min-w-0 space-y-1">
-              <p className="truncate text-sm font-semibold">{item.rewardTitle ?? "Reward collection"}</p>
+              <p className="truncate text-sm font-semibold">{item.rewardTitle ?? t("Reward collection")}</p>
               <p className="text-xs text-muted-foreground">
                 {partnerLabel(item.fulfilmentType, locale)}
               </p>
@@ -55,11 +55,7 @@ export async function CollectionsTable({
                   {partnerLabel(item.state, locale)}
                 </Badge>
               ) : null}
-              {item.progress ? (
-                <Badge variant="secondary" className="capitalize">
-                  {partnerLabel(item.progress, locale)}
-                </Badge>
-              ) : null}
+
             </div>
           </Link>
         ))}

@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-10-25T14:34:57.447741+00:00",
+  "production": false,
+  "physicalDevice": false,
+  "baselineCommit": "2e544099e5a5e61376a24879f156a63c92212bd1",
+  "hashConvention": "SHA-256, LF-normalized UTF-8 source",
+  "sourceHashes": {
+    "__tests__/partnerCollection.test.tsx": "566deecedbd5e74b9579d3b3c391d1d3b26e0669d1a033b8ee3badde1765cbf8",
+    "__tests__/partnerPresentation.test.tsx": "3b80cdfe2eecd2c88b7c685e60c344e6ceda7deb4e9a7a0d5c9883ab439416fe",
+    "__tests__/partnerScanner.test.tsx": "4dd7cbbad61fbb11f993514eff56a14f1631518432a24a90bbaad8765cf1f559",
+    "__tests__/partnerServiceContracts.test.ts": "c52bbc1ba7922631ed7383f9434a56e799148622f5834b0b30f467725122f954",
+    "app/dashboard/analytics/page.tsx": "92a09a5acf391195c7b5064cbd494905572bf8408dd4b1bfd98baf5e04876cbf",
+    "app/dashboard/collections/[id]/page.tsx": "47460d0d08daee8868db4006f0d532174cf8d19a6097ffeda4c2f5a3d0744a66",
+    "app/dashboard/collections/page.tsx": "66268975b828c23f8de330cffe81ff791448f5fecc3c5583b7dcc415b16981a6",
+    "app/dashboard/layout.tsx": "1365626186cd56579bf61f5bd86a96a294375118d4d92111ea61f8196d33074f",
+    "app/dashboard/loading.tsx": "6c9af7918dbb02fd9c4ff89b29f07c0567194da2886032dec9dc02664665ad41",
+    "app/dashboard/notifications/page.tsx": "064af53bfa72a160874b33fe476a6ae02fca86c4f0abf68f08769981cf20eb4d",
+    "app/dashboard/resources/page.tsx": "f8034ce99f05a81236707264d2d625f325f1fbd90d0f9961d5c016f6b2921750",
+    "app/dashboard/rewards/[id]/edit/page.tsx": "9b51e3f2d318432abfe697edd72e2e0d3860d0c9e6755b26fd488821e87535e7",
+    "app/dashboard/rewards/create/page.tsx": "6b29292ef98f7dea91af1b1d48792d1b065e622b0dcc40427002bc82e4fa69d0",
+    "app/dashboard/rewards/page.tsx": "63aba0ab9299ba1eecb39e9991f6031ce1be7305f24a4cd8c97b89d83735fd2d",
+    "app/dashboard/settings/page.tsx": "c179d03092c5a97d60061901414d571831c1eb264a743f2ccb89619efdb57589",
+    "app/dashboard/staff/page.tsx": "cb330565979c0422d7c70a434bae3ecc069c3b32d0d66bd0a7177adaf9cd0d7e",
+    "app/dashboard/validate/page.tsx": "455b76f3f5345fdcfdf1156cf75ebc8a632f7a7fdf8830d2e6af8f3111d18304",
+    "app/globals.css": "1be49c3051dc6465ae652b061156bc24336ee0d3150dfdd36d1f69c8eb193a52",
+    "components/ThemeToggle.tsx": "1b07e292e30abe1dac8132e25808eeede351df9a779ddcafd1fc6ad47c857f2f",
+    "components/partner/CollectionDetail.tsx": "d6d41da1756102af4edbdc9526d4fbf122f7de53d170d8cee1aee9950956b830",
+    "components/partner/CollectionsTable.tsx": "77e33563800dc78d78cf12f01bfc9b2d8cc58adc86198c69c19fd39acc960bef",
+    "components/partner/PartnerAppStatus.tsx": "cf6b8e1b19b05220a8bba3df760d0bf6249bf261cd0fa0985d288542c658ede3",
+    "components/partner/PartnerOverview.tsx": "3a350e67595ca7e92b885b9f647d764e69f34c8f489f654eec608728233ce552",
+    "components/partner/PartnerShell.tsx": "35dfb40cfd892894688415f53cc7855500e566a0f4248a6bf0ccd6ecd2401d96",
+    "components/partner/StaffTable.tsx": "a40bc59aff1aac715f929b19bc104b6090011b5bf35589323311cb26957a4caa",
+    "components/partner/ValidateTokenForm.tsx": "c73399fb827384a9759c987a72aa02628e90f0670a5726767f36bfd2191dc573",
+    "components/shared/EmptyState.tsx": "30534439da29383e8a880974d9b7f8808db1af5b3f326d9526af72051e4d7341",
+    "components/shared/PageShell.tsx": "da393d6af11b81c8202d1cf7febd6d604be9e6d68003089fe3118ca27f4e2057",
+    "components/shared/RouteError.tsx": "c938cead1f506f633429ed7f2f86836fc5ac54bd4fe0552ba1fa0ea98d1234c3",
+    "lib/partnerLocale.ts": "98e7f067f535cfb8087fce86b29cbe294558ee227a281931dda7c44acaf1700a",
+    "lib/partnerPresentation.ts": "15d2eae946792bad9b16c450c3e24c7d1ab726922051f59753053f2d06d5c578",
+    "public/offline.html": "921acea7b76c2fc112b948774e4771b5e86e1f8225b5af6b4947897c50ea1352",
+    "public/sw.js": "ffda8571accb99e4590548d803b6f4698fe03823a603465a39b36ede36493fa0",
+    "services/partner.ts": "1e73d73051e42e541ef28215bf0ddf44785249cf0790bdbde238bb2510e7f6df"
+  },
+  "boundaries": [
+    "Two session identity providers replaced in isolated copy only",
+    "Platform transport supplies empty canonical read models and rejects mutation commands",
+    "Notification reads return empty fixture inbox",
+    "Proxy accepts only the isolated fixture session",
+    "Cached exact production Manrope font is injected for reproducible visual captures"
+  ],
+  "financialActionsUnchanged": true,
+  "browserEngines": {
+    "chromium": "Responsive matrix and interactions",
+    "webkit": "Mobile navigation/modal and overflow smoke passed",
+    "firefox": "Automation failed before loading MOVRR; not accepted"
+  },
+  "securityAndFinancialReleaseRunbook": "../../../../movrr-admin/docs/operations/partner-workspace-release-candidate-2026-10-25.md",
+  "scope": "Changed implementation and regression sources",
+  "toolingHashes": {
+    "scripts/prepare-partner-visual.mjs": "de4df015e2673aa57fae67514b5992bb0ca886314179d895651fb79acf1bbd31",
+    "scripts/capture-partner-visual.cjs": "13e5369df5669a89afea4aca1eadb799197a36d355b3b3b5488df49345125aad",
+    "scripts/verify-partner-interactions.cjs": "26a3159b13e5163dc59f5049ce362f9779ded1a8fc04e6edd10a190fe33d0fa8"
+  }
+}

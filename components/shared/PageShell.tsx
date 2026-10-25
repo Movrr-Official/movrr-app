@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { PartnerShell } from "@/components/partner/PartnerShell";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -50,6 +51,8 @@ export function PageShell({
     () => false,
   );
   const toggleSidebar = () => persistSidebarOpen(!sidebarOpen);
+
+  if (session.role === "partner") return <PartnerShell session={session}>{children}</PartnerShell>;
 
   return (
     <div className="flex h-screen" lang={session.partnerLocale}>

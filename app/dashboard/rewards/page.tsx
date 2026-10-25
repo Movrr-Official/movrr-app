@@ -27,114 +27,17 @@ import { redirect } from "next/navigation";
 import { CircleDollarSign, FileText, Trophy, Wallet } from "lucide-react";
 
 async function PartnerRewardsView() {
-  const locale = await getPartnerLocale();
-  const t = (text: string) => partnerText(locale, text);
+  const locale = await getPartnerLocale(), t = (text: string) => partnerText(locale, text);
   const session = await getCurrentProductSession();
   if (!session?.partnerContext) redirect("/unauthorized");
-
-  const canRead = hasPartnerCapability(
-    session.partnerContext.capabilities,
-    "rewards.catalog.read",
-  );
-  const canManage = hasPartnerCapability(
-    session.partnerContext.capabilities,
-    "rewards.manage",
-  );
-
-  if (!canRead) {
-    return (
-      <div className="page-canvas">
-        <EmptyState
-          title={t("Rewards catalog unavailable")}
-          description={t("Your membership role cannot read partner-scoped rewards.")}
-          iconName="rewards"
-        />
-      </div>
-    );
-  }
-
-  let rewards: Awaited<ReturnType<typeof listPartnerRewards>> = [];
-  let listError: string | null = null;
-  try {
-    rewards = await listPartnerRewards();
-  } catch {
-    listError =
-      "Rewards are temporarily unavailable. Please try again.";
-  }
-
-  return (
-    <div className="page-canvas">
-      <div className="space-y-6 md:space-y-8">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <PageHeader
-            title={t("Rewards")}
-            description={
-              canManage
-                ? t("Manage the rewards offered by your organisation.")
-                : t("Rewards offered by your organisation.")
-            }
-          />
-          {canManage ? (
-            <Button asChild size="sm">
-              <Link href="/dashboard/rewards/create">{t("Add catalog item")}</Link>
-            </Button>
-          ) : null}
-        </div>
-        {listError ? (
-          <p className="text-sm text-destructive">{listError ? t(listError) : null}</p>
-        ) : null}
-        {rewards.length ? (
-          <Card className="border-border">
-            <CardHeader>
-              <CardTitle>{t("Partner catalog")}</CardTitle>
-              <CardDescription>{t("Your rewards and their availability.")}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {rewards.map((reward) => (
-                <div
-                  key={reward.id}
-                  className="flex flex-col gap-2 rounded-xl border border-border/60 p-4 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div>
-                    <p className="text-sm font-semibold">
-                      {reward.name ?? t("Reward")}
-                    </p>
-                    <p className="text-xs text-muted-foreground break-all">
-
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {reward.fulfilmentType ? (
-                      <Badge variant="outline">{partnerLabel(reward.fulfilmentType, locale)}</Badge>
-                    ) : null}
-                    {reward.status ? (
-                      <Badge variant="secondary" className="capitalize">
-                        {t(reward.status)}
-                      </Badge>
-                    ) : null}
-                    {typeof reward.pointsCost === "number" ? (
-                      <Badge>{reward.pointsCost} {t("pts")}</Badge>
-                    ) : null}
-                    {canManage ? (
-                      <Button asChild size="sm" variant="outline">
-                        <Link href={`/dashboard/rewards/${reward.id}/edit`}>{t("Manage")}</Link>
-                      </Button>
-                    ) : null}
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        ) : (
-          <EmptyState
-            title={t("No partner rewards yet")}
-            description={t("Rewards will appear here after you create your first reward.")}
-            iconName="rewards"
-          />
-        )}
-      </div>
-    </div>
-  );
+  const canRead = hasPartnerCapability(session.partnerContext.capabilities, "rewards.catalog.read"), canManage = hasPartnerCapability(session.partnerContext.capabilities, "rewards.manage");
+  if (!canRead) return <div className="page-canvas"><EmptyState title={t("Rewards catalog unavailable")} description={t("Your membership role cannot read partner-scoped rewards.")} iconName="rewards" /></div>;
+  let rewards: Awaited<ReturnType<typeof listPartnerRewards>> = [], listError: string | null = null;
+  try { rewards = await listPartnerRewards(); } catch { listError = "Rewards are temporarily unavailable. Please try again."; }
+  return <div className="page-canvas"><div className="space-y-6">
+    <PageHeader title={t("Rewards")} description={t("Choose a reward to manage its details and availability.")} actions={canManage && rewards.length > 0 ? [{ label: t("Add reward"), href: "/dashboard/rewards/create" }] : []} />
+    {listError ? <p role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-5 text-sm text-destructive">{t(listError)}</p> : rewards.length ? <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{rewards.map(reward => <Card key={reward.id} className="flex flex-col"><CardHeader><div className="mb-4 flex items-center justify-between"><span className="rounded-xl bg-muted p-3"><Trophy className="size-5" aria-hidden="true" /></span>{reward.status && <Badge variant="secondary">{t(reward.status)}</Badge>}</div><CardTitle>{reward.name ?? t("Reward")}</CardTitle>{reward.description && <CardDescription className="line-clamp-2">{reward.description}</CardDescription>}</CardHeader><CardContent className="mt-auto space-y-5">{reward.fulfilmentType && <p className="text-xs text-muted-foreground">{partnerLabel(reward.fulfilmentType, locale)}</p>}<dl className="flex items-end justify-between border-t border-border pt-4"><div><dt className="text-xs text-muted-foreground">{t("Points cost")}</dt><dd className="mt-1 text-lg font-semibold">{reward.pointsCost === 0 ? t("Free") : reward.pointsCost?.toLocaleString(locale === "nl" ? "nl-NL" : "en-GB") ?? t("Unavailable")}</dd></div>{reward.stockAvailable != null && <div className="text-right"><dt className="text-xs text-muted-foreground">{t("Stock")}</dt><dd className="mt-1 text-lg font-semibold">{reward.stockAvailable.toLocaleString(locale === "nl" ? "nl-NL" : "en-GB")}</dd></div>}</dl>{canManage && <Button asChild variant="outline" className="w-full"><Link href={`/dashboard/rewards/${reward.id}/edit`}>{t("Manage")}</Link></Button>}</CardContent></Card>)}</div> : <Card><CardContent className="py-10 text-center"><EmptyState title={t("No rewards yet")} description={t("Create a draft, add your voucher codes, and prepare it with MOVRR.")} iconName="rewards" />{canManage && <Button asChild><Link href="/dashboard/rewards/create">{t("Create your first reward")}</Link></Button>}</CardContent></Card>}
+  </div></div>;
 }
 
 export default async function DashboardRewardsPage({ searchParams }: {

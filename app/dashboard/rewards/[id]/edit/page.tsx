@@ -56,44 +56,44 @@ export default async function PartnerEditRewardPage({
 
         <Card className="border-border">
           <CardHeader>
-            <CardTitle>{t("Catalog item")}</CardTitle>
+            <CardTitle>{t("Reward details")}</CardTitle>
             <CardDescription>{t("Update the reward details. Changes are checked before saving.")}</CardDescription>
           </CardHeader>
           <CardContent>
             <form action={updateRewardCatalogAction} className="grid gap-4 md:grid-cols-2">
               <input type="hidden" name="catalogItemId" value={id} /><input type="hidden" name="expectedUpdatedAt" value={item.updatedAt ?? ""} />
-              <Input
+              <label className="partner-form-label md:col-span-2">{t("Title")}<Input
                 name="title"
                 defaultValue={item.title ?? ""}
                 placeholder={t("Title")}
                 required
                 className="md:col-span-2"
-              />
-              <Textarea
+              /></label>
+              <label className="partner-form-label md:col-span-2">{t("Description")}<Textarea
                 name="description"
                 defaultValue={item.description ?? ""}
                 placeholder={t("Description")}
                 className="md:col-span-2"
-              />
-              <Input
+              /></label>
+              <label className="partner-form-label ">{t("Points cost")}<Input
                 name="pointsCost"
                 type="number"
                 defaultValue={item.pointsCost}
                 min={0}
-              />
-              <Input
+              /></label>
+              <label className="partner-form-label ">{t("Stock available")}<Input
                 name="stockAvailable"
                 type="number"
                 defaultValue={item.stockAvailable}
                 min={0}
-              />
-              <Input name="sku" defaultValue={item.sku ?? ""} placeholder={t("SKU")} />
-              <Input
+              /></label>
+              <label className="partner-form-label ">{t("Internal reference")}<Input name="sku" defaultValue={item.sku ?? ""} placeholder={t("Internal reference")} /></label>
+              <label className="partner-form-label ">{t("Category")}<Input
                 name="category"
                 defaultValue={item.category ?? ""}
                 placeholder={t("Category")}
-              />
-              <select
+              /></label>
+              <label className="partner-form-label md:col-span-2">{t("Status")}<select
                 name="status"
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm md:col-span-2"
                 defaultValue={item.status ?? "draft"}
@@ -102,7 +102,7 @@ export default async function PartnerEditRewardPage({
                 <option value="active">{t("Active")}</option>
                 <option value="paused">{t("Paused")}</option>
                 <option value="archived">{t("Archived")}</option>
-              </select>
+              </select></label>
               <div className="flex gap-3 md:col-span-2">
                 <SubmitButton type="submit" pendingLabel={t("Saving")}>{t("Save changes")}</SubmitButton>
                 <Link

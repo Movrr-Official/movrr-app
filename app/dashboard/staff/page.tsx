@@ -35,7 +35,7 @@ export default async function PartnerStaffPage({
       <div className="page-canvas">
         <div className="space-y-6 md:space-y-8">
           <PageHeader
-            title={t("Staff")}
+            title={t("Team")}
             description={t("Manage your team workspace access.")}
           />
           <EmptyState
@@ -61,7 +61,7 @@ export default async function PartnerStaffPage({
       <div className="space-y-6 md:space-y-8">
         <StatusToast success={success ? t(success) : null} error={error ? t(error) : listError ? t(listError) : null} />
         <PageHeader
-          title={t("Staff")}
+          title={t("Team")}
           description={t("Invite your team and manage their access.")}
         />
         {invitationUrl && <div className="space-y-2"><p>{t("Share this invitation link with the invited account holder.")}</p><Input value={invitationUrl} readOnly /></div>}

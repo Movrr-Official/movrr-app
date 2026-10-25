@@ -40,13 +40,18 @@ it("disables camera and validation offline; viewers never request camera access"
   expect(host.textContent).toContain("Your role cannot validate"); expect(media).not.toHaveBeenCalled();
   Object.defineProperty(navigator,"onLine",{configurable:true,value:false});
   await act(async () => { root.render(<ValidateTokenForm canValidate />); window.dispatchEvent(new Event("offline")); });
-  expect(button("Start camera").disabled).toBe(true); expect(button("Validate reward").disabled).toBe(true);
+  expect(button("Start camera").disabled).toBe(true); expect(button("Validate reward")).toBeUndefined();
+  Object.defineProperty(navigator,"onLine",{configurable:true,value:true});
+  await act(async () => { window.dispatchEvent(new Event("online")); }); await start();
+  Object.defineProperty(navigator,"onLine",{configurable:true,value:false});
+  await act(async () => { window.dispatchEvent(new Event("offline")); });
+  expect(button("Validate reward").disabled).toBe(true);
 });
 it("offers manual fallback on camera denial and supports Dutch", async () => {
   media.mockRejectedValue(new DOMException("denied", "NotAllowedError"));
   await act(async () => root.render(<ValidateTokenForm canValidate />)); await start();
   expect(host.textContent).toContain("Camera unavailable");
-  await act(async () => { const select=host.querySelector("select")!; select.value="nl"; select.dispatchEvent(new Event("change",{bubbles:true})); });
+  await act(async () => root.render(<ValidateTokenForm canValidate initialLocale="nl" />));
   expect(host.textContent).toContain("Camera niet beschikbaar"); expect(host.textContent).toContain("Voer een code in");
 });
 it("releases a camera permission request that resolves after navigation", async () => {

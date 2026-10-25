@@ -171,11 +171,17 @@ export async function listPartnerPendingFulfilments(): Promise<
     .filter((item) => item.id);
 }
 
+export async function listPartnerFulfilmentHistory(): Promise<PartnerPendingFulfilment[]> {
+  await requirePartnerSession();
+  const data = await platformFetch<unknown[]>("/partners/fulfilments/history");
+  return (Array.isArray(data) ? data : []).map(mapPendingItem).filter(item => item.id);
+}
+
 export async function getPartnerPendingFulfilment(
   id: string,
 ): Promise<PartnerPendingFulfilment | null> {
   const items = await listPartnerPendingFulfilments();
-  return items.find((item) => item.id === id) ?? null;
+  return items.find((item) => item.id === id) ?? (await listPartnerFulfilmentHistory()).find(item => item.id === id) ?? null;
 }
 
 export async function confirmPartnerCollection(fulfilmentId: string, expectedVersion: number, reason: string, operationId: string) {

@@ -1,0 +1,16 @@
+[
+  {
+    "engine": "webkit",
+    "available": true,
+    "opened": true,
+    "closed": true,
+    "overflow": false,
+    "errors": [],
+    "physicalDevice": false
+  },
+  {
+    "engine": "firefox",
+    "available": false,
+    "error": "browser.newPage: Cannot read properties of undefined (reading '_page')"
+  }
+]

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function ValidateTokenForm({ canValidate, initialLocale = "en" }: { canValidate: boolean; initialLocale?: "en" | "nl" }) {
-  const [locale, setLocale] = useState<"en" | "nl">(initialLocale);
+  const locale = initialLocale;
   const copy = voucherCopy[locale];
   const [token, setToken] = useState("");
   const [operation, setOperation] = useState("");
@@ -76,17 +76,17 @@ export function ValidateTokenForm({ canValidate, initialLocale = "en" }: { canVa
   return <Card lang={locale} className="mx-auto w-full max-w-2xl overflow-hidden border-border">
     <CardHeader><div className="flex items-start justify-between gap-4">
       <div className="space-y-2"><CardTitle>{copy.title}</CardTitle><CardDescription>{copy.description}</CardDescription></div>
-      <select aria-label="Language / Taal" value={locale} onChange={event => setLocale(event.target.value as "en" | "nl")} className="rounded-md border border-input bg-background p-2 text-sm"><option value="en">English</option><option value="nl">Nederlands</option></select>
+
     </div></CardHeader>
     <CardContent className="space-y-5" lang={locale}>
       {!canValidate ? <p role="status">{copy.restricted}</p> : <>
         {!online && <p role="alert" className="rounded-xl border border-border bg-muted p-4">{copy.offline}</p>}
         {!accepted && <>
-          <div className="relative flex aspect-square max-h-80 items-center justify-center overflow-hidden rounded-2xl border border-border bg-muted">
+          <div className="partner-camera relative flex aspect-square max-h-96 items-center justify-center overflow-hidden rounded-2xl border border-border bg-movrr-bg-primary text-white">
             <video ref={video} muted playsInline aria-label={copy.scanning} className={scanning ? "h-full w-full object-cover" : "hidden"} />
-            {!scanning && <div className="flex flex-col items-center gap-4 p-6 text-center"><ScanLine className="h-14 w-14 text-primary" aria-hidden="true" /><p className="text-sm text-muted-foreground">{token ? copy.review : copy.scanning}</p></div>}
+            {!scanning && <div className="flex flex-col items-center gap-4 p-6 text-center"><ScanLine className="h-14 w-14 text-movrr-accent" aria-hidden="true" /><p className="text-sm text-white/75">{token ? copy.review : copy.scanning}</p></div>}
           </div>
-          <Button type="button" variant="outline" className="min-h-12 w-full" disabled={!online || pending} onClick={() => { setCameraError(false); setScanning(value => !value); }}><Camera className="mr-2 h-4 w-4" aria-hidden="true" />{scanning ? copy.stop : copy.start}</Button>
+          <Button type="button" variant={scanning ? "outline" : "default"} className="min-h-12 w-full" disabled={!online || pending} onClick={() => { setCameraError(false); setScanning(value => !value); }}><Camera className="mr-2 h-4 w-4" aria-hidden="true" />{scanning ? copy.stop : copy.start}</Button>
           {cameraError && <p role="alert" className="text-sm">{copy.cameraError}</p>}
           <form action={action} onSubmit={() => setScanning(false)} className="space-y-4">
             <input type="hidden" name="operationId" value={operation} />
@@ -95,7 +95,7 @@ export function ValidateTokenForm({ canValidate, initialLocale = "en" }: { canVa
               <Input id="token" name="token" value={token} onChange={event => setCode(event.target.value)} autoComplete="off" spellCheck={false} minLength={32} maxLength={512} required disabled={pending} />
             </details>
             {token && <p role="status" className="text-sm text-muted-foreground">{copy.ready}</p>}
-            <Button className="min-h-12 w-full" disabled={!online || pending || !token || !operation}>{pending ? copy.pending : copy.submit}</Button>
+            {token && <Button className="min-h-12 w-full" disabled={!online || pending || !operation}>{pending ? copy.pending : copy.submit}</Button>}
           </form>
         </>}
         {state.outcome && <div ref={feedback} tabIndex={-1} role={accepted ? "status" : "alert"} className="space-y-4 rounded-xl border border-border bg-muted p-4 outline-none focus-visible:ring-2 focus-visible:ring-ring">

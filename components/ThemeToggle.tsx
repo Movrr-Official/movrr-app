@@ -1,12 +1,15 @@
 ﻿"use client";
 
-import { useMemo } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { Laptop, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 
+const subscribeThemeMount = () => () => {};
+
 export function ThemeToggle({ locale = "en" }: { locale?: "en" | "nl" }) {
+  const mounted = useSyncExternalStore(subscribeThemeMount, () => true, () => false);
   const { theme, resolvedTheme, setTheme } = useTheme();
 
   const activeTheme = useMemo(
@@ -14,8 +17,8 @@ export function ThemeToggle({ locale = "en" }: { locale?: "en" | "nl" }) {
     [resolvedTheme, theme],
   );
 
-  if (!theme) {
-    return null;
+  if (!mounted || !theme) {
+    return <span className="inline-block size-9" aria-hidden="true" />;
   }
 
   const nextTheme =

@@ -2,7 +2,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 const state = vi.hoisted(() => ({ fetch: vi.fn() }));
 vi.mock("@/lib/appUser", () => ({ requirePartnerSession: async () => ({ partnerContext: { capabilities: ["fulfilment.read", "analytics.view"], organisationId: "tenant" } }) }));
 vi.mock("@/lib/platform/client", () => ({ platformFetch: state.fetch, createCorrelationId: () => "correlation" }));
-import { getPartnerDashboard, listPartnerRewards, getPartnerAnalytics, validatePartnerToken, invitePartnerStaff } from "@/services/partner";
+import { getPartnerPendingFulfilment, listPartnerFulfilmentHistory, getPartnerDashboard, listPartnerRewards, getPartnerAnalytics, validatePartnerToken, invitePartnerStaff } from "@/services/partner";
 import { getPartnerCatalogItem, updatePartnerCatalogItem } from "@/lib/platform/partnerCatalogPlatform";
 beforeEach(() => vi.clearAllMocks());
 it("maps canonical title, Free price, stock and version into the editor", async () => {
@@ -24,4 +24,10 @@ it("forwards stable scan identity and email invitations to canonical commands", 
   expect(state.fetch).toHaveBeenCalledWith("/partners/validate", { method: "POST", body: { token: "PRIVATE" }, idempotencyKey: "stable-operation" });
   await invitePartnerStaff({ email: "staff@example.com", role: "staff", operationToken: "a".repeat(64) });
   expect(state.fetch).toHaveBeenLastCalledWith("/organisations/tenant/invitations", { method: "POST", body: { email: "staff@example.com", role: "staff", operationToken: "a".repeat(64) } });
+});
+
+it("reopens a completed collection through the canonical tenant-scoped history read", async () => {
+  state.fetch.mockImplementation(async path => path.endsWith("/history") ? [{id:"closed",state:"completed",rewardTitle:"Isolated reward",version:3}] : []);
+  expect(await getPartnerPendingFulfilment("closed")).toMatchObject({id:"closed",state:"completed",version:3});
+  expect(await listPartnerFulfilmentHistory()).toHaveLength(1);expect(state.fetch).toHaveBeenCalledWith("/partners/fulfilments/history");
 });

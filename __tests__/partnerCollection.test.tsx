@@ -15,3 +15,8 @@ it("requires a validated voucher, capability and explicit handover acknowledgeme
 it("keeps internal identifiers out of visible merchant copy",async()=>{
   const html=renderToStaticMarkup(await CollectionsTable({items:[item]}));expect(html).toContain("Coffee");expect(html).toContain("Ready for handover");expect(html).not.toContain("PRIVATE-RIDER");expect(html).not.toContain("PRIVATE-CATALOG");
 });
+
+it("shows a closed history record without inviting another handover",()=>{
+  const html=renderToStaticMarkup(<CollectionDetail item={{...item,state:"completed"}} canConfirm canCancel operationId="stable"/>);
+  expect(html).toContain("No further handover is needed");expect(html).not.toContain("Scan the rider");expect(html).not.toContain("<form");
+});

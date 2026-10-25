@@ -1,0 +1,595 @@
+{
+  "stage": "after",
+  "production": false,
+  "session": "isolated fixture",
+  "data": "empty canonical read models; no merchant inventory or financial data fabricated",
+  "font": {
+    "source": "Exact cached production-build Manrope asset; Google fetch unavailable in isolated dev server",
+    "sha256": "e310b55a7fd9677f5e3555e6c6c4d064fa1f1d24393f0ddbe217cea12a8c432f"
+  },
+  "physicalDevice": false,
+  "results": [
+    {
+      "route": "/dashboard",
+      "size": "mobile",
+      "status": 200,
+      "width": 390,
+      "scrollWidth": 390,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "A good day for a little reward.",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 26,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/rewards",
+      "size": "mobile",
+      "status": 200,
+      "width": 390,
+      "scrollWidth": 390,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Rewards",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 25,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/rewards/create",
+      "size": "mobile",
+      "status": 200,
+      "width": 390,
+      "scrollWidth": 390,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Create reward",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 27,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "route": "/dashboard/resources",
+      "size": "mobile",
+      "status": 200,
+      "width": 390,
+      "scrollWidth": 390,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Voucher inventory",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/validate",
+      "size": "mobile",
+      "status": 200,
+      "width": 390,
+      "scrollWidth": 390,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Scan a reward",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/collections",
+      "size": "mobile",
+      "status": 200,
+      "width": 390,
+      "scrollWidth": 390,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Collections",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/collections/00000000-0000-4000-8000-000000000003",
+      "size": "mobile",
+      "status": 200,
+      "width": 390,
+      "scrollWidth": 390,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Confirm collection",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/staff",
+      "size": "mobile",
+      "status": 200,
+      "width": 390,
+      "scrollWidth": 390,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Team",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/settings",
+      "size": "mobile",
+      "status": 200,
+      "width": 390,
+      "scrollWidth": 390,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Settings",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 27,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/analytics",
+      "size": "mobile",
+      "status": 200,
+      "width": 390,
+      "scrollWidth": 390,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Analytics",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/notifications",
+      "size": "mobile",
+      "status": 200,
+      "width": 390,
+      "scrollWidth": 390,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Notifications",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/collections?view=history",
+      "size": "mobile",
+      "status": 200,
+      "width": 390,
+      "scrollWidth": 390,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Collections",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard",
+      "size": "tablet",
+      "status": 200,
+      "width": 820,
+      "scrollWidth": 820,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "A good day for a little reward.",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 26,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/rewards",
+      "size": "tablet",
+      "status": 200,
+      "width": 820,
+      "scrollWidth": 820,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Rewards",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 25,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/rewards/create",
+      "size": "tablet",
+      "status": 200,
+      "width": 820,
+      "scrollWidth": 820,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Create reward",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 27,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "route": "/dashboard/resources",
+      "size": "tablet",
+      "status": 200,
+      "width": 820,
+      "scrollWidth": 820,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Voucher inventory",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/validate",
+      "size": "tablet",
+      "status": 200,
+      "width": 820,
+      "scrollWidth": 820,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Scan a reward",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/collections",
+      "size": "tablet",
+      "status": 200,
+      "width": 820,
+      "scrollWidth": 820,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Collections",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/collections/00000000-0000-4000-8000-000000000003",
+      "size": "tablet",
+      "status": 200,
+      "width": 820,
+      "scrollWidth": 820,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Confirm collection",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/staff",
+      "size": "tablet",
+      "status": 200,
+      "width": 820,
+      "scrollWidth": 820,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Team",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/settings",
+      "size": "tablet",
+      "status": 200,
+      "width": 820,
+      "scrollWidth": 820,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Settings",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 27,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/analytics",
+      "size": "tablet",
+      "status": 200,
+      "width": 820,
+      "scrollWidth": 820,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Analytics",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/notifications",
+      "size": "tablet",
+      "status": 200,
+      "width": 820,
+      "scrollWidth": 820,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Notifications",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/collections?view=history",
+      "size": "tablet",
+      "status": 200,
+      "width": 820,
+      "scrollWidth": 820,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Collections",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard",
+      "size": "desktop",
+      "status": 200,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "A good day for a little reward.",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 26,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/rewards",
+      "size": "desktop",
+      "status": 200,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Rewards",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 25,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/rewards/create",
+      "size": "desktop",
+      "status": 200,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Create reward",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 27,
+        "incomplete": [
+          "color-contrast"
+        ]
+      }
+    },
+    {
+      "route": "/dashboard/resources",
+      "size": "desktop",
+      "status": 200,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Voucher inventory",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/validate",
+      "size": "desktop",
+      "status": 200,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Scan a reward",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/collections",
+      "size": "desktop",
+      "status": 200,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Collections",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/collections/00000000-0000-4000-8000-000000000003",
+      "size": "desktop",
+      "status": 200,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Confirm collection",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/staff",
+      "size": "desktop",
+      "status": 200,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Team",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/settings",
+      "size": "desktop",
+      "status": 200,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Settings",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 27,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/analytics",
+      "size": "desktop",
+      "status": 200,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Analytics",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/notifications",
+      "size": "desktop",
+      "status": 200,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Notifications",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    },
+    {
+      "route": "/dashboard/collections?view=history",
+      "size": "desktop",
+      "status": 200,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "font": "MOVRRVisualManrope, sans-serif",
+      "h1": "Collections",
+      "privateIdVisible": false,
+      "errors": [],
+      "accessibility": {
+        "violations": [],
+        "passes": 24,
+        "incomplete": []
+      }
+    }
+  ]
+}

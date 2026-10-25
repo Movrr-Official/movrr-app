@@ -1,0 +1,47 @@
+{
+  "production": false,
+  "physicalDevice": false,
+  "session": "isolated fixture",
+  "camera": "permission denial adapter; no physical camera claim",
+  "checks": [
+    "Keyboard skip link is available",
+    "Mobile menu opens as a modal",
+    "Escape closes the mobile modal",
+    "Mobile navigation reaches the actual staff route",
+    "Language menu closes after saving",
+    "Language selection is actor-bound and HttpOnly",
+    "Camera permission denial has a localized manual fallback",
+    "Capture has a stable retry identity",
+    "Unavailable fixture inventory is not shown as a successful validation",
+    "Offline camera is disabled",
+    "Offline validation is disabled",
+    "Reward inputs have persistent accessible labels",
+    "Actual form action surfaces the canonical adapter rejection",
+    "Viewer sees a restricted staff state",
+    "Viewer cannot submit an invitation",
+    "Viewer cannot start a camera",
+    "Dark theme renders through the actual provider",
+    "Installed offline document is served without private content",
+    "Offline document contains no mutation form",
+    "No browser runtime or hydration errors"
+  ],
+  "accessibility": [
+    {
+      "state": "mobile-more-menu",
+      "violations": []
+    },
+    {
+      "state": "scanner-offline-nl",
+      "violations": []
+    },
+    {
+      "state": "overview-dark-nl",
+      "violations": []
+    },
+    {
+      "state": "pwa-offline",
+      "violations": []
+    }
+  ],
+  "errors": []
+}

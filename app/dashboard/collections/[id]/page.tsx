@@ -24,6 +24,7 @@ export default async function PartnerCollectionDetailPage({
   const success = typeof query.success === "string" ? query.success : null;
   const error = typeof query.error === "string" ? query.error : null;
   const item = await getPartnerPendingFulfilment(id);
+  const closed = item && ["completed","collected","delivered","dispatched","cancelled","expired","refunded","reversed"].includes(item.state ?? "");
   const canConfirm = hasPartnerCapability(
     session.partnerContext!.capabilities,
     "fulfilment.confirm",
@@ -34,10 +35,10 @@ export default async function PartnerCollectionDetailPage({
       <div className="space-y-6 md:space-y-8">
         <StatusToast success={success ? t(success) : null} error={error ? t(error) : null} />
         <PageHeader
-          title={t("Confirm collection")}
-          description={t("Review the reward before handing it to the rider.")}
+          title={t(closed ? "Collection details" : "Confirm collection")}
+          description={t(closed ? "View the recorded outcome for this reward." : "Review the reward before handing it to the rider.")}
           action={{
-            label: "Back to collections",
+            label: t("Back to collections"),
             href: "/dashboard/collections",
             variant: "outline",
           }}
@@ -46,7 +47,7 @@ export default async function PartnerCollectionDetailPage({
           <CollectionDetail initialLocale={locale} item={item} canConfirm={canConfirm} canCancel={hasPartnerCapability(session.partnerContext!.capabilities,"fulfilment.cancel")} operationId={randomUUID()}/>
         ) : (
           <EmptyState
-            title={success ? "Collection complete" : "Collection unavailable"}
+            title={t(success ? "Collection complete" : "Collection unavailable")}
             description={t("It may already be confirmed, expired, or outside your organisation scope.")}
             iconName="dashboard"
             navigateTo="/dashboard/collections"

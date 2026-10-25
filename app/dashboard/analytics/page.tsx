@@ -1,3 +1,4 @@
+import { partnerLabel } from "@/lib/partnerPresentation";
 import { getPartnerLocale } from "@/lib/partnerLocaleServer";
 import { partnerText } from "@/lib/partnerLocale";
 import { AdvertiserPerformanceChart } from "@/components/advertiser/PerformanceChart";
@@ -55,17 +56,9 @@ async function PartnerAnalyticsView() {
         {loadError ? (
           <p className="text-sm text-destructive">{loadError ? t(loadError) : null}</p>
         ) : null}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
-          <StatsCard
-            title={t("Reward status categories")}
-            value={analytics.series.length}
-            description={t("Reward status categories")}
-            icon={LineChart}
-          />
-        </div>
         <Card className="border-border">
           <CardHeader>
-            <CardTitle>{t("Analytics series")}</CardTitle>
+            <CardTitle>{t("Reward activity")}</CardTitle>
             <CardDescription>{t("Reward activity for your organisation.")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -76,7 +69,7 @@ async function PartnerAnalyticsView() {
                   className="flex items-center justify-between rounded-xl border border-border/60 p-4"
                 >
                   <p className="font-medium">
-                    {t(String(point.label ?? point.key ?? `Series ${index + 1}`))}
+                    {partnerLabel(String(point.label ?? point.key ?? "").replaceAll(" ", "_"), locale)}
                   </p>
                   <Badge variant="outline">
                     {typeof point.value === "number"

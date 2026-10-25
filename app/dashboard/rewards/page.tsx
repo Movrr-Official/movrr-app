@@ -113,7 +113,7 @@ async function PartnerRewardsView() {
                       </Badge>
                     ) : null}
                     {typeof reward.pointsCost === "number" ? (
-                      <Badge>{reward.pointsCost}{t("pts")}</Badge>
+                      <Badge>{reward.pointsCost} {t("pts")}</Badge>
                     ) : null}
                     {canManage ? (
                       <Button asChild size="sm" variant="outline">

@@ -86,7 +86,7 @@ export async function StaffTable({
                         defaultValue={
                           typeof member.role === "string" ? member.role : "viewer"
                         }
-                        options={roleOptions.map(option => ({ ...option, label: t(option.label) }))}
+                        options={roleOptions.map(option => ({ ...option, label: locale === "nl" ? partnerLabel(option.value, locale) : option.label }))}
                         className="w-36"
                       />
                       <SubmitButton size="sm" pendingLabel={t("Saving…")}>{t("Update role")}</SubmitButton>
@@ -122,7 +122,7 @@ export async function StaffTable({
               <Select
                 name="role"
                 defaultValue="staff"
-                options={roleOptions.map(option => ({ ...option, label: t(option.label) }))}
+                options={roleOptions.map(option => ({ ...option, label: locale === "nl" ? partnerLabel(option.value, locale) : option.label }))}
               />
               <SubmitButton pendingLabel={t("Inviting…")}>{t("Invite")}</SubmitButton>
             </form>

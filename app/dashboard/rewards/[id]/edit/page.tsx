@@ -4,9 +4,8 @@ import { partnerText } from "@/lib/partnerLocale";
 import Link from "next/link";
 import { updateRewardCatalogAction } from "@/app/actions/partner";
 import { StatusToast } from "@/components/form/StatusToast";
-import { SubmitButton } from "@/components/form/SubmitButton";
+import { RewardEditStatus } from "@/components/partner/RewardEditStatus";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,6 +46,7 @@ export default async function PartnerEditRewardPage({
 
   const item = await getPartnerCatalogItem(id);
   if (!item) notFound();
+  const merchantReference = /^PARTNER-[0-9a-f-]{36}$/i.test(item.sku ?? "") ? "" : item.sku ?? "";
 
   return (
     <div className="page-canvas">
@@ -60,7 +60,7 @@ export default async function PartnerEditRewardPage({
         <Card className="border-border">
           <CardHeader>
             <CardTitle>{t("Reward details")}</CardTitle>
-            <CardDescription>{t("Update the reward details. Changes are checked before saving.")}</CardDescription>
+            <CardDescription>{t("Keep your reward details ready for MOVRR review.")}</CardDescription>
           </CardHeader>
           <CardContent>
             <form action={updateRewardCatalogAction} className="grid gap-4 md:grid-cols-2">
@@ -91,15 +91,14 @@ export default async function PartnerEditRewardPage({
                 defaultValue={item.stockAvailable}
                 min={0}
               /></label>
-              <label className="partner-form-label ">{t("Internal reference")}<Input name="sku" defaultValue={item.sku ?? ""} placeholder={t("Internal reference")} /></label>
+              <label className="partner-form-label ">{t("Your reference (optional)")}<Input name="sku" defaultValue={merchantReference} placeholder={t("Your reference (optional)")} /></label>
               <label className="partner-form-label ">{t("Category")}<Input
                 name="category"
                 defaultValue={item.category ?? ""}
                 placeholder={t("Category")}
               /></label>
-              <label className="partner-form-label md:col-span-2">{t("Status")}<Select name="status" aria-label={t("Status")} defaultValue={item.status ?? "draft"} options={[{ value: "draft", label: t("Draft") }, { value: "active", label: t("Active") }, { value: "paused", label: t("Paused") }, { value: "archived", label: t("Archived") }]} /></label>
+              <RewardEditStatus status={item.status} locale={locale} />
               <div className="flex gap-3 md:col-span-2">
-                <SubmitButton type="submit" pendingLabel={t("Saving")}>{t("Save changes")}</SubmitButton>
                 <Button asChild variant="outline"><Link href="/dashboard/rewards">{t("Back to rewards")}</Link></Button>
               </div>
             </form>

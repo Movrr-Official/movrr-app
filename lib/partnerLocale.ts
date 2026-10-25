@@ -1,6 +1,23 @@
 export type PartnerLocale = "en" | "nl";
 
 export const partnerDutch: Record<string, string> = {
+  "Your reference (optional)": "Je eigen referentie (optioneel)",
+  "Your rewards and customer collections.": "Je beloningen en ophaalmomenten voor klanten.",
+  "Back": "Terug",
+  "Save as": "Opslaan als",
+  "Save draft for review": "Concept opslaan voor beoordeling",
+  "Keep your reward details ready for MOVRR review.": "Maak de gegevens van je beloning klaar voor beoordeling door MOVRR.",
+  "Saving changes takes this reward off sale. Save as a draft for MOVRR to review before it becomes available again.": "Door wijzigingen op te slaan is deze beloning niet meer beschikbaar. Sla de beloning op als concept voor beoordeling door MOVRR voordat deze weer beschikbaar wordt.",
+  "Only MOVRR can approve a reward for availability. Drafts, paused and archived rewards cannot be redeemed.": "Alleen MOVRR kan een beloning goedkeuren voor beschikbaarheid. Concepten, gepauzeerde en gearchiveerde beloningen kunnen niet worden ingewisseld.",
+  "I understand this reward will no longer be available after saving.": "Ik begrijp dat deze beloning na het opslaan niet meer beschikbaar is.",
+  "Only MOVRR can approve availability. Save this reward as a draft for review.": "Alleen MOVRR kan de beschikbaarheid goedkeuren. Sla deze beloning op als concept voor beoordeling.",
+  "Confirm that saving will take this reward off sale before continuing.": "Bevestig voordat je verdergaat dat opslaan deze beloning niet meer beschikbaar maakt.",
+  "This reward is no longer available. Refresh your reward list.": "Deze beloning is niet meer beschikbaar. Vernieuw je lijst met beloningen.",
+  "Draft saved. Contact MOVRR when your reward is ready for approval.": "Concept opgeslagen. Neem contact op met MOVRR als je beloning klaar is voor goedkeuring.",
+  "Reward updated. It remains unavailable to riders.": "Beloning bijgewerkt. Deze blijft niet beschikbaar voor fietsers.",
+  "Remove workspace access?": "Toegang tot de werkruimte intrekken?",
+  "This team member will lose access to this workspace. You can restore their membership later.": "Dit teamlid verliest toegang tot deze werkruimte. Je kunt het lidmaatschap later herstellen.",
+  "Keep access": "Toegang behouden",
   "Image could not be uploaded. Please try again.": "De afbeelding kon niet worden ge\u00fcpload. Probeer het opnieuw.",
   "Reward image": "Afbeelding van de beloning",
   "Add image": "Afbeelding toevoegen",

@@ -5,7 +5,7 @@ import { SubmitButton } from "@/components/form/SubmitButton";
 import { StatusToast } from "@/components/form/StatusToast";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { Select } from "@/components/ui/select";
+import { PartnerSelect as Select } from "@/components/partner/PartnerSelect";
 import { InventoryThumbnail } from "@/components/partner/InventoryThumbnail";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";

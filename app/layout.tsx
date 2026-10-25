@@ -55,4 +55,4 @@ export default function RootLayout({
   );
 }
 
-export const viewport: Viewport = { themeColor: "#123c2c", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#123c2c", width: "device-width", initialScale: 1, viewportFit: "cover", interactiveWidget: "resizes-content" };

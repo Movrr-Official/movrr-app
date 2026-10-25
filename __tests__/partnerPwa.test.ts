@@ -17,9 +17,9 @@ it("decodes the actual canonical opaque QR payload with the cross-browser decode
 it("caches only a public offline page, never API reads or mutations", async () => {
   type WorkerEvent = { waitUntil?: (p: Promise<unknown>) => void; respondWith?: (p: Promise<unknown>) => void; request?: { method: string; mode: string; url: string } };
   const handlers: Record<string,(event: WorkerEvent)=>void>={}, add=vi.fn(), match=vi.fn(async()=>"OFFLINE"), fetch=vi.fn(async()=>"NETWORK"), deleteCache=vi.fn(), claim=vi.fn();
-  runInNewContext(readFileSync("public/sw.js","utf8"),{self:{location:{origin:"https://workspace.invalid"},clients:{claim},addEventListener:(kind:string,fn:(event: WorkerEvent)=>void)=>{handlers[kind]=fn;}},caches:{open:async()=>({add}),keys:async()=>["other-app","movrr-partner-offline-old"],delete:deleteCache,match},fetch,URL,Response});
+  runInNewContext(readFileSync("public/sw.js","utf8"),{self:{location:{origin:"https://workspace.invalid"},clients:{claim},addEventListener:(kind:string,fn:(event: WorkerEvent)=>void)=>{handlers[kind]=fn;}},caches:{open:async()=>({addAll:add}),keys:async()=>["other-app","movrr-partner-offline-old"],delete:deleteCache,match},fetch,URL,Response});
   let work:Promise<unknown>|undefined; const waitUntil=(p:Promise<unknown>)=>{work=p;};
-  handlers.install({waitUntil});await work;expect(add).toHaveBeenCalledWith("/offline.html");
+  handlers.install({waitUntil});await work;expect(add).toHaveBeenCalledWith(["/offline.html", "/fonts/jakarta-400.ttf", "/fonts/lexend-700.ttf"]);
   handlers.activate({waitUntil});await work;expect(deleteCache).toHaveBeenCalledTimes(1);expect(deleteCache).toHaveBeenCalledWith("movrr-partner-offline-old");
   const respondWith=vi.fn((p)=>{work=p;});
   for(const [method,mode,url] of [["POST","navigate","https://workspace.invalid/dashboard/validate"],["GET","cors","https://workspace.invalid/api/private"],["GET","navigate","https://elsewhere.invalid/"]]) handlers.fetch({request:{method,mode,url},respondWith});

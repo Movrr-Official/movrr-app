@@ -1,0 +1,127 @@
+{
+  "production": false,
+  "physicalDevice": false,
+  "captures": "Actual routes with explicit isolated session/transport, not merchant/device acceptance",
+  "results": [
+    {
+      "route": "/dashboard",
+      "theme": "light",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/validate",
+      "theme": "light",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/collections",
+      "theme": "light",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/rewards",
+      "theme": "light",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/rewards/create",
+      "theme": "light",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/resources",
+      "theme": "light",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/staff",
+      "theme": "light",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/notifications",
+      "theme": "light",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/settings",
+      "theme": "light",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/workspaces",
+      "theme": "light",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard",
+      "theme": "dark",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/validate",
+      "theme": "dark",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/collections",
+      "theme": "dark",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/rewards",
+      "theme": "dark",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/rewards/create",
+      "theme": "dark",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/resources",
+      "theme": "dark",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/staff",
+      "theme": "dark",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/notifications",
+      "theme": "dark",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/dashboard/settings",
+      "theme": "dark",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "route": "/workspaces",
+      "theme": "dark",
+      "width": 390,
+      "violations": 0
+    }
+  ]
+}

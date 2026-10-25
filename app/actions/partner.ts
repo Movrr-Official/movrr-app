@@ -37,6 +37,7 @@ function lifecycleVersion(form:FormData) {
 
 function mapPlatformError(error: unknown): string {
   if (error instanceof PlatformApiError) {
+    if (error.status === 403 && /Admin approval required/i.test(error.message)) return "Only MOVRR can approve availability. Save this reward as a draft for review.";
     if (["Choose a valid JPEG, PNG or WebP image up to 3 MB.", "Image could not be uploaded. Please try again."].includes(error.message)) return error.message;
     if (error.status === 401 || error.status === 403) return "Your account cannot perform this action. Ask your manager for access.";
     if (error.kind === "AlreadyConfirmed") return "This collection was already confirmed.";
@@ -303,11 +304,18 @@ export async function updateRewardCatalogAction(formData: FormData) {
   const statusRaw = String(formData.get("status") ?? "");
   const status =
     statusRaw === "draft" ||
-    statusRaw === "active" ||
     statusRaw === "paused" ||
     statusRaw === "archived"
       ? statusRaw
       : undefined;
+
+  if (!status) return await redirectWithStatus(`/dashboard/rewards/${id}/edit`, { error: "Only MOVRR can approve availability. Save this reward as a draft for review." });
+  const { getPartnerCatalogItem } = await import("@/lib/platform/partnerCatalogPlatform");
+  const current = await getPartnerCatalogItem(id);
+  if (!current) return await redirectWithStatus("/dashboard/rewards", { error: "This reward is no longer available. Refresh your reward list." });
+  if (current.status === "active" && formData.get("acknowledgeWithdrawal") !== "true") {
+    await redirectWithStatus(`/dashboard/rewards/${id}/edit`, { error: "Confirm that saving will take this reward off sale before continuing." });
+  }
 
   try {
     await updatePartnerCatalogItem(id, {
@@ -332,7 +340,7 @@ export async function updateRewardCatalogAction(formData: FormData) {
 
   revalidatePath("/dashboard/rewards");
   await redirectWithStatus(`/dashboard/rewards/${id}/edit`, {
-    success: "Reward catalog item updated.",
+    success: status === "draft" ? "Draft saved. Contact MOVRR when your reward is ready for approval." : "Reward updated. It remains unavailable to riders.",
   });
 }
 

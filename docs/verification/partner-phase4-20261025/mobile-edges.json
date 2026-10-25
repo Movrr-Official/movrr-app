@@ -1,0 +1,50 @@
+{
+  "physicalDevice": false,
+  "keyboard": "visualViewport resize adapter; physical keyboard acceptance pending",
+  "checks": [
+    "320 /dashboard: fits",
+    "320 /dashboard/validate: fits",
+    "320 /dashboard/rewards/create: fits",
+    "320 /dashboard/staff: fits",
+    "320 /dashboard/settings: fits",
+    "320 /workspaces: fits",
+    "844 /dashboard: fits",
+    "844 /dashboard/validate: fits",
+    "844 /dashboard/rewards/create: fits",
+    "844 /dashboard/staff: fits",
+    "844 /dashboard/settings: fits",
+    "844 /workspaces: fits",
+    "Every visible create-form button/input reaches 44px, with 48px default",
+    "Simulated keyboard resize hides navigation without covering input"
+  ],
+  "targets": [
+    {
+      "label": "Add image",
+      "height": 48
+    },
+    {
+      "label": "",
+      "height": 48
+    },
+    {
+      "label": "",
+      "height": 48
+    },
+    {
+      "label": "",
+      "height": 48
+    },
+    {
+      "label": "",
+      "height": 48
+    },
+    {
+      "label": "",
+      "height": 48
+    },
+    {
+      "label": "Create item",
+      "height": 48
+    }
+  ]
+}

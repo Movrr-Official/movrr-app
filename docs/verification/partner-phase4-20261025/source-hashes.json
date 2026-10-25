@@ -1,0 +1,21 @@
+{
+  "normalization": "UTF-8 text with LF line endings",
+  "files": {
+    "movrr-mobile/components/ui/Button.tsx": "2fed5fe003ed0ef634e47cfa532f8b6f5c132b91e75158617a9e473dd11a5ec4",
+    "movrr-mobile/components/layout/ScreenHeader.tsx": "b629540e7af1b65826b7f23c2f3835eb60b784436e4f3140eb2cd7208abeb642",
+    "movrr-mobile/styles/fonts.ts": "808650700ab5818a859df0b579c3e2f2d3d05124b3dc291b96a38d1225f14284",
+    "movrr-mobile/styles/spacing.ts": "1edb7e28a3d2fcec3189181cf8b49e10615faaec0f8e929c480d8ae1fd627072",
+    "movrr-mobile/styles/radii.ts": "a85a28e6c297b0d7144db3a14d358a01714ca89e22749b277d06a6c2651fdbb4",
+    "movrr-mobile/styles/colors.ts": "a26058d6ee6ca46fba857f5e0e97505da8494adf419c21cf1b03da8abd62ec62",
+    "movrr-mobile/styles/brandGreen.ts": "28af2cce3e1156175d3a4d9f188161106295909b0c5091b2436c2f92f4b9e226",
+    "movrr-app/app/partner.css": "b4e92cb74e938e16dcbf53ce314834a9af43c62d76002aa44869ab2223b5bd33",
+    "movrr-app/components/partner/PartnerShell.tsx": "e010ebc322f8c2b1eae2fb2c4731387a0ea5f42ef334940115744920f31273ed",
+    "movrr-app/components/partner/RewardEditStatus.tsx": "b6c694fdb7ef6fb4ad4acacd16deb9c58a482659e907777b3904951921a50698",
+    "movrr-app/app/dashboard/rewards/[id]/edit/page.tsx": "53cf98004da496f28eb9cbcedfa33afa2a199ba0e3e49b218aadf1e0be03d85b",
+    "movrr-app/app/dashboard/rewards/create/page.tsx": "71a07f23b957e214ff5fca5141e41a7cea47698f5d1d4e1268f178d57d842f89",
+    "movrr-app/lib/usePartnerOverlay.ts": "baf8cde677091b38940478eee46ca3220f842e73303ab02725635f83110a7c27",
+    "movrr-app/app/actions/partner.ts": "1e809eee01e6681896b1146a32ebe04baefef52ee5aa364da8a3c2c3fe84173d",
+    "movrr-app/public/offline.html": "9acdec0e8989b3e3012a6f2b839812ffd6e27e28155703edbb7a69e1f90c71e9",
+    "movrr-app/public/sw.js": "c40599ba46534b7ca548721076bb429e7c5b654fb73c2c47d2bd8647b02cd64f"
+  }
+}

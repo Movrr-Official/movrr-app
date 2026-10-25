@@ -7,9 +7,10 @@ import {
   updateStaffRoleAction,
 } from "@/app/actions/partner";
 import { SubmitButton } from "@/components/form/SubmitButton";
+import { ConfirmSubmitButton } from "@/components/partner/ConfirmSubmitButton";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import { PartnerSelect as Select } from "@/components/partner/PartnerSelect";
 import {
   Card,
   CardContent,
@@ -90,7 +91,7 @@ export async function StaffTable({
                         className="w-36"
                       />
                       <SubmitButton size="sm" pendingLabel={t("Saving…")}>{t("Update role")}</SubmitButton>
-                      <SubmitButton size="sm" name="status" value={member.status === "revoked" ? "active" : "revoked"} pendingLabel={t("Saving…")}>{member.status === "revoked" ? t("Restore membership") : t("Revoke membership")}</SubmitButton>
+                      {member.status === "revoked" ? <SubmitButton size="sm" name="status" value="active" pendingLabel={t("Saving…")}>{t("Restore membership")}</SubmitButton> : <ConfirmSubmitButton size="sm" name="status" value="revoked" pendingLabel={t("Saving…")} title={t("Remove workspace access?")} description={t("This team member will lose access to this workspace. You can restore their membership later.")} cancelLabel={t("Keep access")}>{t("Revoke membership")}</ConfirmSubmitButton>}
                     </form>
                   ) : null}
                 </div>

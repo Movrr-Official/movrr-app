@@ -9,3 +9,6 @@ await mkdir(resolve(root, "public/pwa"), { recursive: true });
 await Promise.all([192, 512].map(size => sharp(resolve(root, "app/icon.png"))
   .resize(size, size).flatten({ background: "#123c2c" }).png()
   .toFile(resolve(root, `public/pwa/icon-${size}.png`))));
+const mark = await sharp(resolve(root, "app/icon.png")).resize(304, 304).png().toBuffer();
+await sharp({ create: { width: 512, height: 512, channels: 4, background: "#123c2c" } })
+  .composite([{ input: mark, gravity: "centre" }]).png().toFile(resolve(root, "public/pwa/icon-maskable-512.png"));

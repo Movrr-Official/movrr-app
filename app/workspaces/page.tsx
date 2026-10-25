@@ -27,7 +27,7 @@ export default async function WorkspacesPage({ searchParams }: { searchParams?: 
   const choices = [
     ...(workspaces.rider ? [{ key: "rider", name: t("Rider"), type: t("Personal workspace"), role: "", icon: Bike }] : []),
     ...workspaces.memberships.map(member => ({
-      key: member.organisationId, name: member.name,
+      key: member.organisationId, name: member.name || t("Organisation"),
       type: t(member.domain === "partner" ? "Partner Workspace" : member.domain === "advertiser" ? "Advertiser workspace" : "Government workspace"),
       role: t(member.role === "partner_operations_manager" ? "Operations manager" : member.role.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")),
       icon: member.domain === "partner" ? Store : member.domain === "advertiser" ? Megaphone : Landmark,

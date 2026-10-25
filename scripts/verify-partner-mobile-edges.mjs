@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { createRequire } from 'node:module';
+import assert from 'node:assert/strict';
+const require=createRequire(import.meta.url),{chromium}=require(process.env.MOVRR_PLAYWRIGHT_MODULE),origin='http://127.0.0.1:3318',out=path.resolve('.tmp/partner-phase4-20261025/evidence');
+const browser=await chromium.launch({headless:true}),checks=[];
+try{const context=await browser.newContext({viewport:{width:320,height:720},hasTouch:true,isMobile:true});const page=await context.newPage();
+for(const size of [{width:320,height:720},{width:844,height:390}]){await page.setViewportSize(size);for(const route of ['/dashboard','/dashboard/validate','/dashboard/rewards/create','/dashboard/staff','/dashboard/settings','/workspaces']){await page.goto(origin+route,{waitUntil:'networkidle'});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),route+' overflow');if(route!=='/workspaces'){const bell=page.getByRole('button',{name:'Notifications',exact:true});await bell.waitFor();const box=await bell.boundingBox();assert.ok(box&&box.x>=0&&box.x+box.width<=size.width,`${route}: header controls fit`)}checks.push(`${size.width} ${route}: fits`);}}
+await page.setViewportSize({width:390,height:844});await page.goto(origin+'/dashboard/rewards/create',{waitUntil:'networkidle'});
+const targets=await page.locator('main button, main input:not([type=hidden]):not([type=file]), main [role=combobox]').evaluateAll(nodes=>nodes.filter(n=>n.getBoundingClientRect().width&&n.getBoundingClientRect().height).map(n=>({label:n.getAttribute('aria-label')??n.textContent,height:n.getBoundingClientRect().height})));
+assert.ok(targets.every(t=>t.height>=44),JSON.stringify(targets));checks.push('Every visible create-form button/input reaches 44px, with 48px default');
+await page.getByLabel('Title',{exact:true}).focus();await page.evaluate(()=>{Object.defineProperty(window.visualViewport,'height',{configurable:true,get:()=>400});window.visualViewport.dispatchEvent(new Event('resize'))});assert.ok(await page.locator('body').evaluate(e=>e.hasAttribute('data-partner-keyboard')));assert.equal(await page.locator('.partner-mobile-tabs').evaluate(e=>getComputedStyle(e).display),'none');checks.push('Simulated keyboard resize hides navigation without covering input');await page.getByRole('heading',{name:'Create reward',exact:true}).click();
+for(const theme of ['light','dark']){await page.evaluate(t=>localStorage.setItem('theme',t),theme);await page.goto(origin+'/workspaces?lang=nl',{waitUntil:'networkidle'});await page.screenshot({path:path.join(out,`workspaces-${theme}-nl-mobile.png`)});}
+fs.writeFileSync(path.join(out,'mobile-edges.json'),JSON.stringify({physicalDevice:false,keyboard:'visualViewport resize adapter; physical keyboard acceptance pending',checks,targets},null,2));console.log(JSON.stringify({checks:checks.length,targets}));}finally{await browser.close()}

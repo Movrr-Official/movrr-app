@@ -1,0 +1,996 @@
+{
+  "production": false,
+  "physicalDevice": false,
+  "session": "isolated visual session",
+  "canonicalCatalog": "actual server actions + Admin command + local SQL; media storage in memory",
+  "checks": [
+    "Back dismisses More without leaving screen",
+    "Destination is unobscured after menu navigation",
+    "Menu selection leaves no extra history trap",
+    "Back dismisses language popover",
+    "Notification View all preserves return path",
+    "Actual create form saves a draft through canonical command",
+    "Actual edit form persists details and canonical viewed version",
+    "Back dismisses status selection without leaving editor",
+    "Image removal saves through canonical command",
+    "Active editor requires withdrawal consent",
+    "Unacknowledged active edit is invalid",
+    "Active browser edit saves as draft and loses active controls",
+    "light 390 overview: no horizontal overflow",
+    "light 390 scan: no horizontal overflow",
+    "light 390 collections: no horizontal overflow",
+    "light 390 history: no horizontal overflow",
+    "light 390 rewards: no horizontal overflow",
+    "light 390 create: no horizontal overflow",
+    "light 390 edit: no horizontal overflow",
+    "light 390 inventory: no horizontal overflow",
+    "light 390 team: no horizontal overflow",
+    "light 390 activity: no horizontal overflow",
+    "light 390 notifications: no horizontal overflow",
+    "light 390 settings: no horizontal overflow",
+    "light 390 workspaces: no horizontal overflow",
+    "light 820 overview: no horizontal overflow",
+    "light 820 scan: no horizontal overflow",
+    "light 820 collections: no horizontal overflow",
+    "light 820 history: no horizontal overflow",
+    "light 820 rewards: no horizontal overflow",
+    "light 820 create: no horizontal overflow",
+    "light 820 edit: no horizontal overflow",
+    "light 820 inventory: no horizontal overflow",
+    "light 820 team: no horizontal overflow",
+    "light 820 activity: no horizontal overflow",
+    "light 820 notifications: no horizontal overflow",
+    "light 820 settings: no horizontal overflow",
+    "light 820 workspaces: no horizontal overflow",
+    "light 1440 overview: no horizontal overflow",
+    "light 1440 scan: no horizontal overflow",
+    "light 1440 collections: no horizontal overflow",
+    "light 1440 history: no horizontal overflow",
+    "light 1440 rewards: no horizontal overflow",
+    "light 1440 create: no horizontal overflow",
+    "light 1440 edit: no horizontal overflow",
+    "light 1440 inventory: no horizontal overflow",
+    "light 1440 team: no horizontal overflow",
+    "light 1440 activity: no horizontal overflow",
+    "light 1440 notifications: no horizontal overflow",
+    "light 1440 settings: no horizontal overflow",
+    "light 1440 workspaces: no horizontal overflow",
+    "dark 390 overview: no horizontal overflow",
+    "dark 390 scan: no horizontal overflow",
+    "dark 390 collections: no horizontal overflow",
+    "dark 390 history: no horizontal overflow",
+    "dark 390 rewards: no horizontal overflow",
+    "dark 390 create: no horizontal overflow",
+    "dark 390 edit: no horizontal overflow",
+    "dark 390 inventory: no horizontal overflow",
+    "dark 390 team: no horizontal overflow",
+    "dark 390 activity: no horizontal overflow",
+    "dark 390 notifications: no horizontal overflow",
+    "dark 390 settings: no horizontal overflow",
+    "dark 390 workspaces: no horizontal overflow",
+    "dark 820 overview: no horizontal overflow",
+    "dark 820 scan: no horizontal overflow",
+    "dark 820 collections: no horizontal overflow",
+    "dark 820 history: no horizontal overflow",
+    "dark 820 rewards: no horizontal overflow",
+    "dark 820 create: no horizontal overflow",
+    "dark 820 edit: no horizontal overflow",
+    "dark 820 inventory: no horizontal overflow",
+    "dark 820 team: no horizontal overflow",
+    "dark 820 activity: no horizontal overflow",
+    "dark 820 notifications: no horizontal overflow",
+    "dark 820 settings: no horizontal overflow",
+    "dark 820 workspaces: no horizontal overflow",
+    "dark 1440 overview: no horizontal overflow",
+    "dark 1440 scan: no horizontal overflow",
+    "dark 1440 collections: no horizontal overflow",
+    "dark 1440 history: no horizontal overflow",
+    "dark 1440 rewards: no horizontal overflow",
+    "dark 1440 create: no horizontal overflow",
+    "dark 1440 edit: no horizontal overflow",
+    "dark 1440 inventory: no horizontal overflow",
+    "dark 1440 team: no horizontal overflow",
+    "dark 1440 activity: no horizontal overflow",
+    "dark 1440 notifications: no horizontal overflow",
+    "dark 1440 settings: no horizontal overflow",
+    "dark 1440 workspaces: no horizontal overflow",
+    "Reduced motion disables entry animation",
+    "Text scaling keeps screen within viewport",
+    "Escape restores menu trigger focus",
+    "Dutch light overview: no overflow",
+    "Dutch light scan: no overflow",
+    "Dutch light collections: no overflow",
+    "Dutch light history: no overflow",
+    "Dutch light rewards: no overflow",
+    "Dutch light create: no overflow",
+    "Dutch light edit: no overflow",
+    "Dutch light inventory: no overflow",
+    "Dutch light team: no overflow",
+    "Dutch light activity: no overflow",
+    "Dutch light notifications: no overflow",
+    "Dutch light settings: no overflow",
+    "Dutch light workspaces: no overflow",
+    "Dutch dark overview: no overflow",
+    "Dutch dark scan: no overflow",
+    "Dutch dark collections: no overflow",
+    "Dutch dark history: no overflow",
+    "Dutch dark rewards: no overflow",
+    "Dutch dark create: no overflow",
+    "Dutch dark edit: no overflow",
+    "Dutch dark inventory: no overflow",
+    "Dutch dark team: no overflow",
+    "Dutch dark activity: no overflow",
+    "Dutch dark notifications: no overflow",
+    "Dutch dark settings: no overflow",
+    "Dutch dark workspaces: no overflow",
+    "Offline fallback retains Dutch and dark appearance",
+    "Offline retry retains path without query",
+    "Offline document cannot submit commands",
+    "Cache contains only allowlisted public assets",
+    "Reconnection returns to intended screen",
+    "Simulated standalone hides redundant install control",
+    "No runtime errors"
+  ],
+  "matrix": [
+    {
+      "name": "overview",
+      "route": "/dashboard",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "scan",
+      "route": "/dashboard/validate",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "collections",
+      "route": "/dashboard/collections",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "history",
+      "route": "/dashboard/collections?view=history",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "rewards",
+      "route": "/dashboard/rewards",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "create",
+      "route": "/dashboard/rewards/create",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "edit",
+      "route": "/dashboard/rewards/e61eeb72-1944-49b4-b47b-1c5ca1f2f70a/edit",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "inventory",
+      "route": "/dashboard/resources",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "team",
+      "route": "/dashboard/staff",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "activity",
+      "route": "/dashboard/analytics",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "notifications",
+      "route": "/dashboard/notifications",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "settings",
+      "route": "/dashboard/settings",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "workspaces",
+      "route": "/workspaces",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "overview",
+      "route": "/dashboard",
+      "theme": "light",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "scan",
+      "route": "/dashboard/validate",
+      "theme": "light",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "collections",
+      "route": "/dashboard/collections",
+      "theme": "light",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "history",
+      "route": "/dashboard/collections?view=history",
+      "theme": "light",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "rewards",
+      "route": "/dashboard/rewards",
+      "theme": "light",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "create",
+      "route": "/dashboard/rewards/create",
+      "theme": "light",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "edit",
+      "route": "/dashboard/rewards/e61eeb72-1944-49b4-b47b-1c5ca1f2f70a/edit",
+      "theme": "light",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "inventory",
+      "route": "/dashboard/resources",
+      "theme": "light",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "team",
+      "route": "/dashboard/staff",
+      "theme": "light",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "activity",
+      "route": "/dashboard/analytics",
+      "theme": "light",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "notifications",
+      "route": "/dashboard/notifications",
+      "theme": "light",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "settings",
+      "route": "/dashboard/settings",
+      "theme": "light",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "workspaces",
+      "route": "/workspaces",
+      "theme": "light",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "overview",
+      "route": "/dashboard",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "scan",
+      "route": "/dashboard/validate",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "collections",
+      "route": "/dashboard/collections",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "history",
+      "route": "/dashboard/collections?view=history",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "rewards",
+      "route": "/dashboard/rewards",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "create",
+      "route": "/dashboard/rewards/create",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "edit",
+      "route": "/dashboard/rewards/e61eeb72-1944-49b4-b47b-1c5ca1f2f70a/edit",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "inventory",
+      "route": "/dashboard/resources",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "team",
+      "route": "/dashboard/staff",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "activity",
+      "route": "/dashboard/analytics",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "notifications",
+      "route": "/dashboard/notifications",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "settings",
+      "route": "/dashboard/settings",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "workspaces",
+      "route": "/workspaces",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "overview",
+      "route": "/dashboard",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "scan",
+      "route": "/dashboard/validate",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "collections",
+      "route": "/dashboard/collections",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "history",
+      "route": "/dashboard/collections?view=history",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "rewards",
+      "route": "/dashboard/rewards",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "create",
+      "route": "/dashboard/rewards/create",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "edit",
+      "route": "/dashboard/rewards/e61eeb72-1944-49b4-b47b-1c5ca1f2f70a/edit",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "inventory",
+      "route": "/dashboard/resources",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "team",
+      "route": "/dashboard/staff",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "activity",
+      "route": "/dashboard/analytics",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "notifications",
+      "route": "/dashboard/notifications",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "settings",
+      "route": "/dashboard/settings",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "workspaces",
+      "route": "/workspaces",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "overview",
+      "route": "/dashboard",
+      "theme": "dark",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "scan",
+      "route": "/dashboard/validate",
+      "theme": "dark",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "collections",
+      "route": "/dashboard/collections",
+      "theme": "dark",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "history",
+      "route": "/dashboard/collections?view=history",
+      "theme": "dark",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "rewards",
+      "route": "/dashboard/rewards",
+      "theme": "dark",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "create",
+      "route": "/dashboard/rewards/create",
+      "theme": "dark",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "edit",
+      "route": "/dashboard/rewards/e61eeb72-1944-49b4-b47b-1c5ca1f2f70a/edit",
+      "theme": "dark",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "inventory",
+      "route": "/dashboard/resources",
+      "theme": "dark",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "team",
+      "route": "/dashboard/staff",
+      "theme": "dark",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "activity",
+      "route": "/dashboard/analytics",
+      "theme": "dark",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "notifications",
+      "route": "/dashboard/notifications",
+      "theme": "dark",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "settings",
+      "route": "/dashboard/settings",
+      "theme": "dark",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "workspaces",
+      "route": "/workspaces",
+      "theme": "dark",
+      "width": 820,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "overview",
+      "route": "/dashboard",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "scan",
+      "route": "/dashboard/validate",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "collections",
+      "route": "/dashboard/collections",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "history",
+      "route": "/dashboard/collections?view=history",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "rewards",
+      "route": "/dashboard/rewards",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "create",
+      "route": "/dashboard/rewards/create",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "edit",
+      "route": "/dashboard/rewards/e61eeb72-1944-49b4-b47b-1c5ca1f2f70a/edit",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "inventory",
+      "route": "/dashboard/resources",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "team",
+      "route": "/dashboard/staff",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "activity",
+      "route": "/dashboard/analytics",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "notifications",
+      "route": "/dashboard/notifications",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "settings",
+      "route": "/dashboard/settings",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "workspaces",
+      "route": "/workspaces",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "overview",
+      "route": "/dashboard",
+      "theme": "light",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "scan",
+      "route": "/dashboard/validate",
+      "theme": "light",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "collections",
+      "route": "/dashboard/collections",
+      "theme": "light",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "history",
+      "route": "/dashboard/collections?view=history",
+      "theme": "light",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "rewards",
+      "route": "/dashboard/rewards",
+      "theme": "light",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "create",
+      "route": "/dashboard/rewards/create",
+      "theme": "light",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "edit",
+      "route": "/dashboard/rewards/e61eeb72-1944-49b4-b47b-1c5ca1f2f70a/edit",
+      "theme": "light",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "inventory",
+      "route": "/dashboard/resources",
+      "theme": "light",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "team",
+      "route": "/dashboard/staff",
+      "theme": "light",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "activity",
+      "route": "/dashboard/analytics",
+      "theme": "light",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "notifications",
+      "route": "/dashboard/notifications",
+      "theme": "light",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "settings",
+      "route": "/dashboard/settings",
+      "theme": "light",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "workspaces",
+      "route": "/workspaces",
+      "theme": "light",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "overview",
+      "route": "/dashboard",
+      "theme": "dark",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "scan",
+      "route": "/dashboard/validate",
+      "theme": "dark",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "collections",
+      "route": "/dashboard/collections",
+      "theme": "dark",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "history",
+      "route": "/dashboard/collections?view=history",
+      "theme": "dark",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "rewards",
+      "route": "/dashboard/rewards",
+      "theme": "dark",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "create",
+      "route": "/dashboard/rewards/create",
+      "theme": "dark",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "edit",
+      "route": "/dashboard/rewards/e61eeb72-1944-49b4-b47b-1c5ca1f2f70a/edit",
+      "theme": "dark",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "inventory",
+      "route": "/dashboard/resources",
+      "theme": "dark",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "team",
+      "route": "/dashboard/staff",
+      "theme": "dark",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "activity",
+      "route": "/dashboard/analytics",
+      "theme": "dark",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "notifications",
+      "route": "/dashboard/notifications",
+      "theme": "dark",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "settings",
+      "route": "/dashboard/settings",
+      "theme": "dark",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    },
+    {
+      "name": "workspaces",
+      "route": "/workspaces",
+      "theme": "dark",
+      "width": 390,
+      "locale": "nl",
+      "overflow": false,
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "violations": 0
+}

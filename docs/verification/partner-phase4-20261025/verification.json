@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-25",
+  "productionDeployed": false,
+  "appTests": {"files":28,"passed":156},
+  "affectedAdminTests": {"files":8,"passed":39,"sourceModified":false},
+  "canonicalLocalJourney": {"passed":10,"host":"127.0.0.1:55443","realAppActions":true,"realAdminCatalogCommands":true,"canonicalCapturedSql":true,"boundaries":["session","database transport","in-memory media provider"]},
+  "browser": {"passed":126,"routeCombinations":104,"axeViolations":0,"runtimeErrors":0,"physicalDevice":false},
+  "smallScreenAndKeyboard": {"passed":14,"keyboard":"simulated visualViewport resize"},
+  "finalMobileSweep": {"checks":20,"axeViolations":0},
+  "finalStateCorrections": {"passed":4,"automaticOnlineHintObserved":false,"explicitRecoverySucceeded":true},
+  "typescript":"pass",
+  "productionBuild":"pass; actual Admin HTTPS API origin; no deploy",
+  "changedSourceLint":"pass",
+  "fullAppLint":{"status":"existing unrelated failures","errors":16,"warnings":2,"suppressed":false},
+  "productionReadOnlyCheck":{"activePartnerCatalogWriteDenied":true,"shop":{"state":"disabled","redemption_enabled":false},"financialRecordsReadOrChanged":false},
+  "gitTriggeredMainDeployment":false,
+  "adminOrRiderSourceChanged":false,
+  "operationalAcceptance":"physical devices, genuine merchant supply/provider and staff attestations remain required"
+}

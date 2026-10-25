@@ -7,11 +7,13 @@ import { getPartnerNotificationPreviewAction } from "@/app/actions/partner";
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { useOnline } from "@/lib/useOnline";
+import { usePartnerOverlay } from "@/lib/usePartnerOverlay";
+import { useRouter } from "next/navigation";
 import { partnerText, type PartnerLocale } from "@/lib/partnerLocale";
 import type { ProductNotification } from "@/lib/notifications";
 
 export function PartnerNotificationPreview({ locale }: { locale: PartnerLocale }) {
-  const [open, setOpen] = useState(false);
+  const overlay = usePartnerOverlay(), router = useRouter();
   const [items, setItems] = useState<ProductNotification[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const request = useRef(0);
@@ -32,12 +34,12 @@ export function PartnerNotificationPreview({ locale }: { locale: PartnerLocale }
   }
 
   function changeOpen(next: boolean) {
-    setOpen(next);
+    overlay.changeOpen(next);
     if (next) void load();
     else { request.current++; setItems([]); setStatus("idle"); }
   }
 
-  return <Popover open={open} onOpenChange={changeOpen}>
+  return <Popover open={overlay.open} onOpenChange={changeOpen}>
     <PopoverTrigger asChild><Button variant="ghost" size="icon" type="button" className="partner-icon-button" aria-label={t("Notifications")}><Bell className="size-[19px]" aria-hidden="true" /></Button></PopoverTrigger>
     <PopoverContent className="partner-popover partner-notification-preview w-96 p-0" lang={locale} aria-labelledby="partner-notification-title">
       <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-3">
@@ -58,7 +60,7 @@ export function PartnerNotificationPreview({ locale }: { locale: PartnerLocale }
           })}</ol>
           : <div className="space-y-2 px-5 py-8 text-center"><CheckCheck className="mx-auto mb-3 size-6 text-muted-foreground" aria-hidden="true" /><p className="text-sm font-semibold">{t("You're all caught up")}</p><p className="text-sm text-muted-foreground">{t("New updates will appear here.")}</p></div>}
       </div>
-      <div className="border-t border-border p-3"><Link href="/dashboard/notifications" onClick={() => changeOpen(false)} className="flex min-h-11 items-center justify-center rounded-lg text-sm font-semibold hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring">{t("View all notifications")}</Link></div>
+      <div className="border-t border-border p-3"><Link href="/dashboard/notifications" onClick={event => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); overlay.close(() => router.push("/dashboard/notifications")); }} className="flex min-h-11 items-center justify-center rounded-lg text-sm font-semibold hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring">{t("View all notifications")}</Link></div>
     </PopoverContent>
   </Popover>;
 }

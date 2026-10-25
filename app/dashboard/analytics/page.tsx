@@ -50,7 +50,7 @@ async function PartnerAnalyticsView() {
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
         <PageHeader
-          title={t("Analytics")}
+          title={t("Activity")}
           description={t("Track reward progress and customer collections.")}
         />
         {loadError ? (

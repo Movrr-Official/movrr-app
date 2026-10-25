@@ -6,7 +6,6 @@ import { createRewardCatalogAction } from "@/app/actions/partner";
 import { StatusToast } from "@/components/form/StatusToast";
 import { SubmitButton } from "@/components/form/SubmitButton";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -66,9 +65,8 @@ export default async function PartnerCreateRewardPage({
               /></label>
               <label className="partner-form-label ">{t("Points cost")}<Input name="pointsCost" type="number" placeholder={t("Points cost")} min={0} required /></label>
               <label className="partner-form-label ">{t("Stock available")}<Input name="stockAvailable" type="number" placeholder={t("Stock available")} min={0} /></label>
-              <label className="partner-form-label ">{t("Internal reference")}<Input name="sku" placeholder={t("Internal reference")} /></label>
+              <label className="partner-form-label ">{t("Your reference (optional)")}<Input name="sku" placeholder={t("Your reference (optional)")} /></label>
               <label className="partner-form-label ">{t("Category")}<Input name="category" placeholder={t("Category")} /></label>
-              <label className="partner-form-label md:col-span-2">{t("Status")}<Select name="status" aria-label={t("Status")} defaultValue="draft" options={[{ value: "draft", label: t("Draft") }]} /></label>
               <div className="flex gap-3 md:col-span-2">
                 <SubmitButton type="submit" pendingLabel={t("Creating")}>{t("Create item")}</SubmitButton>
                 <Button asChild variant="outline"><Link href="/dashboard/rewards">{t("Cancel")}</Link></Button>

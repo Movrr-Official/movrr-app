@@ -1,0 +1,11 @@
+{
+  "production": false,
+  "physicalDevice": false,
+  "checks": [
+    "Auto-generated UUID reference is not displayed",
+    "Untouched reference remains canonical while active edit saves draft",
+    "Offline fallback does not claim recovery from an initial browser network hint",
+    "Explicit reconnect retry reaches protected intended route"
+  ],
+  "automaticOnlineHintObserved": false
+}

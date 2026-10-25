@@ -4,7 +4,7 @@ const mocks = vi.hoisted(() => ({ guard: vi.fn(), get: vi.fn(), set: vi.fn(), re
 vi.mock("@/lib/appUser", () => ({ requirePartnerSession: mocks.guard }));
 vi.mock("next/headers", () => ({ cookies: async () => ({ get: mocks.get, set: mocks.set }) }));
 vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidate }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }), redirect: (url: string) => { throw new Error(url); } }));
+vi.mock("next/navigation", () => ({ usePathname: () => "/dashboard/staff", useRouter: () => ({ push: vi.fn() }), redirect: (url: string) => { throw new Error(url); } }));
 vi.mock("@/lib/notifications", () => ({}));
 vi.mock("@/services/partner", () => ({ confirmPartnerCollection: mocks.confirm, cancelPartnerFulfilment: mocks.cancel }));
 import { getPartnerLocale } from "@/lib/partnerLocaleServer";

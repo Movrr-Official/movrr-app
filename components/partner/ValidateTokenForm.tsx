@@ -94,7 +94,7 @@ export function ValidateTokenForm({ canValidate, initialLocale = "en", handoffUr
 
   return <Card lang={locale} className="mx-auto w-full max-w-2xl overflow-hidden border-border">
     <CardHeader><div className="flex items-start justify-between gap-4">
-      <div className="space-y-2"><CardTitle>{mobile === false ? copy.phoneTitle : copy.title}</CardTitle><CardDescription>{mobile === false ? copy.phoneDescription : copy.description}</CardDescription></div>
+      <div className="space-y-2">{mobile === false && <CardTitle>{copy.phoneTitle}</CardTitle>}<CardDescription>{mobile === false ? copy.phoneDescription : copy.description}</CardDescription></div>
 
     </div></CardHeader>
     <CardContent className="space-y-5" lang={locale}>

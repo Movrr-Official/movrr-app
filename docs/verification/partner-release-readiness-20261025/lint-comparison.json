@@ -1,0 +1,161 @@
+{
+  "baseline": "b33e34dec03fcc757a7e4423989d49b065abacce",
+  "candidate": "9f1660c24ad8d03fceef40d3f4a67f0dfa0857e6",
+  "baselineProvenance": "docs/verification/partner-scanner-production-20261025/deployment.json",
+  "sameInstalledToolchain": true,
+  "baselineErrors": 16,
+  "baselineWarnings": 2,
+  "candidateErrors": 16,
+  "candidateWarnings": 2,
+  "newDiagnostics": [],
+  "removedDiagnostics": [],
+  "groups": [
+    {
+      "file": "app/account/deletion-receipt/page.tsx",
+      "rule": "react-hooks/purity",
+      "severity": 2,
+      "count": 1
+    },
+    {
+      "file": "docs/verification/partner-header-and-images-20261025/verify-states.mjs",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "severity": 1,
+      "count": 1
+    },
+    {
+      "file": "docs/verification/partner-phone-handoff-20261025/capture.cjs",
+      "rule": "@typescript-eslint/no-require-imports",
+      "severity": 2,
+      "count": 7
+    },
+    {
+      "file": "lib/notifications.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "severity": 1,
+      "count": 1
+    },
+    {
+      "file": "scripts/capture-partner-visual.cjs",
+      "rule": "@typescript-eslint/no-require-imports",
+      "severity": 2,
+      "count": 4
+    },
+    {
+      "file": "scripts/verify-partner-interactions.cjs",
+      "rule": "@typescript-eslint/no-require-imports",
+      "severity": 2,
+      "count": 4
+    }
+  ],
+  "unchangedFiles": [
+    {
+      "file": "app/account/deletion-receipt/page.tsx",
+      "baselineBlob": "bae621b67bd232d3299724356fe3db840411ebf8",
+      "candidateBlob": "bae621b67bd232d3299724356fe3db840411ebf8",
+      "identical": true
+    },
+    {
+      "file": "docs/verification/partner-header-and-images-20261025/verify-states.mjs",
+      "baselineBlob": "edd807b4719adf01e2ce2a6b3c61e8f401404cfb",
+      "candidateBlob": "edd807b4719adf01e2ce2a6b3c61e8f401404cfb",
+      "identical": true
+    },
+    {
+      "file": "docs/verification/partner-phone-handoff-20261025/capture.cjs",
+      "baselineBlob": "d42aed1fb547b17c7effe607cf4670f5b83f9640",
+      "candidateBlob": "d42aed1fb547b17c7effe607cf4670f5b83f9640",
+      "identical": true
+    },
+    {
+      "file": "lib/notifications.ts",
+      "baselineBlob": "4f07a079ea01b60c67cc995ddff2568084b5880b",
+      "candidateBlob": "4f07a079ea01b60c67cc995ddff2568084b5880b",
+      "identical": true
+    },
+    {
+      "file": "scripts/capture-partner-visual.cjs",
+      "baselineBlob": "a1a46799ca59d7735dfa32b226baf457f97d73c6",
+      "candidateBlob": "a1a46799ca59d7735dfa32b226baf457f97d73c6",
+      "identical": true
+    },
+    {
+      "file": "scripts/verify-partner-interactions.cjs",
+      "baselineBlob": "a5b97eac7a516bb7bfd07e84c9e1c6274a918ea3",
+      "candidateBlob": "a5b97eac7a516bb7bfd07e84c9e1c6274a918ea3",
+      "identical": true
+    },
+    {
+      "file": "package.json",
+      "baselineBlob": "69acbca3ff5bcb03c6a29da6b64e5425075ed4a2",
+      "candidateBlob": "69acbca3ff5bcb03c6a29da6b64e5425075ed4a2",
+      "identical": true
+    },
+    {
+      "file": "package-lock.json",
+      "baselineBlob": "59c993bc423463dcc0af2e84fb046fd22d5d2ccf",
+      "candidateBlob": "59c993bc423463dcc0af2e84fb046fd22d5d2ccf",
+      "identical": true
+    },
+    {
+      "file": "eslint.config.mjs",
+      "baselineBlob": "42d0ba2ba349d15674a0ea08523daa303e936f3d",
+      "candidateBlob": "42d0ba2ba349d15674a0ea08523daa303e936f3d",
+      "identical": true
+    },
+    {
+      "file": "components/partner/ValidateTokenForm.tsx",
+      "baselineBlob": "991ca293e1644fbad661dde4d75200f47a5a3f18",
+      "candidateBlob": "991ca293e1644fbad661dde4d75200f47a5a3f18",
+      "identical": true
+    },
+    {
+      "file": "components/partner/CollectionDetail.tsx",
+      "baselineBlob": "964312bd704031a0826aaa4d64a23dee5c00327c",
+      "candidateBlob": "964312bd704031a0826aaa4d64a23dee5c00327c",
+      "identical": true
+    },
+    {
+      "file": "app/actions/partner.ts",
+      "baselineBlob": "f3cbc2db9b937e35547bbd0a17656232b38fb8a1",
+      "candidateBlob": "f3cbc2db9b937e35547bbd0a17656232b38fb8a1",
+      "identical": true
+    },
+    {
+      "file": "services/partner.ts",
+      "baselineBlob": "f2e99dd91232d35a914e64db40c0c8302d1aef1e",
+      "candidateBlob": "f2e99dd91232d35a914e64db40c0c8302d1aef1e",
+      "identical": true
+    },
+    {
+      "file": "public/sw.js",
+      "baselineBlob": "30ff60d128a7be0b6506661ac7b854679e6fb5c1",
+      "candidateBlob": "30ff60d128a7be0b6506661ac7b854679e6fb5c1",
+      "identical": true
+    },
+    {
+      "file": "public/offline.html",
+      "baselineBlob": "8043a0f4eceb4f8010ff3fed742821c5607c5739",
+      "candidateBlob": "8043a0f4eceb4f8010ff3fed742821c5607c5739",
+      "identical": true
+    },
+    {
+      "file": "proxy.ts",
+      "baselineBlob": "e2bd6425b554e400dbae5741f122904f81db79b8",
+      "candidateBlob": "e2bd6425b554e400dbae5741f122904f81db79b8",
+      "identical": true
+    },
+    {
+      "file": "app/partner.css",
+      "baselineBlob": "b6b861121f01845943b36650a718c5d00eef3303",
+      "candidateBlob": "b6b861121f01845943b36650a718c5d00eef3303",
+      "identical": true
+    }
+  ],
+  "toolchain": {
+    "node": "v22.18.0",
+    "eslint": "9.39.4",
+    "nextEslint": "16.4.3",
+    "typescript": "5.9.3"
+  },
+  "normalization": "Relative file paths and full diagnostic messages with absolute checkout roots replaced by <checkout>"
+}

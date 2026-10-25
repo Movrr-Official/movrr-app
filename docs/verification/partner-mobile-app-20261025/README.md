@@ -4,6 +4,11 @@ Implemented in `movrr-app`. No Rider Mobile or Admin source changes, deployment,
 production mutation, account creation, inventory creation or dependency changes.
 Baseline: `add3f66ed6fd4c7654239fb73ee99eaceef946c8`.
 
+The provisional release decision below is superseded by the
+[final readiness assessment](../partner-release-readiness-20261025/README.md),
+which compares lint directly with the recorded deployed baseline. The application
+candidate remains `9f1660c`; no application correction was required.
+
 [Visual comparison](comparison.html) · [Browser evidence](browser-results.json)
 
 ## Presentation architecture

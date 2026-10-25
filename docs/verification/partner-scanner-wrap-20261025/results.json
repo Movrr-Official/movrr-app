@@ -1,0 +1,118 @@
+{
+  "production": false,
+  "physicalDevice": false,
+  "checks": [
+    {
+      "locale": "en",
+      "width": 320,
+      "instructionScale": 1,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "en",
+      "width": 320,
+      "instructionScale": 2,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "nl",
+      "width": 320,
+      "instructionScale": 1,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "nl",
+      "width": 320,
+      "instructionScale": 2,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "en",
+      "width": 360,
+      "instructionScale": 1,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "en",
+      "width": 360,
+      "instructionScale": 2,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "nl",
+      "width": 360,
+      "instructionScale": 1,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "nl",
+      "width": 360,
+      "instructionScale": 2,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "en",
+      "width": 390,
+      "instructionScale": 1,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "en",
+      "width": 390,
+      "instructionScale": 2,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "nl",
+      "width": 390,
+      "instructionScale": 1,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "nl",
+      "width": 390,
+      "instructionScale": 2,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "en",
+      "width": 430,
+      "instructionScale": 1,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "en",
+      "width": 430,
+      "instructionScale": 2,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "nl",
+      "width": 430,
+      "instructionScale": 1,
+      "withinFrame": true,
+      "pageOverflow": false
+    },
+    {
+      "locale": "nl",
+      "width": 430,
+      "instructionScale": 2,
+      "withinFrame": true,
+      "pageOverflow": false
+    }
+  ]
+}

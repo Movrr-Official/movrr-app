@@ -1,0 +1,188 @@
+{
+  "at": "2026-10-25T19:59:32.443Z",
+  "production": true,
+  "name": "partner",
+  "deploymentId": "dpl_2i8xoZ54YVFQwMY1DuDnCFivzrkf",
+  "sha": "48d32c361c6da7c8cd5a27d6bd02b1230ebce639",
+  "url": "https://app.movrr.nl",
+  "immutableUrl": "https://movrr-qdqjvf0ws-movrrops-projects.vercel.app",
+  "aliasVerified": true,
+  "existingFirewallAuthenticationSettingsPreserved": true,
+  "regions": [
+    "fra1"
+  ],
+  "checks": [
+    {
+      "route": "/",
+      "method": "GET",
+      "status": 307,
+      "location": "/auth/signin",
+      "contentType": "text/html; charset=utf-8",
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "bytes": 7911,
+      "sha256": "1b0561b75b9c81789e594f0a57fbd25ad38cf55dbad474ce7937b770e1b91ad2"
+    },
+    {
+      "route": "/dashboard",
+      "method": "GET",
+      "status": 307,
+      "location": "/auth/signin",
+      "contentType": "text/plain",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "bytes": 15,
+      "sha256": "7c040f8633b8823d72ed63da9b3b2dfe9846e912c66a64c9433ec9c4815d76c2"
+    },
+    {
+      "route": "/workspaces",
+      "method": "GET",
+      "status": 307,
+      "location": "/auth/signin?redirectTo=/workspaces",
+      "contentType": "text/html; charset=utf-8",
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "bytes": 8704,
+      "sha256": "81a65949ac8e09eb7353c75f98fc76237a8d65943b1b6cff8f802f1cb6ccdea2"
+    },
+    {
+      "route": "/dashboard/validate",
+      "method": "GET",
+      "status": 307,
+      "location": "/auth/signin?redirectTo=%2Fdashboard%2Fvalidate",
+      "contentType": "text/plain",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "bytes": 15,
+      "sha256": "7c040f8633b8823d72ed63da9b3b2dfe9846e912c66a64c9433ec9c4815d76c2"
+    },
+    {
+      "route": "/dashboard/collections",
+      "method": "GET",
+      "status": 307,
+      "location": "/auth/signin",
+      "contentType": "text/plain",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "bytes": 15,
+      "sha256": "7c040f8633b8823d72ed63da9b3b2dfe9846e912c66a64c9433ec9c4815d76c2"
+    },
+    {
+      "route": "/dashboard/rewards",
+      "method": "GET",
+      "status": 307,
+      "location": "/auth/signin",
+      "contentType": "text/plain",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "bytes": 15,
+      "sha256": "7c040f8633b8823d72ed63da9b3b2dfe9846e912c66a64c9433ec9c4815d76c2"
+    },
+    {
+      "route": "/dashboard/resources",
+      "method": "GET",
+      "status": 307,
+      "location": "/auth/signin",
+      "contentType": "text/plain",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "bytes": 15,
+      "sha256": "7c040f8633b8823d72ed63da9b3b2dfe9846e912c66a64c9433ec9c4815d76c2"
+    },
+    {
+      "route": "/dashboard/staff",
+      "method": "GET",
+      "status": 307,
+      "location": "/auth/signin",
+      "contentType": "text/plain",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "bytes": 15,
+      "sha256": "7c040f8633b8823d72ed63da9b3b2dfe9846e912c66a64c9433ec9c4815d76c2"
+    },
+    {
+      "route": "/dashboard/settings",
+      "method": "GET",
+      "status": 307,
+      "location": "/auth/signin",
+      "contentType": "text/plain",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "bytes": 15,
+      "sha256": "7c040f8633b8823d72ed63da9b3b2dfe9846e912c66a64c9433ec9c4815d76c2"
+    },
+    {
+      "route": "/manifest.webmanifest",
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "contentType": "application/manifest+json; charset=utf-8",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "bytes": 495,
+      "sha256": "de819fefefcd9b195831e46a70c3f738826a2b074e51827b62ca34635e296822"
+    },
+    {
+      "route": "/pwa/icon-192.png",
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "contentType": "image/png",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "bytes": 6389,
+      "sha256": "649ca4b05160a615be4ef654e94c45ffdc573db896e586ccb0ea93c7d922cff1"
+    },
+    {
+      "route": "/pwa/icon-512.png",
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "contentType": "image/png",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "bytes": 20369,
+      "sha256": "aac0b99a34c41d9ef6d6e6ff375389def447a49974d6b323f435e08a7637439e"
+    },
+    {
+      "route": "/pwa/icon-maskable-512.png",
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "contentType": "image/png",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "bytes": 19248,
+      "sha256": "7c5e382d1b3e923941de0e910c52b0a8ffdef4041979b46b4c91c413a291547b"
+    },
+    {
+      "route": "/flags/gb.svg",
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "contentType": "image/svg+xml",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "bytes": 504,
+      "sha256": "c8be1e7208798a4ae692ee1e937065d498bb29e741943f6172b29118b8ed8066"
+    },
+    {
+      "route": "/flags/nl.svg",
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "contentType": "image/svg+xml",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "bytes": 225,
+      "sha256": "8f691f17fe70894537af8e92f2ca47761d353639b0defc15cbe561eb503ab010"
+    },
+    {
+      "route": "/sw.js",
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "contentType": "application/javascript; charset=utf-8",
+      "cacheControl": "no-cache, no-store, must-revalidate",
+      "bytes": 1383,
+      "sha256": "c40599ba46534b7ca548721076bb429e7c5b654fb73c2c47d2bd8647b02cd64f"
+    },
+    {
+      "route": "/offline.html",
+      "method": "GET",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "bytes": 4076,
+      "sha256": "9acdec0e8989b3e3012a6f2b839812ffd6e27e28155703edbb7a69e1f90c71e9"
+    }
+  ],
+  "authenticatedBrowserAcceptance": false,
+  "physicalDeviceAcceptance": false
+}

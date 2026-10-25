@@ -125,7 +125,7 @@ export function ValidateTokenForm({ canValidate, initialLocale = "en", handoffUr
         {!accepted && <>
           <div className="partner-camera relative flex aspect-square max-h-96 items-center justify-center overflow-hidden rounded-2xl border border-border bg-movrr-bg-primary text-white">
             <video ref={video} muted playsInline aria-label={copy.scanning} className={scanning ? "h-full w-full object-cover" : "hidden"} />
-            {!scanning && <div className="flex flex-col items-center gap-4 p-6 text-center"><ScanLine className="h-14 w-14 text-movrr-accent" aria-hidden="true" /><p className="text-sm text-white/75">{token ? copy.review : copy.scanning}</p></div>}
+            {!scanning && <div className="partner-camera-placeholder p-4 text-center"><div className="partner-camera-guidance flex flex-col items-center gap-4"><ScanLine className="h-14 w-14 shrink-0 text-movrr-accent" aria-hidden="true" /><p className="text-sm text-white/75">{token ? copy.review : copy.scanning}</p></div></div>}
           </div>
           <Button type="button" variant={scanning ? "outline" : "default"} className="min-h-12 w-full" disabled={!online || pending} onClick={() => { setCameraError(false); setScanning(value => !value); }}><Camera className="mr-2 h-4 w-4" aria-hidden="true" />{scanning ? copy.stop : copy.start}</Button>
           {cameraError && <p role="alert" className="text-sm">{copy.cameraError}</p>}

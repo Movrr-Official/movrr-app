@@ -1,0 +1,17 @@
+{
+  "sha": "48d32c361c6da7c8cd5a27d6bd02b1230ebce639",
+  "id": "dpl_2i8xoZ54YVFQwMY1DuDnCFivzrkf",
+  "state": "READY",
+  "target": "production",
+  "domain": "https://app.movrr.nl",
+  "immutableUrl": "https://movrr-qdqjvf0ws-movrrops-projects.vercel.app",
+  "regions": [
+    "fra1"
+  ],
+  "rollback": {
+    "id": "dpl_B823jSAiYWG9n8NRsX9NYnPKUXML",
+    "sha": "43f11fcec679f145c7fe8d29ced2085d16d3edc8"
+  },
+  "adminRedeployed": false,
+  "migrationsApplied": false
+}

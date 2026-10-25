@@ -1,0 +1,10 @@
+{
+  "mode": "after",
+  "production": false,
+  "initialLocale": "en",
+  "workspacePickerLocale": "nl",
+  "returnedDashboardLocale": "nl",
+  "fullPageReloadUsed": false,
+  "financialCommands": 0,
+  "savedLocale": "nl"
+}

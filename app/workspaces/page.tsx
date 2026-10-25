@@ -37,8 +37,19 @@ export default async function WorkspacesPage({ searchParams }: { searchParams?: 
     "use server";
     const requested = String(form.get("workspace") ?? "");
     const current = await getAccountWorkspaces();
-    if (!(requested === "rider" && current.rider) && !current.memberships.some(member => member.organisationId === requested)) throw new Error("Active workspace membership required");
-    (await cookies()).set("movrr-workspace", requested, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/" });
+    const membership = current.memberships.find(member => member.organisationId === requested);
+    if (!(requested === "rider" && current.rider) && !membership) throw new Error("Active workspace membership required");
+    const selectionCookies = await cookies();
+    if (membership?.domain === "partner") {
+      const actor = await getAuthenticatedAppUser();
+      if (!actor) redirect("/auth/signin?redirectTo=/workspaces");
+      // The dashboard-scoped cookie is absent from a /workspaces action request.
+      // Reissue the validated presentation preference so the redirect RSC sees it too.
+      selectionCookies.set("movrr-partner-locale", JSON.stringify({ actor: actor.authUser.id, locale }), {
+        httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/dashboard", maxAge: 31536000,
+      });
+    }
+    selectionCookies.set("movrr-workspace", requested, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/" });
     redirect("/dashboard");
   }
   return <main className="workspace-picker" lang={locale}>

@@ -1,3 +1,5 @@
+import { getPartnerLocale } from "@/lib/partnerLocaleServer";
+import { partnerText } from "@/lib/partnerLocale";
 import { ValidateTokenForm } from "@/components/partner/ValidateTokenForm";
 import { StatusToast } from "@/components/form/StatusToast";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -9,6 +11,8 @@ export default async function PartnerValidatePage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const locale = await getPartnerLocale();
+  const t = (text: string) => partnerText(locale, text);
   const session = await requirePartnerSession();
   const params = await searchParams;
   const success = typeof params.success === "string" ? params.success : null;
@@ -21,12 +25,12 @@ export default async function PartnerValidatePage({
   return (
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
-        <StatusToast success={success} error={error} />
+        <StatusToast success={success ? t(success) : null} error={error ? t(error) : null} />
         <PageHeader
-          title="Validate"
-          description="Submit a fulfilment token to the Platform API. Success and failure reasons are returned by the server."
+          title={t("Reward redemption")}
+          description={t("Check a rider reward securely before handover.")}
         />
-        <ValidateTokenForm canValidate={canValidate} />
+        <ValidateTokenForm initialLocale={locale} canValidate={canValidate} />
       </div>
     </div>
   );

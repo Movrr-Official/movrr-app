@@ -26,6 +26,7 @@ function mapPendingItem(raw: unknown): PartnerPendingFulfilment {
   const row = asRecord(raw);
   return {
     id: String(row.id ?? ""),
+    rewardTitle: typeof row.rewardTitle === "string" ? row.rewardTitle : undefined,
     version: typeof row.version === "number" ? row.version : undefined,
     state: typeof row.state === "string" ? row.state : undefined,
     progress: typeof row.progress === "string" ? row.progress : undefined,
@@ -93,7 +94,12 @@ function mapReward(raw: unknown): PartnerReward {
   const row = asRecord(raw);
   return {
     id: String(row.id ?? ""),
-    name: typeof row.name === "string" ? row.name : null,
+    updatedAt: typeof row.updatedAt === "string" ? row.updatedAt : undefined,
+    description: typeof row.description === "string" ? row.description : undefined,
+    category: typeof row.category === "string" ? row.category : undefined,
+    sku: typeof row.sku === "string" ? row.sku : undefined,
+    stockAvailable: typeof row.inventoryCount === "number" ? row.inventoryCount : null,
+    name: typeof row.title === "string" ? row.title : typeof row.name === "string" ? row.name : null,
     fulfilmentType:
       typeof row.fulfilmentType === "string"
         ? row.fulfilmentType
@@ -104,8 +110,8 @@ function mapReward(raw: unknown): PartnerReward {
     pointsCost:
       typeof row.pointsCost === "number"
         ? row.pointsCost
-        : typeof row.points_cost === "number"
-          ? row.points_cost
+        : typeof row.pointsPrice === "number"
+          ? row.pointsPrice
           : null,
   };
 }
@@ -136,14 +142,10 @@ export async function getPartnerDashboard(): Promise<PartnerDashboard> {
 
   const [pending, analytics] = await Promise.all([
     hasPartnerCapability(ctx.capabilities, "fulfilment.read")
-      ? platformFetch<unknown[]>("/partners/fulfilments/pending").catch(
-          () => [] as unknown[],
-        )
+      ? platformFetch<unknown[]>("/partners/fulfilments/pending")
       : Promise.resolve([] as unknown[]),
     hasPartnerCapability(ctx.capabilities, "analytics.view")
-      ? platformFetch<{ series?: unknown[] }>("/partners/analytics").catch(
-          () => ({ series: [] }),
-        )
+      ? platformFetch<{ series?: unknown[] }>("/partners/analytics")
       : Promise.resolve({ series: [] }),
   ]);
 
@@ -154,8 +156,8 @@ export async function getPartnerDashboard(): Promise<PartnerDashboard> {
     organisationId: ctx.organisationId,
     membershipRole: ctx.membershipRole,
     pendingCount: pendingItems.length,
-    failureRateLabel: "—",
-    analyticsSeriesCount: series.length,
+    validatedCount: pendingItems.map(asRecord).filter(row => row.state === "validated").length,
+    completedCount: Number(series.map(asRecord).find(row => row.state === "completed")?.count ?? 0),
   };
 }
 
@@ -195,12 +197,13 @@ export async function cancelPartnerFulfilment(fulfilmentId:string,expectedVersio
  return platformFetch(`/fulfilment/${encodeURIComponent(fulfilmentId)}/cancel`,{method:"POST",body:{expectedVersion,reason,riderReason:reason},idempotencyKey:operationId});
 }
 
-export async function validatePartnerToken(token: string) {
+export async function validatePartnerToken(token: string, operationId: string) {
+  if (!operationId.trim() || operationId.length > 200) throw new Error("Stable operation required");
   await requirePartnerSession();
-  return platformFetch<unknown>("/partners/validate", {
+  return platformFetch<{ fulfilmentId: string; fulfilment: { state: string } }>("/partners/validate", {
     method: "POST",
     body: { token },
-    idempotencyKey: createCorrelationId(),
+    idempotencyKey: operationId,
   });
 }
 
@@ -233,15 +236,14 @@ export async function listPartnerRewards(): Promise<PartnerReward[]> {
 }
 
 export async function listPartnerStaff(): Promise<PartnerStaffMember[]> {
-  const session = await requirePartnerSession();
-  const orgId = session.partnerContext!.organisationId;
-  const data = await platformFetch<unknown[]>(`/organisations/${orgId}/staff`);
+  await requirePartnerSession();
+  const data = await platformFetch<unknown[]>("/partners/staff");
   return data.map(mapStaff);
 }
 
 export async function invitePartnerStaff(input: {
   operationToken: string;
-  userId: string;
+  email: string;
   role: string;
 }) {
   const session = await requirePartnerSession();
@@ -273,7 +275,7 @@ export async function getPartnerAnalytics(): Promise<PartnerAnalytics> {
   );
   return {
     series: Array.isArray(data?.series)
-      ? data.series.map((item) => asRecord(item))
+      ? data.series.map((item) => { const row = asRecord(item); return { label: String(row.state ?? "" ).replaceAll("_", " "), value: typeof row.count === "number" ? row.count : undefined }; })
       : [],
   };
 }
@@ -284,12 +286,4 @@ export async function getPartnerSettings(): Promise<PartnerSettings> {
     "/partners/settings",
   );
   return data && typeof data === "object" ? data : {};
-}
-
-export async function patchPartnerSettings(settings: Record<string, unknown>) {
-  await requirePartnerSession();
-  return platformFetch<Record<string, unknown>>("/partners/settings", {
-    method: "PATCH",
-    body: settings,
-  });
 }

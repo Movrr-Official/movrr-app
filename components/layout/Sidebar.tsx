@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { partnerText } from "@/lib/partnerLocale";
 import Link from "next/link";
 
 import { useEffect, useMemo, useState } from "react";
@@ -130,6 +131,7 @@ const workspaceLabels: Record<ProductRole, string> = {
 };
 
 export function Sidebar({
+  locale = "en",
   role,
 
   pathname,
@@ -140,6 +142,7 @@ export function Sidebar({
 
   onCloseMobile,
 }: {
+  locale?: "en" | "nl";
   role: ProductRole;
 
   pathname: string;
@@ -150,6 +153,7 @@ export function Sidebar({
 
   onCloseMobile: () => void;
 }) {
+  const t = (text: string) => role === "partner" ? partnerText(locale, text) : text;
   const [isMobile, setIsMobile] = useState(false);
   const prefersReducedMotion = useReducedMotion();
 
@@ -212,7 +216,7 @@ export function Sidebar({
 
           "shadow-sm lg:shadow-none",
         )}
-        aria-label="Main navigation"
+        aria-label={t("Main navigation")}
       >
         <div
           className={cn(
@@ -249,7 +253,7 @@ export function Sidebar({
                   </h2>
 
                   <span className="text-xs text-muted-foreground truncate">
-                    {workspaceLabels[role]}
+                    {t(workspaceLabels[role])}
                   </span>
                 </div>
               </motion.div>
@@ -261,7 +265,7 @@ export function Sidebar({
             size="sm"
             onClick={onToggle}
             className="hover:bg-muted hover:text-foreground p-1"
-            aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+            aria-label={sidebarOpen ? t("Collapse sidebar") : t("Expand sidebar")}
             aria-expanded={sidebarOpen}
             aria-controls="product-navigation"
           >
@@ -295,7 +299,7 @@ export function Sidebar({
                       !sidebarOpen && "justify-center",
                     )}
                     aria-current={isActive ? "page" : undefined}
-                    aria-label={showCollapsedTooltip ? item.label : undefined}
+                    aria-label={showCollapsedTooltip ? t(item.label) : undefined}
                     onClick={() => {
                       if (isMobile) onCloseMobile();
                     }}
@@ -311,7 +315,7 @@ export function Sidebar({
                           transition={contentTransition}
                           className="flex items-center justify-between flex-1 min-w-0"
                         >
-                          <span className="truncate">{item.label}</span>
+                          <span className="truncate">{t(item.label)}</span>
                         </motion.span>
                       ) : null}
                     </AnimatePresence>
@@ -323,7 +327,7 @@ export function Sidebar({
                     <TooltipTrigger asChild>{link}</TooltipTrigger>
 
                     <TooltipContent side="right" align="center" sideOffset={8}>
-                      {item.label}
+                      {t(item.label)}
                     </TooltipContent>
                   </Tooltip>
                 ) : (
@@ -348,14 +352,14 @@ export function Sidebar({
 
                         !sidebarOpen && "justify-center",
                       )}
-                      aria-label="Sign Out"
+                      aria-label={t("Sign Out")}
                     >
                       <LogOut className="h-5 w-5 shrink-0" aria-hidden="true" />
                     </Button>
                   </TooltipTrigger>
 
                   <TooltipContent side="right" align="center" sideOffset={8}>
-                    Sign Out
+                    {t("Sign Out")}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -379,7 +383,7 @@ export function Sidebar({
                       exit={{ opacity: 0, x: -10 }}
                       transition={contentTransition}
                     >
-                      Sign Out
+                      {t("Sign Out")}
                     </motion.span>
                   ) : null}
                 </AnimatePresence>

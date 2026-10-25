@@ -1,9 +1,10 @@
+import { getPartnerLocale } from "@/lib/partnerLocaleServer";
+import { partnerText } from "@/lib/partnerLocale";
 import { importResourceCodesAction } from "@/app/actions/partner";
 import { SubmitButton } from "@/components/form/SubmitButton";
 import { StatusToast } from "@/components/form/StatusToast";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -22,6 +23,8 @@ export default async function PartnerResourcesPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const locale = await getPartnerLocale();
+  const t = (text: string) => partnerText(locale, text);
   const session = await requirePartnerSession();
   const params = await searchParams;
   const success = typeof params.success === "string" ? params.success : null;
@@ -36,35 +39,33 @@ export default async function PartnerResourcesPage({
   if (canManage) {
     try {
       resources = await listPartnerResources();
-    } catch (err) {
+    } catch {
       listError =
-        err instanceof Error ? err.message : "Failed to load resources";
+        "Voucher inventory is temporarily unavailable. Please try again.";
     }
   }
 
   return (
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
-        <StatusToast success={success} error={error ?? listError} />
+        <StatusToast success={success ? t(success) : null} error={error ?? listError} />
         <PageHeader
-          title="Resources"
-          description="Fulfilment resource pools for your organisation. Import only when Platform grants resources.manage."
+          title={t("Resources")}
+          description={t("Manage the voucher codes available for your rewards.")}
         />
 
         {!canManage ? (
           <EmptyState
-            title="Resources unavailable"
-            description="Your membership role cannot manage fulfilment resources."
+            title={t("Resources unavailable")}
+            description={t("Your membership role cannot manage fulfilment resources.")}
             iconName="file"
           />
         ) : (
           <>
             <Card className="border-border">
               <CardHeader>
-                <CardTitle>Resource pools</CardTitle>
-                <CardDescription>
-                  Read model from GET /api/v1/partners/resources.
-                </CardDescription>
+                <CardTitle>{t("Resource pools")}</CardTitle>
+                <CardDescription>{t("Voucher inventory for your organisation.")}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {resources.length ? (
@@ -75,63 +76,51 @@ export default async function PartnerResourcesPage({
                     >
                       <div>
                         <p className="text-sm font-semibold">
-                          {resource.name ?? resource.id}
-                        </p>
-                        <p className="text-xs text-muted-foreground break-all">
-                          {resource.id}
+                          {resource.name ?? t("Voucher pool")}
                         </p>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        <Badge variant="outline">
-                          Pool {resource.poolCount ?? "—"}
+                        <Badge variant="outline">{t("Pool")} {resource.poolCount ?? "—"}
                         </Badge>
-                        <Badge variant="secondary">
-                          Available {resource.availableCount ?? "—"}
+                        <Badge variant="secondary">{t("Available")} {resource.availableCount ?? "—"}
                         </Badge>
                         {resource.status ? (
-                          <Badge className="capitalize">{resource.status}</Badge>
+                          <Badge className="capitalize">{t(resource.status)}</Badge>
                         ) : null}
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-muted-foreground">
-                    No resource pools returned by Platform yet.
-                  </p>
+                  <p className="text-sm text-muted-foreground">{t("No voucher pools yet. Contact MOVRR to prepare your reward inventory.")}</p>
                 )}
               </CardContent>
             </Card>
 
             <Card className="border-border">
               <CardHeader>
-                <CardTitle>Import codes</CardTitle>
-                <CardDescription>
-                  Posts codes to Platform with an Idempotency-Key. No local pool
-                  mutation.
-                </CardDescription>
+                <CardTitle>{t("Import codes")}</CardTitle>
+                <CardDescription>{t("Add the codes supplied by your voucher provider.")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <form
                   action={importResourceCodesAction}
                   className="grid gap-4 md:grid-cols-2"
                 >
-                  <Input
-                    name="resourceId"
-                    placeholder="Resource id"
-                    required
-                  />
+                  <label className="space-y-2 text-sm">{t("Voucher pool")}<select name="resourceId" required aria-label={t("Voucher pool")} className="block h-12 w-full rounded-md border border-input bg-background px-3" defaultValue="">
+                      <option value="" disabled>{t("Select a voucher pool")}</option>
+                      {resources.map(resource => <option key={resource.id} value={resource.id}>{resource.name ?? t("Voucher pool")}</option>)}
+                    </select>
+                  </label>
                   <div className="md:col-span-2">
                     <Textarea
                       name="codes"
-                      placeholder="One code per line (or comma-separated)"
+                      placeholder={t("One code per line (or comma-separated)")}
                       rows={6}
                       required
                     />
                   </div>
                   <div>
-                    <SubmitButton pendingLabel="Importing…">
-                      Import codes
-                    </SubmitButton>
+                    <SubmitButton pendingLabel={t("Importing…")}>{t("Import codes")}</SubmitButton>
                   </div>
                 </form>
               </CardContent>

@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 
-export function ThemeToggle() {
+export function ThemeToggle({ locale = "en" }: { locale?: "en" | "nl" }) {
   const { theme, resolvedTheme, setTheme } = useTheme();
 
   const activeTheme = useMemo(
@@ -29,7 +29,7 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       className="h-9 w-9 hover:bg-muted"
-      aria-label={`Toggle theme, current theme is ${theme ?? "system"}`}
+      aria-label={locale === "nl" ? `Thema wijzigen, huidig thema: ${theme === "light" ? "licht" : theme === "dark" ? "donker" : "systeem"}` : `Toggle theme, current theme is ${theme ?? "system"}`}
       onClick={() => setTheme(nextTheme)}
     >
       <Icon className="h-4 w-4" />

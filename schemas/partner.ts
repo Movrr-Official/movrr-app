@@ -37,11 +37,12 @@ export const partnerDashboardSchema = z.object({
   organisationId: z.string(),
   membershipRole: partnerMembershipRoleSchema.nullable(),
   pendingCount: z.number().int().nonnegative(),
-  failureRateLabel: z.string(),
-  analyticsSeriesCount: z.number().int().nonnegative(),
+  validatedCount: z.number().int().nonnegative(),
+  completedCount: z.number().int().nonnegative(),
 });
 
 export const partnerPendingFulfilmentSchema = z.object({
+  rewardTitle: z.string().optional(),
   version: z.number().int().nonnegative().optional(),
   id: z.string(),
   state: z.string().optional(),
@@ -63,6 +64,11 @@ export const partnerResourceSchema = z.object({
 });
 
 export const partnerRewardSchema = z.object({
+  updatedAt: z.string().optional(),
+  description: z.string().optional(),
+  category: z.string().optional(),
+  sku: z.string().optional(),
+  stockAvailable: z.number().nullable().optional(),
   id: z.string(),
   name: z.string().optional().nullable(),
   fulfilmentType: z.string().optional().nullable(),

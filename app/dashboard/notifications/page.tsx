@@ -1,3 +1,5 @@
+import { getPartnerLocale } from "@/lib/partnerLocaleServer";
+import { partnerText, type PartnerLocale } from "@/lib/partnerLocale";
 import {
   markGovernmentNotificationReadAction,
   markGovernmentNotificationsReadAction,
@@ -44,6 +46,7 @@ import { getRiderNotificationsData } from "@/services/rider";
 import { redirect } from "next/navigation";
 
 function RoleNotificationsInbox({
+  locale = "en",
   roleLabel,
   notifications,
   filter,
@@ -54,6 +57,7 @@ function RoleNotificationsInbox({
   emptyTitle,
   emptyDescription,
 }: {
+  locale?: PartnerLocale;
   roleLabel: string;
   notifications: ProductNotification[];
   filter: string;
@@ -64,6 +68,7 @@ function RoleNotificationsInbox({
   emptyTitle: string;
   emptyDescription: string;
 }) {
+  const t = (text: string) => partnerText(locale, text);
   const categories = Array.from(
     new Set(notifications.map((item) => item.category)),
   ).sort();
@@ -76,10 +81,9 @@ function RoleNotificationsInbox({
     <>
       <Card className="border-border">
         <CardHeader>
-          <CardTitle>{roleLabel} notification preferences</CardTitle>
+          <CardTitle>{t(`${roleLabel} notification preferences`)}</CardTitle>
           <CardDescription>
-            Control in-product updates for your {roleLabel.toLowerCase()}{" "}
-            workspace.
+            {t(`Control in-product updates for your ${roleLabel.toLowerCase()} workspace.`)}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -90,30 +94,24 @@ function RoleNotificationsInbox({
             <CheckboxField
               name="productNotifications"
               defaultChecked={productNotifications}
-              label={`Enable ${roleLabel.toLowerCase()} workspace notifications`}
+              label={t(`Enable ${roleLabel.toLowerCase()} workspace notifications`)}
             />
             <SubmitButton
               type="submit"
               variant="outline"
-              pendingLabel="Saving preference"
-            >
-              Save preference
-            </SubmitButton>
+              pendingLabel={t("Saving preference")}
+            >{t("Save preference")}</SubmitButton>
           </form>
           <form action={markAllReadAction}>
-            <SubmitButton type="submit" variant="secondary" pendingLabel="Updating">
-              Mark all as read
-            </SubmitButton>
+            <SubmitButton type="submit" variant="secondary" pendingLabel={t("Updating")}>{t("Mark all as read")}</SubmitButton>
           </form>
         </CardContent>
       </Card>
 
       <Card className="border-border">
         <CardHeader>
-          <CardTitle>Inbox filters</CardTitle>
-          <CardDescription>
-            Filter account, programme, and fulfilment messages.
-          </CardDescription>
+          <CardTitle>{t("Inbox filters")}</CardTitle>
+          <CardDescription>{t("Filter account, programme, and fulfilment messages.")}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           {["all", ...categories].map((value) => (
@@ -124,7 +122,7 @@ function RoleNotificationsInbox({
               size="sm"
             >
               <a href={`/dashboard/notifications?filter=${value}`}>
-                {value === "all" ? "All" : value.replace(/_/g, " ")}
+                {t(value === "all" ? "All" : value.replace(/_/g, " "))}
               </a>
             </Button>
           ))}
@@ -134,10 +132,9 @@ function RoleNotificationsInbox({
       {filtered.length ? (
         <Card className="border-border">
           <CardHeader>
-            <CardTitle>{roleLabel} inbox</CardTitle>
+            <CardTitle>{t(`${roleLabel} inbox`)}</CardTitle>
             <CardDescription>
-              Messages scoped to the authenticated {roleLabel.toLowerCase()}{" "}
-              workspace.
+              {t(`Messages scoped to the authenticated ${roleLabel.toLowerCase()} workspace.`)}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -151,17 +148,17 @@ function RoleNotificationsInbox({
                     <div className="flex items-center gap-3">
                       <p className="font-medium">{notification.title}</p>
                       <Badge variant="outline" className="capitalize">
-                        {notification.category}
+                        {t(notification.category)}
                       </Badge>
                       {!notification.isRead ? (
-                        <Badge variant="secondary">Unread</Badge>
+                        <Badge variant="secondary">{t("Unread")}</Badge>
                       ) : null}
                     </div>
                     <p className="mt-2 text-sm text-muted-foreground">
                       {notification.message}
                     </p>
                     <p className="mt-2 text-xs text-muted-foreground">
-                      {formatRelativeDate(notification.createdAt)}
+                      {locale === "nl" ? new Intl.DateTimeFormat("nl-NL", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Amsterdam" }).format(new Date(notification.createdAt)) : formatRelativeDate(notification.createdAt)}
                     </p>
                   </div>
                   {!notification.isRead ? (
@@ -175,10 +172,8 @@ function RoleNotificationsInbox({
                         type="submit"
                         variant="outline"
                         size="sm"
-                        pendingLabel="Updating"
-                      >
-                        Mark as read
-                      </SubmitButton>
+                        pendingLabel={t("Updating")}
+                      >{t("Mark as read")}</SubmitButton>
                     </form>
                   ) : null}
                 </div>
@@ -188,8 +183,8 @@ function RoleNotificationsInbox({
         </Card>
       ) : (
         <EmptyState
-          title={emptyTitle}
-          description={emptyDescription}
+          title={t(emptyTitle)}
+          description={t(emptyDescription)}
           iconName="bell"
         />
       )}
@@ -215,6 +210,8 @@ export default async function DashboardNotificationsPage({
     session.appUser.role === "partner"
   ) {
     const role = session.appUser.role;
+    const locale = role === "partner" ? await getPartnerLocale() : "en";
+    const t = (text: string) => partnerText(locale, text);
     const roleLabel = role === "government" ? "Government" : "Partner";
     const notifications = await listUserNotifications(
       session.appUser.id,
@@ -227,12 +224,12 @@ export default async function DashboardNotificationsPage({
     return (
       <div className="page-canvas">
         <div className="space-y-6 md:space-y-8">
-          <StatusToast success={success} error={error} />
+          <StatusToast success={success ? t(success) : null} error={error ? t(error) : null} />
           <PageHeader
-            title="Notifications"
-            description={`${roleLabel} workspace notifications.`}
+            title={t("Notifications")}
+            description={t(`${roleLabel} workspace notifications.`)}
           />
-          <RoleNotificationsInbox
+          <RoleNotificationsInbox locale={locale}
             roleLabel={roleLabel}
             notifications={notifications}
             filter={filter}

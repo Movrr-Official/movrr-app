@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useParams } from "next/navigation";
+import { partnerText } from "@/lib/partnerLocale";
 import Link from "next/link";
 import { Home } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -14,6 +15,10 @@ interface BreadcrumbItem {
 
 const routeLabels: Record<string, string> = {
   dashboard: "Overview",
+  collections: "Collections",
+  validate: "Validate",
+  staff: "Staff",
+  resources: "Resources",
   campaigns: "Campaigns",
   routes: "Routes",
   rewards: "Rewards",
@@ -45,7 +50,7 @@ const formatRouteLabel = (
 
   if (isUUID || isNumericID) {
     if (params) {
-      const name = params.name || params.title || params.id;
+      const name = params.name || params.title;
       if (name && typeof name === "string") {
         return name.length > 30 ? `${name.substring(0, 30)}...` : name;
       }
@@ -113,7 +118,7 @@ const generateBreadcrumbs = (
   return breadcrumbs;
 };
 
-export function Breadcrumb() {
+export function Breadcrumb({ locale = "en" }: { locale?: "en" | "nl" }) {
   const pathname = usePathname();
   const params = useParams();
   const breadcrumbs = useMemo(
@@ -151,11 +156,11 @@ export function Breadcrumb() {
                     "flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors duration-200 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 rounded-sm",
                     item.isActive && "text-foreground",
                   )}
-                  aria-label="Home"
-                  title="Go to Overview"
+                  aria-label={partnerText(locale, "Home")}
+                  title={locale === "nl" ? "Naar overzicht" : "Go to Overview"}
                 >
                   <Home className="h-3.5 w-3.5" />
-                  <span className="text-xs font-medium">{item.label}</span>
+                  <span className="text-xs font-medium">{partnerText(locale, item.label)}</span>
                 </Link>
               ) : (
                 <>
@@ -168,7 +173,7 @@ export function Breadcrumb() {
                       )}
                       aria-current="page"
                     >
-                      {item.label}
+                      {partnerText(locale, item.label)}
                     </span>
                   ) : (
                     <Link
@@ -177,9 +182,9 @@ export function Breadcrumb() {
                         "text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50 rounded-sm",
                         "truncate max-w-50 sm:max-w-none",
                       )}
-                      title={`Go to ${item.label}`}
+                      title={`${locale === "nl" ? "Naar" : "Go to"} ${partnerText(locale, item.label)}`}
                     >
-                      {item.label}
+                      {partnerText(locale, item.label)}
                     </Link>
                   )}
                 </>
@@ -190,7 +195,7 @@ export function Breadcrumb() {
       </ol>
       {currentPageLabel && (
         <span className="text-base font-semibold text-foreground leading-none">
-          {currentPageLabel}
+          {partnerText(locale, currentPageLabel)}
         </span>
       )}
     </nav>

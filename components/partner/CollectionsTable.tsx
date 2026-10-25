@@ -1,3 +1,6 @@
+import { getPartnerLocale } from "@/lib/partnerLocaleServer";
+import { partnerText } from "@/lib/partnerLocale";
+import { partnerLabel } from "@/lib/partnerPresentation";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,16 +13,18 @@ import {
 import { EmptyState } from "@/components/shared/EmptyState";
 import type { PartnerPendingFulfilment } from "@/schemas";
 
-export function CollectionsTable({
+export async function CollectionsTable({
   items,
 }: {
   items: PartnerPendingFulfilment[];
 }) {
+  const locale = await getPartnerLocale();
+  const t = (text: string) => partnerText(locale, text);
   if (!items.length) {
     return (
       <EmptyState
-        title="No pending collections"
-        description="Pending fulfilments from Platform will list here for confirmation."
+        title={t("No pending collections")}
+        description={t("Rewards ready for collection will appear here.")}
         iconName="dashboard"
       />
     );
@@ -28,10 +33,8 @@ export function CollectionsTable({
   return (
     <Card className="border-border">
       <CardHeader>
-        <CardTitle>Pending collections</CardTitle>
-        <CardDescription>
-          Read model from Platform GET /api/v1/partners/fulfilments/pending.
-        </CardDescription>
+        <CardTitle>{t("Pending collections")}</CardTitle>
+        <CardDescription>{t("Scan the rider QR code, then open the reward to confirm handover.")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         {items.map((item) => (
@@ -41,21 +44,20 @@ export function CollectionsTable({
             className="flex flex-col gap-2 rounded-xl border border-border/60 bg-background/70 p-4 transition-colors hover:bg-muted/40 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="min-w-0 space-y-1">
-              <p className="truncate text-sm font-semibold">{item.id}</p>
+              <p className="truncate text-sm font-semibold">{item.rewardTitle ?? "Reward collection"}</p>
               <p className="text-xs text-muted-foreground">
-                {item.fulfilmentType ?? "fulfilment"}
-                {item.catalogItemId ? ` · ${item.catalogItemId}` : ""}
+                {partnerLabel(item.fulfilmentType, locale)}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
               {item.state ? (
                 <Badge variant="outline" className="capitalize">
-                  {item.state}
+                  {partnerLabel(item.state, locale)}
                 </Badge>
               ) : null}
               {item.progress ? (
                 <Badge variant="secondary" className="capitalize">
-                  {item.progress}
+                  {partnerLabel(item.progress, locale)}
                 </Badge>
               ) : null}
             </div>

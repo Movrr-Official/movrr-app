@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+﻿import type { Metadata, Viewport } from "next";
 import { Manrope, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -19,14 +19,16 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Movrr - Rider and Advertiser Workspace",
-  description: "Authenticated rider and advertiser product surfaces for MOVRR.",
+  title: "MOVRR Workspace",
+  description: "Your secure MOVRR workspace.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "MOVRR" },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon", type: "image/png", sizes: "512x512" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
     ],
-    apple: [{ url: "/apple-icon", type: "image/png", sizes: "180x180" }],
+    apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
   },
 };
 
@@ -52,3 +54,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+export const viewport: Viewport = { themeColor: "#123c2c", width: "device-width", initialScale: 1 };

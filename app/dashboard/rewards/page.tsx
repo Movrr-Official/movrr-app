@@ -1,3 +1,6 @@
+import { getPartnerLocale } from "@/lib/partnerLocaleServer";
+import { partnerText } from "@/lib/partnerLocale";
+import { partnerLabel } from "@/lib/partnerPresentation";
 import Link from "next/link";
 import { RewardFinancialSummary } from "@/components/rider/RewardFinancialSummary";
 import { listRedemptions } from "@/lib/platform/riderPlatform";
@@ -24,6 +27,8 @@ import { redirect } from "next/navigation";
 import { CircleDollarSign, FileText, Trophy, Wallet } from "lucide-react";
 
 async function PartnerRewardsView() {
+  const locale = await getPartnerLocale();
+  const t = (text: string) => partnerText(locale, text);
   const session = await getCurrentProductSession();
   if (!session?.partnerContext) redirect("/unauthorized");
 
@@ -40,8 +45,8 @@ async function PartnerRewardsView() {
     return (
       <div className="page-canvas">
         <EmptyState
-          title="Rewards catalog unavailable"
-          description="Your membership role cannot read partner-scoped rewards."
+          title={t("Rewards catalog unavailable")}
+          description={t("Your membership role cannot read partner-scoped rewards.")}
           iconName="rewards"
         />
       </div>
@@ -52,9 +57,9 @@ async function PartnerRewardsView() {
   let listError: string | null = null;
   try {
     rewards = await listPartnerRewards();
-  } catch (error) {
+  } catch {
     listError =
-      error instanceof Error ? error.message : "Failed to load rewards";
+      "Rewards are temporarily unavailable. Please try again.";
   }
 
   return (
@@ -62,29 +67,27 @@ async function PartnerRewardsView() {
       <div className="space-y-6 md:space-y-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <PageHeader
-            title="Rewards"
+            title={t("Rewards")}
             description={
               canManage
-                ? "Partner-scoped reward catalog from Platform. Manage items when rewards.manage is granted."
-                : "Read-only partner-scoped reward catalog from Platform."
+                ? t("Manage the rewards offered by your organisation.")
+                : t("Rewards offered by your organisation.")
             }
           />
           {canManage ? (
             <Button asChild size="sm">
-              <Link href="/dashboard/rewards/create">Add catalog item</Link>
+              <Link href="/dashboard/rewards/create">{t("Add catalog item")}</Link>
             </Button>
           ) : null}
         </div>
         {listError ? (
-          <p className="text-sm text-destructive">{listError}</p>
+          <p className="text-sm text-destructive">{listError ? t(listError) : null}</p>
         ) : null}
         {rewards.length ? (
           <Card className="border-border">
             <CardHeader>
-              <CardTitle>Partner catalog</CardTitle>
-              <CardDescription>
-                GET /api/v1/partners/rewards — presentation only.
-              </CardDescription>
+              <CardTitle>{t("Partner catalog")}</CardTitle>
+              <CardDescription>{t("Your rewards and their availability.")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {rewards.map((reward) => (
@@ -94,29 +97,27 @@ async function PartnerRewardsView() {
                 >
                   <div>
                     <p className="text-sm font-semibold">
-                      {reward.name ?? reward.id}
+                      {reward.name ?? t("Reward")}
                     </p>
                     <p className="text-xs text-muted-foreground break-all">
-                      {reward.id}
+
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     {reward.fulfilmentType ? (
-                      <Badge variant="outline">{reward.fulfilmentType}</Badge>
+                      <Badge variant="outline">{partnerLabel(reward.fulfilmentType, locale)}</Badge>
                     ) : null}
                     {reward.status ? (
                       <Badge variant="secondary" className="capitalize">
-                        {reward.status}
+                        {t(reward.status)}
                       </Badge>
                     ) : null}
                     {typeof reward.pointsCost === "number" ? (
-                      <Badge>{reward.pointsCost} pts</Badge>
+                      <Badge>{reward.pointsCost}{t("pts")}</Badge>
                     ) : null}
                     {canManage ? (
                       <Button asChild size="sm" variant="outline">
-                        <Link href={`/dashboard/rewards/${reward.id}/edit`}>
-                          Manage
-                        </Link>
+                        <Link href={`/dashboard/rewards/${reward.id}/edit`}>{t("Manage")}</Link>
                       </Button>
                     ) : null}
                   </div>
@@ -126,8 +127,8 @@ async function PartnerRewardsView() {
           </Card>
         ) : (
           <EmptyState
-            title="No partner rewards yet"
-            description="Partner-scoped catalog items will appear here once Platform returns them."
+            title={t("No partner rewards yet")}
+            description={t("Rewards will appear here after you create your first reward.")}
             iconName="rewards"
           />
         )}

@@ -52,8 +52,9 @@ export function PageShell({
   const toggleSidebar = () => persistSidebarOpen(!sidebarOpen);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen" lang={session.partnerLocale}>
       <Sidebar
+        locale={session.partnerLocale}
         role={session.role}
         pathname={pathname}
         sidebarOpen={sidebarOpen}
@@ -68,7 +69,7 @@ export function PageShell({
             onToggleSidebar={toggleSidebar}
           />
           <main className="flex-1 bg-background">{children}</main>
-          <Footer />
+          <Footer locale={session.partnerLocale} />
         </div>
       </div>
     </div>

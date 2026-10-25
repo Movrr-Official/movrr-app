@@ -1,3 +1,5 @@
+import { getPartnerLocale } from "@/lib/partnerLocaleServer";
+import { partnerText } from "@/lib/partnerLocale";
 import { randomUUID } from "node:crypto";
 import { CollectionDetail } from "@/components/partner/CollectionDetail";
 import { StatusToast } from "@/components/form/StatusToast";
@@ -14,6 +16,8 @@ export default async function PartnerCollectionDetailPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const locale = await getPartnerLocale();
+  const t = (text: string) => partnerText(locale, text);
   const session = await requirePartnerSession();
   const { id } = await params;
   const query = await searchParams;
@@ -28,10 +32,10 @@ export default async function PartnerCollectionDetailPage({
   return (
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
-        <StatusToast success={success} error={error} />
+        <StatusToast success={success ? t(success) : null} error={error ? t(error) : null} />
         <PageHeader
-          title="Confirm collection"
-          description="Review Platform fulfilment state, then confirm collection via API."
+          title={t("Confirm collection")}
+          description={t("Review the reward before handing it to the rider.")}
           action={{
             label: "Back to collections",
             href: "/dashboard/collections",
@@ -39,14 +43,14 @@ export default async function PartnerCollectionDetailPage({
           }}
         />
         {item ? (
-          <CollectionDetail item={item} canConfirm={canConfirm} canCancel={hasPartnerCapability(session.partnerContext!.capabilities,"fulfilment.cancel")} operationId={randomUUID()}/>
+          <CollectionDetail initialLocale={locale} item={item} canConfirm={canConfirm} canCancel={hasPartnerCapability(session.partnerContext!.capabilities,"fulfilment.cancel")} operationId={randomUUID()}/>
         ) : (
           <EmptyState
-            title="Fulfilment not in pending list"
-            description="It may already be confirmed, expired, or outside your organisation scope."
+            title={success ? "Collection complete" : "Collection unavailable"}
+            description={t("It may already be confirmed, expired, or outside your organisation scope.")}
             iconName="dashboard"
             navigateTo="/dashboard/collections"
-            buttonText="Return to collections"
+            buttonText={t("Return to collections")}
           />
         )}
       </div>

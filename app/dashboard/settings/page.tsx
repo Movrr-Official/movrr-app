@@ -1,9 +1,11 @@
+import { partnerLabel } from "@/lib/partnerPresentation";
+import { getPartnerLocale } from "@/lib/partnerLocaleServer";
+import { partnerText } from "@/lib/partnerLocale";
 import Link from "next/link";
 import {
   updateAdvertiserNotificationPreferencesAction,
   updateAdvertiserSettingsAction,
 } from "@/app/actions/advertiser";
-import { updatePartnerSettingsAction } from "@/app/actions/partner";
 import {
   updateRiderNotificationPreferencesAction,
   updateRiderProfileAction,
@@ -130,84 +132,15 @@ export default async function DashboardSettingsPage({
   }
 
   if (session.appUser.role === "partner") {
-    let settings: Record<string, unknown> = {};
-    let loadError: string | null = null;
-    try {
-      settings = await getPartnerSettings();
-    } catch (err) {
-      loadError =
-        err instanceof Error ? err.message : "Failed to load partner settings";
-    }
-
-    return (
-      <div className="page-canvas">
-        <div className="space-y-6 md:space-y-8">
-          <StatusToast success={success} error={error ?? loadError} />
-          <PageHeader
-            title="Settings"
-            description="Partner organisation settings via Platform GET/PATCH /api/v1/partners/settings."
-          />
-          <Card className="border-border">
-            <CardHeader>
-              <CardTitle>Organisation settings</CardTitle>
-              <CardDescription>
-                Patches are forwarded to Platform. If PATCH is not yet enabled
-                server-side, the API error is shown here.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form
-                action={updatePartnerSettingsAction}
-                className="grid gap-4 md:grid-cols-2"
-              >
-                <Input
-                  name="displayName"
-                  placeholder="Display name"
-                  defaultValue={
-                    typeof settings.displayName === "string"
-                      ? settings.displayName
-                      : session.appUser.organization ?? session.appUser.name
-                  }
-                />
-                <Input
-                  name="supportEmail"
-                  type="email"
-                  placeholder="Support email"
-                  defaultValue={
-                    typeof settings.supportEmail === "string"
-                      ? settings.supportEmail
-                      : session.appUser.email
-                  }
-                />
-                <Textarea
-                  className="md:col-span-2"
-                  name="notes"
-                  placeholder="Notes"
-                  defaultValue={
-                    typeof settings.notes === "string" ? settings.notes : ""
-                  }
-                  rows={4}
-                />
-                <div className="md:col-span-2">
-                  <SubmitButton pendingLabel="Saving…">
-                    Save partner settings
-                  </SubmitButton>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-          <Card className="border-border">
-            <CardHeader>
-              <CardTitle>Membership</CardTitle>
-              <CardDescription>
-                Organisation {session.partnerContext?.organisationId} · role{" "}
-                {session.partnerContext?.membershipRole ?? "unknown"}
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
-      </div>
-    );
+  const locale = await getPartnerLocale();
+  const t = (text: string) => partnerText(locale, text);
+    const settings = await getPartnerSettings();
+    return <div className="page-canvas"><div className="space-y-6 md:space-y-8">
+      <PageHeader title={t("Settings")} description={t("Your organisation and workspace access.")} />
+      <Card><CardHeader><CardTitle>{String(settings.name ?? t("Partner organisation"))}</CardTitle><CardDescription>{t("Contact MOVRR to update your organisation details.")}</CardDescription></CardHeader>
+        <CardContent><dl className="space-y-3 text-sm"><div><dt>{t("Status")}</dt><dd className="capitalize">{t(String(settings.status ?? "Unavailable"))}</dd></div><div><dt>{t("Your role")}</dt><dd className="capitalize">{partnerLabel(session.partnerContext?.membershipRole, locale)}</dd></div></dl></CardContent>
+      </Card>
+    </div></div>;
   }
 
   if (session.appUser.role === "advertiser") {

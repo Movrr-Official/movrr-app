@@ -1,5 +1,6 @@
 "use client";
 
+import { partnerText } from "@/lib/partnerLocale";
 import Image from "next/image";
 import { Menu, User } from "lucide-react";
 
@@ -25,6 +26,7 @@ export function Navbar({
   sidebarOpen: boolean;
   onToggleSidebar: () => void;
 }) {
+  const t = (text: string) => session.role === "partner" ? partnerText(session.partnerLocale ?? "en", text) : text;
   return (
     <header className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 border-b border-border bg-background">
       <div className="flex items-center gap-4 flex-1 max-w-3xl">
@@ -46,19 +48,19 @@ export function Navbar({
               MOVRR
             </h2>
             <span className="text-xs text-muted-foreground leading-none">
-              {workspaceLabels[session.role]}
+              {t(workspaceLabels[session.role])}
             </span>
           </div>
         </div>
 
         <div className="hidden md:flex items-center">
-          <Breadcrumb />
+          <Breadcrumb locale={session.partnerLocale} />
         </div>
       </div>
 
       <div className="flex items-center gap-3">
-        <Button asChild variant="ghost" size="sm"><a href="/workspaces">Switch workspace</a></Button>
-        <ThemeToggle />
+        <Button asChild variant="ghost" size="sm"><a href="/workspaces">{t("Switch workspace")}</a></Button>
+        <ThemeToggle locale={session.partnerLocale} />
 
         <Button
           type="button"
@@ -66,7 +68,7 @@ export function Navbar({
           size="sm"
           onClick={onToggleSidebar}
           className="lg:hidden p-2 hover:bg-muted"
-          aria-label="Toggle sidebar"
+          aria-label={t("Toggle sidebar")}
           aria-expanded={sidebarOpen}
           aria-controls="product-navigation"
         >
@@ -87,7 +89,7 @@ export function Navbar({
                   variant="outline"
                   className="text-xs font-medium capitalize"
                 >
-                  {session.role} workspace
+                  {t(workspaceLabels[session.role])}
                 </Badge>
               </div>
             </div>

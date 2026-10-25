@@ -1,3 +1,5 @@
+import { getPartnerLocale } from "@/lib/partnerLocaleServer";
+import { partnerText } from "@/lib/partnerLocale";
 import { AdvertiserPerformanceChart } from "@/components/advertiser/PerformanceChart";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -30,42 +32,41 @@ const RANGE_OPTIONS = [
 ] as const;
 
 async function PartnerAnalyticsView() {
+  const locale = await getPartnerLocale();
+  const t = (text: string) => partnerText(locale, text);
   let analytics: Awaited<ReturnType<typeof getPartnerAnalytics>> = {
     series: [],
   };
   let loadError: string | null = null;
   try {
     analytics = await getPartnerAnalytics();
-  } catch (error) {
+  } catch {
     loadError =
-      error instanceof Error ? error.message : "Failed to load analytics";
+      "Reward activity is temporarily unavailable. Please try again.";
   }
 
   return (
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
         <PageHeader
-          title="Analytics"
-          description="Partner analytics read models from Platform GET /api/v1/partners/analytics."
+          title={t("Analytics")}
+          description={t("Track reward progress and customer collections.")}
         />
         {loadError ? (
-          <p className="text-sm text-destructive">{loadError}</p>
+          <p className="text-sm text-destructive">{loadError ? t(loadError) : null}</p>
         ) : null}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
           <StatsCard
-            title="Series points"
+            title={t("Reward status categories")}
             value={analytics.series.length}
-            description="Count of sink series entries returned by Platform"
+            description={t("Reward status categories")}
             icon={LineChart}
           />
         </div>
         <Card className="border-border">
           <CardHeader>
-            <CardTitle>Analytics series</CardTitle>
-            <CardDescription>
-              Presentation of Platform sink read models only — no local
-              aggregation rules.
-            </CardDescription>
+            <CardTitle>{t("Analytics series")}</CardTitle>
+            <CardDescription>{t("Reward activity for your organisation.")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {analytics.series.length ? (
@@ -75,19 +76,19 @@ async function PartnerAnalyticsView() {
                   className="flex items-center justify-between rounded-xl border border-border/60 p-4"
                 >
                   <p className="font-medium">
-                    {String(point.label ?? point.key ?? `Series ${index + 1}`)}
+                    {t(String(point.label ?? point.key ?? `Series ${index + 1}`))}
                   </p>
                   <Badge variant="outline">
                     {typeof point.value === "number"
-                      ? point.value.toLocaleString()
+                      ? point.value.toLocaleString(locale === "nl" ? "nl-NL" : "en-GB")
                       : "—"}
                   </Badge>
                 </div>
               ))
             ) : (
               <EmptyState
-                title="No partner analytics yet"
-                description="Series will appear here when Platform returns analytics sink data for your organisation."
+                title={t("No partner analytics yet")}
+                description={t("Reward activity will appear here after your first customer redemption.")}
                 iconName="dashboard"
               />
             )}

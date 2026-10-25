@@ -1,3 +1,5 @@
+import { getPartnerLocale } from "@/lib/partnerLocaleServer";
+import { partnerText } from "@/lib/partnerLocale";
 import { cookies } from "next/headers";
 import { Input } from "@/components/ui/input";
 import { StaffTable } from "@/components/partner/StaffTable";
@@ -13,6 +15,8 @@ export default async function PartnerStaffPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const locale = await getPartnerLocale();
+  const t = (text: string) => partnerText(locale, text);
   const session = await requirePartnerSession();
   const params = await searchParams;
   let invitationUrl: string | undefined;
@@ -31,12 +35,12 @@ export default async function PartnerStaffPage({
       <div className="page-canvas">
         <div className="space-y-6 md:space-y-8">
           <PageHeader
-            title="Staff"
-            description="Organisation membership management requires staff.manage."
+            title={t("Staff")}
+            description={t("Manage your team workspace access.")}
           />
           <EmptyState
-            title="Staff management unavailable"
-            description="Your membership role cannot list or manage organisation staff."
+            title={t("Staff management unavailable")}
+            description={t("Your membership role cannot list or manage organisation staff.")}
             iconName="dashboard"
           />
         </div>
@@ -48,19 +52,19 @@ export default async function PartnerStaffPage({
   let listError: string | null = null;
   try {
     members = await listPartnerStaff();
-  } catch (err) {
-    listError = err instanceof Error ? err.message : "Failed to load staff";
+  } catch {
+    listError = "Team details are temporarily unavailable. Please try again.";
   }
 
   return (
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
-        <StatusToast success={success} error={error ?? listError} />
+        <StatusToast success={success ? t(success) : null} error={error ? t(error) : listError ? t(listError) : null} />
         <PageHeader
-          title="Staff"
-          description="Invite and change organisation membership roles through Platform APIs only."
+          title={t("Staff")}
+          description={t("Invite your team and manage their access.")}
         />
-        {invitationUrl && <div className="space-y-2"><p>Invitation link ? share with the invited account holder</p><Input value={invitationUrl} readOnly /></div>}
+        {invitationUrl && <div className="space-y-2"><p>{t("Share this invitation link with the invited account holder.")}</p><Input value={invitationUrl} readOnly /></div>}
         <StaffTable members={members} canManage={canManage} actorRole={session.partnerContext!.membershipRole} />
       </div>
     </div>

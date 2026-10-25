@@ -22,6 +22,7 @@ export type PartnerCatalogInput = {
 };
 
 export type PartnerCatalogItem = {
+  updatedAt?: string;
   id: string;
   title?: string;
   description?: string;
@@ -74,7 +75,7 @@ export async function createPartnerCatalogItem(input: PartnerCatalogInput) {
 
 export async function updatePartnerCatalogItem(
   id: string,
-  input: Partial<PartnerCatalogInput>,
+  input: Partial<PartnerCatalogInput> & { expectedUpdatedAt: string },
 ) {
   await requirePartnerSession();
   const data = await platformFetch<unknown>(`/partners/rewards/${id}`, {
@@ -95,6 +96,8 @@ export async function getPartnerCatalogItem(
   if (!found) return null;
   return {
     id: found.id,
+    updatedAt: found.updatedAt,
+    description: found.description, category: found.category, sku: found.sku, stockAvailable: found.stockAvailable ?? undefined,
     title: found.name ?? undefined,
     pointsCost: found.pointsCost ?? undefined,
     status: found.status ?? undefined,

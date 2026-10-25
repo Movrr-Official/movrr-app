@@ -32,20 +32,19 @@ export function RouteError({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <AlertTriangle className="h-5 w-5 text-destructive" />
-            We couldn{"'"}t load this dashboard view
+            We couldn{"'"}t load this dashboard view / Deze pagina kon niet worden geladen
           </CardTitle>
           <CardDescription>
-            The request failed before the product surface could render. You can
-            retry safely.
+            Please check your connection and try again. / Controleer je verbinding en probeer het opnieuw.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-muted-foreground">
-            {error.message || "Unexpected dashboard error."}
+            Your workspace is temporarily unavailable. / Je werkruimte is tijdelijk niet beschikbaar.
           </p>
           <Button type="button" onClick={reset} variant="outline">
             <RotateCcw className="mr-2 h-4 w-4" />
-            Retry
+            Retry / Opnieuw proberen
           </Button>
         </CardContent>
       </Card>

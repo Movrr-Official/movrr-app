@@ -1,3 +1,6 @@
+import { getPartnerLocale } from "@/lib/partnerLocaleServer";
+import { partnerText } from "@/lib/partnerLocale";
+import { partnerLabel } from "@/lib/partnerPresentation";
 import Link from "next/link";
 import { ClipboardList, QrCode, Shield } from "lucide-react";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -13,30 +16,32 @@ import {
 import { Button } from "@/components/ui/button";
 import type { PartnerDashboard } from "@/schemas";
 
-export function PartnerOverview({
+export async function PartnerOverview({
   dashboard,
 }: {
   dashboard: PartnerDashboard;
 }) {
+  const locale = await getPartnerLocale();
+  const t = (text: string) => partnerText(locale, text);
   return (
     <div className="space-y-6 md:space-y-8">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
         <StatsCard
-          title="Pending collections"
+          title={t("Pending collections")}
           value={dashboard.pendingCount}
-          description="Fulfilments awaiting partner collection confirmation"
+          description={t("Rewards waiting for collection")}
           icon={ClipboardList}
         />
         <StatsCard
-          title="Failure rate"
-          value={dashboard.failureRateLabel}
-          description="Presentation field from Platform analytics (when available)"
+          title={t("Ready for handover")}
+          value={dashboard.validatedCount}
+          description={t("Scanned rewards awaiting handover")}
           icon={Shield}
         />
         <StatsCard
-          title="Analytics series"
-          value={dashboard.analyticsSeriesCount}
-          description="Read-model series points from partner analytics"
+          title={t("Collections completed")}
+          value={dashboard.completedCount}
+          description={t("Confirmed reward collections")}
           icon={QrCode}
         />
       </div>
@@ -45,36 +50,33 @@ export function PartnerOverview({
         <CardHeader>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <CardTitle>Reward Partner workspace</CardTitle>
-              <CardDescription>
-                Organisation-scoped operations via Platform API. This is not a
-                rider marketplace.
-              </CardDescription>
+              <CardTitle>{t("Reward Partner workspace")}</CardTitle>
+              <CardDescription>{t("Manage your team, rewards and customer collections.")}</CardDescription>
             </div>
             {dashboard.membershipRole ? (
               <Badge variant="outline" className="capitalize">
-                {dashboard.membershipRole}
+                {partnerLabel(dashboard.membershipRole, locale)}
               </Badge>
             ) : null}
           </div>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
           <Button asChild>
-            <Link href="/dashboard/collections">Pending collections</Link>
+            <Link href="/dashboard/collections">{t("Pending collections")}</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/dashboard/validate">Validate token</Link>
+            <Link href="/dashboard/validate">{t("Scan a reward")}</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/dashboard/analytics">Analytics</Link>
+            <Link href="/dashboard/analytics">{t("Analytics")}</Link>
           </Button>
         </CardContent>
       </Card>
 
       {dashboard.pendingCount === 0 ? (
         <EmptyState
-          title="No pending collections"
-          description="When riders redeem QR/collection rewards, pending fulfilments from Platform will appear here."
+          title={t("No pending collections")}
+          description={t("Rewards ready for customer collection will appear here.")}
           iconName="dashboard"
         />
       ) : null}

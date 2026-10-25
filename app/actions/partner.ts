@@ -1,5 +1,7 @@
 "use server";
 
+import { getPartnerLocale } from "@/lib/partnerLocaleServer";
+import { partnerText } from "@/lib/partnerLocale";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -17,13 +19,13 @@ import {
   cancelPartnerFulfilment,
   importPartnerResourceCodes,
   invitePartnerStaff,
-  patchPartnerSettings,
   updatePartnerStaffRole,
   validatePartnerToken,
 } from "@/services/partner";
 
-function redirectWithStatus(path: string, params: Record<string, string>) {
-  const search = new URLSearchParams(params);
+async function redirectWithStatus(path: string, params: Record<string, string>): Promise<never> {
+  const locale = await getPartnerLocale();
+  const search = new URLSearchParams(Object.fromEntries(Object.entries(params).map(([key, value]) => [key, partnerText(locale, value)])));
   redirect(`${path}?${search.toString()}`);
 }
 
@@ -34,22 +36,12 @@ function lifecycleVersion(form:FormData) {
 
 function mapPlatformError(error: unknown): string {
   if (error instanceof PlatformApiError) {
-    if (
-      error.kind === "AlreadyConfirmed" ||
-      error.message.toLowerCase().includes("already")
-    ) {
-      return "This collection was already confirmed.";
-    }
-    if (
-      error.kind === "ConcurrencyConflict" ||
-      error.status === 409 ||
-      error.message.toLowerCase().includes("version")
-    ) {
-      return "This fulfilment changed concurrently. Refresh and try again.";
-    }
-    return error.message;
+    if (error.status === 401 || error.status === 403) return "Your account cannot perform this action. Ask your manager for access.";
+    if (error.kind === "AlreadyConfirmed") return "This collection was already confirmed.";
+    if (error.kind === "ConcurrencyConflict" || error.status === 409) return "This reward changed. Refresh before trying again.";
+    if (error.kind === "BusinessFailure" || error.kind === "validation" || error.kind === "not_found") return "This action is unavailable. Check the reward details and try again.";
   }
-  return error instanceof Error ? error.message : "Platform request failed";
+  return "We couldn't confirm the result. Refresh to check the current status before trying again.";
 }
 
 export async function confirmCollectionAction(formData: FormData) {
@@ -60,22 +52,22 @@ export async function confirmCollectionAction(formData: FormData) {
       "fulfilment.confirm",
     )
   ) {
-    redirectWithStatus("/dashboard/collections", {
+    await redirectWithStatus("/dashboard/collections", {
       error: "Your role cannot confirm collections.",
     });
   }
 
   const fulfilmentId = String(formData.get("fulfilmentId") ?? "").trim();
   if (!fulfilmentId) {
-    redirectWithStatus("/dashboard/collections", {
-      error: "Missing fulfilment id.",
+    await redirectWithStatus("/dashboard/collections", {
+      error: "Choose a reward to continue.",
     });
   }
 
   try {
     await confirmPartnerCollection(fulfilmentId, lifecycleVersion(formData), String(formData.get("reason") ?? ""), String(formData.get("operationId") ?? ""));
   } catch (error) {
-    redirectWithStatus(`/dashboard/collections/${fulfilmentId}`, {
+    await redirectWithStatus(`/dashboard/collections/${fulfilmentId}`, {
       error: mapPlatformError(error),
     });
   }
@@ -83,55 +75,52 @@ export async function confirmCollectionAction(formData: FormData) {
   revalidatePath("/dashboard/collections");
   revalidatePath(`/dashboard/collections/${fulfilmentId}`);
   revalidatePath("/dashboard");
-  redirectWithStatus(`/dashboard/collections/${fulfilmentId}`, {
+  await redirectWithStatus(`/dashboard/collections/${fulfilmentId}`, {
     success: "Collection confirmed.",
   });
 }
 
-export async function validateTokenAction(formData: FormData) {
+export async function validateTokenAction(
+  _previous: import("@/lib/partnerVoucher").VoucherValidationState,
+  formData: FormData,
+): Promise<import("@/lib/partnerVoucher").VoucherValidationState> {
   const session = await requirePartnerSession();
-  if (
-    !hasPartnerCapability(
-      session.partnerContext!.capabilities,
-      "fulfilment.validate",
-    )
-  ) {
-    redirectWithStatus("/dashboard/validate", {
-      error: "Your role cannot validate tokens.",
-    });
+  if (!hasPartnerCapability(session.partnerContext!.capabilities, "fulfilment.validate")) {
+    return { outcome: "restricted" };
   }
-
   const token = String(formData.get("token") ?? "").trim();
-  if (!token) {
-    redirectWithStatus("/dashboard/validate", {
-      error: "Enter a validation code.",
-    });
+  const operationId = String(formData.get("operationId") ?? "");
+  if (token.length < 32 || token.length > 512 || !/^[0-9a-f-]{36}$/i.test(operationId)) {
+    return { outcome: "invalid" };
   }
-
   try {
-    await validatePartnerToken(token);
+    const result = await validatePartnerToken(token, operationId);
+    if (result.fulfilment?.state !== "validated" || !/^[0-9a-f-]{36}$/i.test(result.fulfilmentId)) {
+      return { outcome: "retry" };
+    }
+    revalidatePath("/dashboard/collections");
+    revalidatePath(`/dashboard/collections/${result.fulfilmentId}`);
+    revalidatePath("/dashboard");
+    return { outcome: "validated", fulfilmentId: result.fulfilmentId };
   } catch (error) {
-    redirectWithStatus("/dashboard/validate", {
-      error: mapPlatformError(error),
-    });
+    if (error instanceof PlatformApiError) {
+      if (error.status === 401 || error.status === 403) return { outcome: "restricted" };
+      if (error.kind === "not_found") return { outcome: "invalid" };
+      if (["BusinessFailure", "ConcurrencyConflict", "unavailable"].includes(error.kind)) return { outcome: "unavailable" };
+    }
+    return { outcome: "retry" };
   }
-
-  revalidatePath("/dashboard/collections");
-  revalidatePath("/dashboard/validate");
-  redirectWithStatus("/dashboard/validate", {
-    success: "Token validated by Platform API.",
-  });
 }
 
 export async function cancelCollectionAction(formData:FormData) {
  const session=await requirePartnerSession();
- if(!hasPartnerCapability(session.partnerContext!.capabilities,"fulfilment.cancel"))redirectWithStatus("/dashboard/collections",{error:"Your role cannot cancel rewards."});
+ if(!hasPartnerCapability(session.partnerContext!.capabilities,"fulfilment.cancel"))await redirectWithStatus("/dashboard/collections",{error:"Your role cannot cancel rewards."});
  const id=String(formData.get("fulfilmentId")??"");
- if(!/^[0-9a-f-]{36}$/i.test(id))redirectWithStatus("/dashboard/collections",{error:"Invalid reward id."});
+ if(!/^[0-9a-f-]{36}$/i.test(id))await redirectWithStatus("/dashboard/collections",{error:"Invalid reward id."});
  try{await cancelPartnerFulfilment(id,lifecycleVersion(formData),String(formData.get("reason")??""),String(formData.get("operationId")??""));}
- catch(error){redirectWithStatus(`/dashboard/collections/${id}`,{error:mapPlatformError(error)});}
+ catch(error){await redirectWithStatus(`/dashboard/collections/${id}`,{error:mapPlatformError(error)});}
  revalidatePath("/dashboard/collections");revalidatePath(`/dashboard/collections/${id}`);
- redirectWithStatus("/dashboard/collections",{success:"Reward cancellation settled by Platform."});
+ await redirectWithStatus("/dashboard/collections",{success:"Reward cancelled. Check the reward history for any refund."});
 }
 
 export async function importResourceCodesAction(formData: FormData) {
@@ -142,7 +131,7 @@ export async function importResourceCodesAction(formData: FormData) {
       "resources.manage",
     )
   ) {
-    redirectWithStatus("/dashboard/resources", {
+    await redirectWithStatus("/dashboard/resources", {
       error: "Your role cannot manage resources.",
     });
   }
@@ -155,22 +144,22 @@ export async function importResourceCodesAction(formData: FormData) {
     .filter(Boolean);
 
   if (!resourceId || codes.length === 0) {
-    redirectWithStatus("/dashboard/resources", {
+    await redirectWithStatus("/dashboard/resources", {
       error: "Resource id and at least one code are required.",
     });
   }
 
+  let imported: number;
   try {
     const result = await importPartnerResourceCodes({ resourceId, codes });
-    revalidatePath("/dashboard/resources");
-    redirectWithStatus("/dashboard/resources", {
-      success: `Imported ${result.imported} code(s).`,
-    });
+    imported = result.imported;
   } catch (error) {
-    redirectWithStatus("/dashboard/resources", {
+    await redirectWithStatus("/dashboard/resources", {
       error: mapPlatformError(error),
     });
   }
+  revalidatePath("/dashboard/resources");
+  await redirectWithStatus("/dashboard/resources", { success: `Imported ${imported!} code(s).` });
 }
 
 export async function inviteStaffAction(formData: FormData) {
@@ -178,32 +167,32 @@ export async function inviteStaffAction(formData: FormData) {
   if (
     !hasPartnerCapability(session.partnerContext!.capabilities, "staff.manage")
   ) {
-    redirectWithStatus("/dashboard/staff", {
+    await redirectWithStatus("/dashboard/staff", {
       error: "Your role cannot manage staff.",
     });
   }
 
-  const userId = String(formData.get("userId") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const role = String(formData.get("role") ?? "").trim();
-  if (!userId || !role) {
-    redirectWithStatus("/dashboard/staff", {
-      error: "User id and role are required.",
+  if (!email || !role) {
+    await redirectWithStatus("/dashboard/staff", {
+      error: "Email and role are required.",
     });
   }
 
   try {
     const operationToken = String(formData.get("operationToken") ?? "");
-    const invitation = await invitePartnerStaff({ userId, role, operationToken });
+    const invitation = await invitePartnerStaff({ email, role, operationToken });
     (await cookies()).set("movrr-invitation", JSON.stringify({ actor: session.authUser.id, organisationId: session.partnerContext!.organisationId, url: invitation.url }),
       { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/dashboard/staff", maxAge: 600 });
   } catch (error) {
-    redirectWithStatus("/dashboard/staff", {
+    await redirectWithStatus("/dashboard/staff", {
       error: mapPlatformError(error),
     });
   }
 
   revalidatePath("/dashboard/staff");
-  redirectWithStatus("/dashboard/staff", {
+  await redirectWithStatus("/dashboard/staff", {
     success: "Staff member invited.",
   });
 }
@@ -213,7 +202,7 @@ export async function updateStaffRoleAction(formData: FormData) {
   if (
     !hasPartnerCapability(session.partnerContext!.capabilities, "staff.manage")
   ) {
-    redirectWithStatus("/dashboard/staff", {
+    await redirectWithStatus("/dashboard/staff", {
       error: "Your role cannot manage staff.",
     });
   }
@@ -221,7 +210,7 @@ export async function updateStaffRoleAction(formData: FormData) {
   const membershipId = String(formData.get("membershipId") ?? "").trim();
   const role = String(formData.get("role") ?? "").trim();
   if (!membershipId || !role) {
-    redirectWithStatus("/dashboard/staff", {
+    await redirectWithStatus("/dashboard/staff", {
       error: "Membership id and role are required.",
     });
   }
@@ -233,39 +222,14 @@ export async function updateStaffRoleAction(formData: FormData) {
     const status = rawStatus === "revoked" || rawStatus === "active" ? rawStatus : undefined;
     await updatePartnerStaffRole({ membershipId, role, expectedUpdatedAt, status });
   } catch (error) {
-    redirectWithStatus("/dashboard/staff", {
+    await redirectWithStatus("/dashboard/staff", {
       error: mapPlatformError(error),
     });
   }
 
   revalidatePath("/dashboard/staff");
-  redirectWithStatus("/dashboard/staff", {
+  await redirectWithStatus("/dashboard/staff", {
     success: "Staff role updated.",
-  });
-}
-
-export async function updatePartnerSettingsAction(formData: FormData) {
-  await requirePartnerSession();
-
-  const displayName = String(formData.get("displayName") ?? "").trim();
-  const supportEmail = String(formData.get("supportEmail") ?? "").trim();
-  const notes = String(formData.get("notes") ?? "").trim();
-
-  try {
-    await patchPartnerSettings({
-      displayName: displayName || undefined,
-      supportEmail: supportEmail || undefined,
-      notes: notes || undefined,
-    });
-  } catch (error) {
-    redirectWithStatus("/dashboard/settings", {
-      error: mapPlatformError(error),
-    });
-  }
-
-  revalidatePath("/dashboard/settings");
-  redirectWithStatus("/dashboard/settings", {
-    success: "Partner settings updated.",
   });
 }
 
@@ -274,15 +238,16 @@ export async function createRewardCatalogAction(formData: FormData) {
   if (
     !hasPartnerCapability(session.partnerContext!.capabilities, "rewards.manage")
   ) {
-    redirectWithStatus("/dashboard/rewards", {
+    await redirectWithStatus("/dashboard/rewards", {
       error: "Your role cannot manage rewards.",
     });
   }
 
   const title = String(formData.get("title") ?? "").trim();
-  const pointsCost = Number(formData.get("pointsCost") ?? 0);
-  if (!title || pointsCost <= 0) {
-    redirectWithStatus("/dashboard/rewards/create", {
+  const rawPoints = String(formData.get("pointsCost") ?? "").trim();
+  const pointsCost = rawPoints ? Number(rawPoints) : NaN;
+  if (!title || !Number.isSafeInteger(pointsCost) || pointsCost < 0) {
+    await redirectWithStatus("/dashboard/rewards/create", {
       error: "Title and points cost are required.",
     });
   }
@@ -291,28 +256,25 @@ export async function createRewardCatalogAction(formData: FormData) {
     "@/lib/platform/partnerCatalogPlatform"
   );
 
+  let createdId: string;
   try {
     const item = await createPartnerCatalogItem({
       title,
       pointsCost,
       description: String(formData.get("description") ?? "").trim() || undefined,
-      status:
-        String(formData.get("status") ?? "draft") === "active"
-          ? "active"
-          : "draft",
+      status: "draft",
       sku: String(formData.get("sku") ?? "").trim() || undefined,
       category: String(formData.get("category") ?? "").trim() || undefined,
-      stockAvailable: Number(formData.get("stockAvailable") ?? 0) || undefined,
+      stockAvailable: formData.get("stockAvailable") ? Number(formData.get("stockAvailable")) : undefined,
     });
-    revalidatePath("/dashboard/rewards");
-    redirectWithStatus(`/dashboard/rewards/${item.id}/edit`, {
-      success: "Reward catalog item created.",
-    });
+    createdId = item.id;
   } catch (error) {
-    redirectWithStatus("/dashboard/rewards/create", {
+    await redirectWithStatus("/dashboard/rewards/create", {
       error: mapPlatformError(error),
     });
   }
+  revalidatePath("/dashboard/rewards");
+  await redirectWithStatus(`/dashboard/rewards/${createdId!}/edit`, { success: "Reward created." });
 }
 
 export async function updateRewardCatalogAction(formData: FormData) {
@@ -320,14 +282,14 @@ export async function updateRewardCatalogAction(formData: FormData) {
   if (
     !hasPartnerCapability(session.partnerContext!.capabilities, "rewards.manage")
   ) {
-    redirectWithStatus("/dashboard/rewards", {
+    await redirectWithStatus("/dashboard/rewards", {
       error: "Your role cannot manage rewards.",
     });
   }
 
   const id = String(formData.get("catalogItemId") ?? "").trim();
   if (!id) {
-    redirectWithStatus("/dashboard/rewards", { error: "Missing catalog item id." });
+    await redirectWithStatus("/dashboard/rewards", { error: "Missing catalog item id." });
   }
 
   const { updatePartnerCatalogItem } = await import(
@@ -345,6 +307,7 @@ export async function updateRewardCatalogAction(formData: FormData) {
 
   try {
     await updatePartnerCatalogItem(id, {
+      expectedUpdatedAt: String(formData.get("expectedUpdatedAt") ?? ""),
       title: String(formData.get("title") ?? "").trim() || undefined,
       description: String(formData.get("description") ?? "").trim() || undefined,
       pointsCost: formData.get("pointsCost")
@@ -358,13 +321,13 @@ export async function updateRewardCatalogAction(formData: FormData) {
         : undefined,
     });
   } catch (error) {
-    redirectWithStatus(`/dashboard/rewards/${id}/edit`, {
+    await redirectWithStatus(`/dashboard/rewards/${id}/edit`, {
       error: mapPlatformError(error),
     });
   }
 
   revalidatePath("/dashboard/rewards");
-  redirectWithStatus(`/dashboard/rewards/${id}/edit`, {
+  await redirectWithStatus(`/dashboard/rewards/${id}/edit`, {
     success: "Reward catalog item updated.",
   });
 }
@@ -375,14 +338,14 @@ export async function updatePartnerNotificationPreferencesAction(formData: FormD
 
   await persistNotificationsPreference(session.appUser.id, notifications);
   revalidateRoleNotificationPaths("partner");
-  redirectWithStatus("/dashboard/notifications", { success: "Notification preference saved." });
+  await redirectWithStatus("/dashboard/notifications", { success: "Notification preference saved." });
 }
 
 export async function markPartnerNotificationsReadAction() {
   const session = await requirePartnerSession();
   await markUserNotificationsRead(session.appUser.id);
   revalidatePath("/dashboard/notifications");
-  redirectWithStatus("/dashboard/notifications", { success: "Notifications marked as read." });
+  await redirectWithStatus("/dashboard/notifications", { success: "Notifications marked as read." });
 }
 
 export async function markPartnerNotificationReadAction(formData: FormData) {
@@ -390,5 +353,15 @@ export async function markPartnerNotificationReadAction(formData: FormData) {
   const notificationId = String(formData.get("notificationId") ?? "").trim();
   await markSingleNotificationRead(session.appUser.id, notificationId);
   revalidatePath("/dashboard/notifications");
-  redirectWithStatus("/dashboard/notifications", { success: "Notification updated." });
+  await redirectWithStatus("/dashboard/notifications", { success: "Notification updated." });
+}
+
+export async function changePartnerLanguageAction(formData: FormData) {
+  const session = await requirePartnerSession();
+  const locale = formData.get("locale");
+  if (locale !== "en" && locale !== "nl") return;
+  (await cookies()).set("movrr-partner-locale", JSON.stringify({ actor: session.authUser.id, locale }), {
+    httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/dashboard", maxAge: 31536000,
+  });
+  revalidatePath("/dashboard", "layout");
 }

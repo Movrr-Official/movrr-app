@@ -1,3 +1,5 @@
+import { getPartnerLocale } from "@/lib/partnerLocaleServer";
+import { partnerText } from "@/lib/partnerLocale";
 import Link from "next/link";
 import { createRewardCatalogAction } from "@/app/actions/partner";
 import { StatusToast } from "@/components/form/StatusToast";
@@ -21,6 +23,8 @@ export default async function PartnerCreateRewardPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const locale = await getPartnerLocale();
+  const t = (text: string) => partnerText(locale, text);
   const session = await getCurrentProductSession();
   if (!session?.partnerContext) redirect("/unauthorized");
 
@@ -38,48 +42,41 @@ export default async function PartnerCreateRewardPage({
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
         <PageHeader
-          title="Create reward"
-          description="POST /api/v1/partners/rewards — add a catalog item."
+          title={t("Create reward")}
+          description={t("Prepare a reward for your customers.")}
         />
-        <StatusToast success={success} error={error} />
+        <StatusToast success={success ? t(success) : null} error={error ? t(error) : null} />
 
         <Card className="border-border">
           <CardHeader>
-            <CardTitle>Catalog item</CardTitle>
-            <CardDescription>
-              New items are created as draft unless set to active.
-            </CardDescription>
+            <CardTitle>{t("Catalog item")}</CardTitle>
+            <CardDescription>{t("Rewards start as drafts. MOVRR approves availability after voucher inventory and delivery details are ready.")}</CardDescription>
           </CardHeader>
           <CardContent>
             <form action={createRewardCatalogAction} className="grid gap-4 md:grid-cols-2">
-              <Input name="title" placeholder="Title" required className="md:col-span-2" />
+              <Input name="title" placeholder={t("Title")} required className="md:col-span-2" />
               <Textarea
                 name="description"
-                placeholder="Description"
+                placeholder={t("Description")}
                 className="md:col-span-2"
               />
-              <Input name="pointsCost" type="number" placeholder="Points cost" min={1} required />
-              <Input name="stockAvailable" type="number" placeholder="Stock available" min={0} />
-              <Input name="sku" placeholder="SKU" />
-              <Input name="category" placeholder="Category" />
+              <Input name="pointsCost" type="number" placeholder={t("Points cost")} min={0} required />
+              <Input name="stockAvailable" type="number" placeholder={t("Stock available")} min={0} />
+              <Input name="sku" placeholder={t("SKU")} />
+              <Input name="category" placeholder={t("Category")} />
               <select
                 name="status"
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm md:col-span-2"
                 defaultValue="draft"
               >
-                <option value="draft">Draft</option>
-                <option value="active">Active</option>
+                <option value="draft">{t("Draft")}</option>
               </select>
               <div className="flex gap-3 md:col-span-2">
-                <SubmitButton type="submit" pendingLabel="Creating">
-                  Create item
-                </SubmitButton>
+                <SubmitButton type="submit" pendingLabel={t("Creating")}>{t("Create item")}</SubmitButton>
                 <Link
                   href="/dashboard/rewards"
                   className="inline-flex h-10 items-center rounded-md border border-input px-4 text-sm"
-                >
-                  Cancel
-                </Link>
+                >{t("Cancel")}</Link>
               </div>
             </form>
           </CardContent>

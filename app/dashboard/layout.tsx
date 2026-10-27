@@ -5,7 +5,7 @@ import { requireProductSession } from "@/lib/appUser";
 
 export async function generateMetadata() {
   const session = await requireProductSession(["rider", "advertiser", "partner", "government"]);
-  return session.appUser.role === "partner" ? { manifest: "/partner/manifest.webmanifest", appleWebApp: { capable: true, statusBarStyle: "default" as const, title: "MOVRR Partner" } } : {};
+  return session.appUser.role === "partner" ? { manifest: "/partner/manifest.webmanifest", appleWebApp: { capable: true, statusBarStyle: "default" as const, title: "MOVRR Partner" }, icons: { apple: [{ url: "/pwa/partner/apple-touch-icon.png", sizes: "180x180", type: "image/png" }] } } : {};
 }
 
 export default async function DashboardLayout({

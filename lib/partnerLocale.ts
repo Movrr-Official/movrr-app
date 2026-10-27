@@ -242,6 +242,8 @@ export const partnerDutch: Record<string, string> = {
   "Mark as read": "Markeren als gelezen",
   "No partner notifications": "Geen partnermeldingen",
   "Account, programme, and fulfilment notices will appear here when MOVRR has updates for your workspace.": "Hier verschijnen berichten over je account, programma's en beloningen zodra MOVRR nieuws heeft voor je werkruimte.",
+  "Close": "Sluiten",
+  "Install MOVRR Partner": "MOVRR Partner installeren",
   "Install MOVRR": "MOVRR installeren",
   "You are offline. Reconnect before handing over rewards.": "Je bent offline. Maak verbinding voordat je beloningen overhandigt.",
   "Offline screen unavailable.": "Offlinescherm niet beschikbaar.",

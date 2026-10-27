@@ -1,9 +1,8 @@
 "use client";
 import { useEffect, useRef, type ReactNode } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, ClipboardList, Gift, House, ScanLine, UserRound } from "lucide-react";
+import { ArrowLeft, ClipboardList, Gift, House, ScanLine, UserRound, ChevronDown } from "lucide-react";
 import { PartnerAppStatus } from "./PartnerAppStatus";
 import { PartnerNotificationPreview } from "./PartnerNotificationPreview";
 import { partnerText } from "@/lib/partnerLocale";
@@ -13,17 +12,36 @@ const icons = [House, ClipboardList, ScanLine, Gift, UserRound];
 export function PartnerMobileShell({ session, children }: { session: AppSessionValue; children: ReactNode }) {
   const pathname = usePathname(), active = partnerMobileTab(pathname), parent = partnerMobileParent(pathname);
   const content = useRef<HTMLElement>(null), previous = useRef(pathname);
+  const shell = useRef<HTMLDivElement>(null);
   const locale = session.partnerLocale ?? "en", t = (text: string) => partnerText(locale, text);
   const titles: Record<string, string> = { "/dashboard/resources": "Inventory", "/dashboard/staff": "Team", "/dashboard/settings": "Settings", "/dashboard/analytics": "Performance", "/dashboard/notifications": "Notifications" };
   const title = parent ? (titles[pathname] ?? (pathname.includes("/rewards/") ? "Rewards" : "Reward collection")) : partnerMobileTabs.find(tab => tab.href === active)?.label ?? "Home";
   useEffect(() => {
     if (previous.current !== pathname) { previous.current = pathname; content.current?.focus({ preventScroll: true }); }
   }, [pathname]);
-  return <div className="partner-workspace partner-mobile-app" lang={locale} data-presentation="mobile">
+  useEffect(() => {
+    // Match installed browser chrome to the app surface without changing the web viewport.
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    if (!meta || !shell.current) return;
+    const original = meta.content;
+    const sync = () => {
+      const current = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+      if (!current || !shell.current) return;
+      const surface = getComputedStyle(shell.current).getPropertyValue("--background").trim();
+      if (current.content !== surface) current.content = surface;
+    };
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    // Next can replace viewport metadata during client navigation.
+    observer.observe(document.head, { childList: true, subtree: true, attributes: true, attributeFilter: ["content"] });
+    return () => { observer.disconnect(); const current = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]'); if (current) current.content = original; };
+  }, []);
+  return <div ref={shell} className="partner-workspace partner-mobile-app" lang={locale} data-presentation="mobile">
     <a href="#partner-content" className="partner-skip">{t("Skip to content")}</a>
     <header className="partner-app-header">
-      <div className="partner-app-heading">{parent ? <Link href={parent} className="partner-app-back" aria-label={t("Back")}><ArrowLeft aria-hidden="true" /></Link> : <Image src="/movrr-icon-mark.png" width={30} height={30} alt="" />}<div><span className="partner-app-eyebrow">MOVRR Partner</span><p>{t(title)}</p></div></div>
-      <div className="partner-app-tools"><PartnerAppStatus locale={locale} /><PartnerNotificationPreview key={session.authUserId} locale={locale} /></div>
+      <div className="partner-app-heading">{parent ? <><Link href={parent} className="partner-app-back" aria-label={t("Back")}><ArrowLeft aria-hidden="true" /></Link><p>{t(title)}</p></> : <Link href="/dashboard/more" className="partner-context-chip" aria-label={t("Your account")}><span className="partner-context-avatar" aria-hidden="true">{session.name.slice(0, 1).toLocaleUpperCase(locale)}</span><span><strong>MOVRR Partner</strong><span>{session.name}</span></span><ChevronDown size={14} aria-hidden="true" /></Link>}</div>
+      <div className="partner-app-tools"><PartnerAppStatus locale={locale} presentation="mobile-status" /><PartnerNotificationPreview key={session.authUserId} locale={locale} /></div>
     </header>
     <main ref={content} id="partner-content" tabIndex={-1} className="partner-content partner-app-content">{children}</main>
     <nav className="partner-mobile-tabs partner-app-tabs" aria-label={t("Main navigation")}>

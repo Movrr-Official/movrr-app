@@ -4,6 +4,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({ guard: vi.fn() }));
 vi.mock("@/lib/appUser", () => ({ requirePartnerSession: mocks.guard }));
 vi.mock("@/lib/partnerLocaleServer", () => ({ getPartnerLocale: async () => "nl" }));
+vi.mock("@/components/partner/PartnerMobilePreferences", () => ({ PartnerMobilePreferences: () => <div>Mobile language preference</div> }));
 vi.mock("@/components/ThemeToggle", () => ({ ThemeToggle: () => <button>Theme</button> }));
 import Account from "@/app/dashboard/more/page";
 beforeEach(() => vi.clearAllMocks());

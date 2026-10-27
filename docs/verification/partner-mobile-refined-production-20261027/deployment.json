@@ -1,0 +1,23 @@
+﻿{
+  "date": "2026-10-27",
+  "applicationSha": "9fca7ec7d6001f418b263d04528c3b350f1cc39e",
+  "productionUrl": "https://app.movrr.nl",
+  "deploymentId": "dpl_GeJ4yM6hFZXjRGyNeY9EQuQn5KA7",
+  "deploymentUrl": "https://movrr-p3jhpqnt4-movrrops-projects.vercel.app",
+  "vercelDetail": "https://vercel.com/movrrops-projects/movrr-app/GeJ4yM6hFZXjRGyNeY9EQuQn5KA7",
+  "status": "Ready",
+  "domainAssigned": true,
+  "mechanism": "Existing signed-in ops@movrr.nl Vercel UI; explicit Git-source production deployment of exact SHA",
+  "normalMainFastForward": {"from":"750a9975dd579013b29e3d5aa4cb3c6bf9e79665", "to":"9fca7ec7d6001f418b263d04528c3b350f1cc39e"},
+  "rollback": {
+    "sha": "3fb2906519f7a4c021cc16a654936d17e8fc2cc3",
+    "deploymentId": "dpl_3Jvidhzu4WvdZiZJ9UWd6RAnrUqN",
+    "url": "https://movrr-rm0npyznu-movrrops-projects.vercel.app",
+    "preserved": true
+  },
+  "configurationOrPermissionsChanged": false,
+  "adminDeployed": false,
+  "migrationsRun": false,
+  "productionFinancialMutations": false,
+  "physicalDeviceAcceptance": "pending"
+}

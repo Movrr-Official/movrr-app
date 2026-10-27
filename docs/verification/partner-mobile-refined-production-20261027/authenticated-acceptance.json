@@ -1,0 +1,34 @@
+﻿{
+  "production": true,
+  "method": "Native browser UI; existing authorized sessions; no session credential copying",
+  "physicalDevice": false,
+  "authenticatedMobileViewport": [360,800],
+  "checks": {
+    "desktopWorkspaceLoaded": true,
+    "desktopContinueOnPhoneHandoff": true,
+    "desktopCameraNotOffered": true,
+    "mobileHome": true,
+    "mobileActivity": true,
+    "mobileScan": true,
+    "mobileRewardsWithExistingCatalogAndFab": true,
+    "mobileAccount": true,
+    "singleMobileScreenHeaders": true,
+    "screenLoadingResolvesToExistingContent": true,
+    "bottomNavigation": true,
+    "backDismissesLanguageSheetAndKeepsAccountRoute": true,
+    "englishDutchSwitchAndEnglishRestored": true,
+    "notificationsLoadAndEscapeDismissesOverlay": true,
+    "workspaceChooserOnlyAuthorizedExistingWorkspace": true,
+    "selectExistingWorkspaceReturnsToAuthenticatedHome": true,
+    "separateAdvertiserSessionRemainsAdvertiserScoped": true,
+    "browserDesktopModeRestored": true
+  },
+  "limits": [
+    "No camera capture, token validation or fulfilment attempted in production",
+    "No physical installation or standalone device launch acceptance",
+    "No production form submissions or catalog/inventory/financial edits",
+    "Session/chooser checks and unchanged authorization fingerprints do not constitute a new adversarial cross-tenant penetration test",
+    "iPhone XR and Samsung S23 Ultra dimensions covered by source acceptance, not claimed as physical or production device acceptance"
+  ],
+  "privateMerchantRecordsOrScreenshotsIncluded": false
+}

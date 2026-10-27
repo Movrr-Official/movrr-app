@@ -1,0 +1,41 @@
+{
+  "baseline": "750a997",
+  "production": false,
+  "physicalDevices": false,
+  "unitTests": {
+    "passed": 178,
+    "suites": 34
+  },
+  "typecheck": "pass",
+  "productionBuild": "pass; 37 pages",
+  "changedSourceLint": "pass",
+  "standardBrowser": {
+    "production": false,
+    "physicalDevices": false,
+    "emptyReadModels": true,
+    "errors": [],
+    "passedChecks": 127,
+    "renders": 66,
+    "devices": [
+      "iphone-xr",
+      "narrow",
+      "s23-ultra"
+    ],
+    "locales": [
+      "en",
+      "nl"
+    ],
+    "desktopComparison": "Home, Scan and Rewards pixel-identical to baseline"
+  },
+  "delayedBrowser": {
+    "production": false,
+    "physicalDevices": false,
+    "readDelayMs": 3000,
+    "delayConfinedToIsolatedCopy": true,
+    "fixture": "__tests__/fixtures/partner-mobile-read-models.json",
+    "routes": 13,
+    "renders": 78,
+    "errors": [],
+    "passedChecks": 280
+  }
+}

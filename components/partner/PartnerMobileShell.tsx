@@ -42,7 +42,7 @@ export function PartnerMobileShell({ session, children }: { session: AppSessionV
   return <div ref={shell} className="partner-workspace partner-mobile-app" lang={locale} data-presentation="mobile" data-screen={active.split("/").at(-1) ?? "home"}>
     <a href="#partner-content" className="partner-skip">{t("Skip to content")}</a>
     <header className="partner-app-header">
-      <div className="partner-app-heading">{parent ? <><Link href={parent} className="partner-app-back" aria-label={t("Back")}><ArrowLeft aria-hidden="true" /></Link><p>{t(title)}</p></> : <Link href="/dashboard/more" className="partner-app-wordmark" aria-label={t("Your account")}><Image src="/pwa/partner/icon-192.png" width={36} height={36} alt="" /><span>MOVRR Partner</span></Link>}</div>
+      <div className="partner-app-heading">{parent ? <><Link href={parent} className="partner-app-back" aria-label={t("Back")}><ArrowLeft aria-hidden="true" /></Link><p>{t(title)}</p></> : <Link href="/dashboard/more" className="partner-app-wordmark" aria-label={t("Your account")}><Image src="/pwa/partner/header-mark.png" width={36} height={36} alt="" /><span>MOVRR Partner</span></Link>}</div>
       <div className="partner-app-tools"><PartnerAppStatus locale={locale} presentation="mobile-status" /><PartnerNotificationPreview key={session.authUserId} locale={locale} /></div>
     </header>
     <main ref={content} id="partner-content" tabIndex={-1} className="partner-content partner-app-content">{children}</main>

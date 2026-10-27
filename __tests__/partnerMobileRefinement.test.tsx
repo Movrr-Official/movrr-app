@@ -47,12 +47,22 @@ it("separates Partner installation identity/assets from the existing web workspa
     expect(`${meta.width}x${meta.height}`).toBe(icon.sizes);
   }
   const { data, info } = await sharp("public/pwa/partner/icon-512.png").ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  expect(data[3]).toBe(0); // Transparent canvas, no baked dark tile.
-  let minX=info.width,maxX=0;
-  for(let y=0;y<info.height;y++) for(let x=0;x<info.width;x++) if(data[(y*info.width+x)*4+3]>128) {minX=Math.min(minX,x);maxX=Math.max(maxX,x);}
-  expect((maxX-minX)/info.width).toBeGreaterThan(.8);
-  const { data: opaque } = await sharp("public/pwa/partner/maskable-512.png").ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  expect([...opaque.subarray(0,4)]).toEqual([35,178,69,255]);
+  const pixel = (x: number, y: number) => [...data.subarray((y * info.width + x) * 4, (y * info.width + x) * 4 + 4)];
+  for (const [x, y] of [[0,0],[511,0],[0,511],[511,511],[256,256],[64,64]]) expect(pixel(x,y)).toEqual([18,60,44,255]);
+  let minX=info.width,maxX=0,minY=info.height,maxY=0,green=0;
+  for(let y=0;y<info.height;y++) for(let x=0;x<info.width;x++) {
+    const index=(y*info.width+x)*4;
+    if(data[index+3]!==255) throw new Error("Installation icon must be opaque");
+    if(data[index+1]>119) {minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);green++;}
+  }
+  expect((maxX-minX)/info.width).toBeGreaterThan(.67); expect((maxX-minX)/info.width).toBeLessThan(.7);
+  expect((maxY-minY)/info.height).toBeGreaterThan(.61); expect((maxY-minY)/info.height).toBeLessThan(.64);
+  expect(green).toBeGreaterThan(10000);
+  expect((await sharp("public/pwa/partner/header-mark.png").ensureAlpha().raw().toBuffer())[3]).toBe(0);
+  for(const file of ["maskable-512.png","apple-touch-icon.png"]) {
+    const bytes=await sharp(`public/pwa/partner/${file}`).ensureAlpha().raw().toBuffer();
+    expect([...bytes.subarray(0,4)]).toEqual([18,60,44,255]);
+  }
 });
 
 it("keeps mobile browser chrome through metadata replacement and restores web chrome on exit", async () => {

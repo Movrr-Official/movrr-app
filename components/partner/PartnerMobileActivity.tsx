@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ChevronRight, Inbox, ScanLine } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, Inbox, ScanLine, X } from "lucide-react";
 import type { PartnerPendingFulfilment } from "@/schemas";
 import { partnerText, type PartnerLocale } from "@/lib/partnerLocale";
 import { partnerLabel } from "@/lib/partnerPresentation";
@@ -14,7 +14,10 @@ export function PartnerMobileActivity({ items, history, canScan, locale }: { ite
       <ul className="partner-activity-list">{items.map(item => {
         const rawDate = history ? item.updatedAt ?? item.createdAt : item.createdAt;
         const date = rawDate ? new Date(rawDate) : null;
-        return <li key={item.id}><Link href={`/dashboard/collections/${item.id}`}><span className="partner-activity-symbol"><ScanLine size={20} aria-hidden="true" /></span><span className="partner-activity-copy"><strong>{item.rewardTitle ?? t("Reward collection")}</strong>{item.state && <span className="partner-activity-status" data-state={item.state}>{partnerLabel(item.state, locale)}</span>}<span className="partner-activity-meta"><span>{partnerLabel(item.fulfilmentType, locale)}</span>{date && !Number.isNaN(date.getTime()) && <time dateTime={rawDate!}>{formatter.format(date)}</time>}</span></span><ChevronRight className="partner-activity-chevron" size={18} aria-hidden="true" /></Link></li>;
+        const recorded = ["completed", "collected", "delivered", "dispatched"].includes(item.state ?? "");
+        const closed = ["cancelled", "expired", "refunded", "reversed", "failed"].includes(item.state ?? "");
+        const Icon = recorded ? Check : closed ? X : ScanLine;
+        return <li key={item.id} data-state={item.state}><Link href={`/dashboard/collections/${item.id}`}><span className={`partner-activity-symbol${closed ? " is-closed" : ""}`}><Icon size={20} aria-hidden="true" /></span><span className="partner-activity-copy"><strong>{item.rewardTitle ?? t("Reward collection")}</strong>{item.state && <span className="partner-activity-status" data-state={item.state}>{partnerLabel(item.state, locale)}</span>}<span className="partner-activity-meta"><span>{partnerLabel(item.fulfilmentType, locale)}</span>{date && !Number.isNaN(date.getTime()) && <time dateTime={rawDate!}>{formatter.format(date)}</time>}</span></span><ChevronRight className="partner-activity-chevron" size={18} aria-hidden="true" /></Link></li>;
       })}</ul>
     </>}
   </div>;

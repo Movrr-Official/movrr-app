@@ -1,3 +1,4 @@
+import { PartnerMobileForm } from "@/components/partner/PartnerMobileForm";
 import { getPartnerLocale } from "@/lib/partnerLocaleServer";
 import { partnerText } from "@/lib/partnerLocale";
 import { importResourceCodesAction } from "@/app/actions/partner";
@@ -104,8 +105,8 @@ export default async function PartnerResourcesPage({
                 <CardDescription>{t("Add the codes supplied by your voucher provider.")}</CardDescription>
               </CardHeader>
               <CardContent>
-                <form
-                  action={importResourceCodesAction}
+                <PartnerMobileForm
+                  locale={locale} action={importResourceCodesAction}
                   className="grid gap-4 md:grid-cols-2"
                 >
                   <label className="space-y-2 text-sm">{t("Voucher pool")}<Select name="resourceId" required aria-label={t("Voucher pool")} placeholder={t("Select a voucher pool")} options={resources.map(resource => ({ value: resource.id, label: resource.name ?? t("Voucher pool") }))} />
@@ -121,7 +122,7 @@ export default async function PartnerResourcesPage({
                   <div>
                     <SubmitButton pendingLabel={t("Importing…")}>{t("Import codes")}</SubmitButton>
                   </div>
-                </form>
+                </PartnerMobileForm>
               </CardContent>
             </Card>
           </>

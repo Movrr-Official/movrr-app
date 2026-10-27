@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ImageIcon } from "lucide-react";
 
 /** Decorative beside the visible inventory name; never invent a product image. */
-export function PartnerCatalogImage({ src, banner = false }: { src?: string | null; banner?: boolean }) {
+export function PartnerCatalogImage({ src, banner = false, branded = false }: { src?: string | null; banner?: boolean; branded?: boolean }) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const safeSrc = src && /^https?:\/\//i.test(src) ? src : null;
   return (
@@ -13,7 +13,7 @@ export function PartnerCatalogImage({ src, banner = false }: { src?: string | nu
         // Provider images retain their original URL; no image proxy or host expansion.
         // eslint-disable-next-line @next/next/no-img-element
         <img src={safeSrc} alt="" width={banner ? 1200 : 48} height={banner ? 450 : 48} loading="lazy" decoding="async" referrerPolicy="no-referrer" className="h-full w-full object-cover" ref={node => { if (node?.complete && node.naturalWidth === 0) setFailedSrc(safeSrc); }} onError={() => setFailedSrc(safeSrc)} />
-      ) : <ImageIcon className={banner ? "size-8 text-muted-foreground" : "size-5 text-muted-foreground"} />}
+      ) : branded ? <span className="partner-catalog-placeholder"><span className="partner-catalog-brand-mark" /><span>MOVRR</span></span> : <ImageIcon className={banner ? "size-8 text-muted-foreground" : "size-5 text-muted-foreground"} />}
     </span>
   );
 }

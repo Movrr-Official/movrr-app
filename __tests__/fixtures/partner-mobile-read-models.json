@@ -12,5 +12,6 @@
     {"id":"visual-completed","rewardTitle":"Coffee","state":"completed","fulfilmentType":"physical_collection","updatedAt":"2026-10-26T13:00:00Z","version":2},
     {"id":"visual-cancelled","rewardTitle":"Museum pass","state":"cancelled","fulfilmentType":"qr_barcode","updatedAt":"2026-10-26T14:00:00Z","version":1}
   ],
-  "/partners/analytics": {"series":[{"state":"completed","count":1}]}
+  "/partners/analytics": {"series":[{"state":"completed","count":1}]},
+  "/partners/resources": [{"id":"00000000-0000-4000-8000-000000000003","name":"Local voucher pool (test fixture)","poolCount":12}]
 }

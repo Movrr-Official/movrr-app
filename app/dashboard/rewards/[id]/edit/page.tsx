@@ -1,3 +1,4 @@
+import { PartnerMobileForm } from "@/components/partner/PartnerMobileForm";
 import { RewardImageField } from "@/components/partner/RewardImageField";
 import { getPartnerLocale } from "@/lib/partnerLocaleServer";
 import { partnerText } from "@/lib/partnerLocale";
@@ -63,7 +64,7 @@ export default async function PartnerEditRewardPage({
             <CardDescription>{t("Keep your reward details ready for MOVRR review.")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <form action={updateRewardCatalogAction} className="grid gap-4 md:grid-cols-2">
+            <PartnerMobileForm locale={locale} action={updateRewardCatalogAction} className="grid gap-4 md:grid-cols-2">
               <input type="hidden" name="catalogItemId" value={id} /><input type="hidden" name="expectedUpdatedAt" value={item.updatedAt ?? ""} />
               <RewardImageField locale={locale} initialUrl={item.thumbnailUrl} />
               <label className="partner-form-label md:col-span-2">{t("Title")}<Input
@@ -101,7 +102,7 @@ export default async function PartnerEditRewardPage({
               <div className="flex gap-3 md:col-span-2">
                 <Button asChild variant="outline"><Link href="/dashboard/rewards">{t("Back to rewards")}</Link></Button>
               </div>
-            </form>
+            </PartnerMobileForm>
           </CardContent>
         </Card>
       </div>

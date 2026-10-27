@@ -15,7 +15,7 @@ await import('data:text/javascript;base64,' + Buffer.from(source).toString('base
 // rejected by the original isolated transport. Never used by the actual app.
 if (process.env.MOVRR_PARTNER_VISUAL_READ_FIXTURE) {
   const models = JSON.parse(fs.readFileSync(process.env.MOVRR_PARTNER_VISUAL_READ_FIXTURE, 'utf8').replace(/^\uFEFF/, ''));
-  const allowed = ['/partners/rewards', '/partners/fulfilments/pending', '/partners/fulfilments/history', '/partners/analytics'];
+  const allowed = ['/partners/rewards', '/partners/fulfilments/pending', '/partners/fulfilments/history', '/partners/analytics', '/partners/resources'];
   if (Object.keys(models).some(route => !allowed.includes(route))) throw Error('Only approved presentation read routes may be supplied');
   const target = path.resolve('.tmp', task, process.argv[2]);
   fs.writeFileSync(path.join(target, 'visual-read-models.json'), JSON.stringify(models));

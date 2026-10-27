@@ -39,6 +39,7 @@ it("captures once with rear camera, stops tracks and waits for explicit validati
   expect(state.validate).toHaveBeenCalledTimes(2);
   for (const [,data] of state.validate.mock.calls) expect(data.get("operationId")).toBe(operation);
   expect(document.activeElement?.getAttribute("role")).toBe("alert");
+  expect(host.querySelector('.partner-scan-ready')).toBeNull();
 });
 it("disables camera and validation offline; viewers never request camera access", async () => {
   await act(async () => root.render(<ValidateTokenForm {...handoff} canValidate={false} />));
@@ -96,4 +97,19 @@ it("releases an active camera when the device no longer supports the mobile scan
   expect(stop).toHaveBeenCalled(); expect(host.querySelector('video')).toBeNull(); expect(host.textContent).toContain("Continue on your phone");
   await act(async () => { mobile = true; deviceListeners.forEach(change => change()); });
   expect(media).toHaveBeenCalledTimes(1); expect(button("Start camera")).toBeDefined();
+});
+
+it("shows real validation pending, then offers review without claiming handover completion", async () => {
+  let finish!: (value: { outcome:"validated"; fulfilmentId:string }) => void;
+  state.validate.mockReturnValue(new Promise(resolve=>{finish=resolve;}));
+  await act(async()=>root.render(<ValidateTokenForm {...handoff} canValidate/>));await start();
+  await act(async()=>{host.querySelector("form")!.requestSubmit();});
+  expect(host.querySelector('.partner-camera')?.getAttribute('aria-busy')).toBe('true');
+  expect(host.querySelector('.partner-scan-checking')?.getAttribute('role')).toBe('status');
+  expect(button('Start camera').disabled).toBe(true);
+  await act(async()=>finish({outcome:'validated',fulfilmentId:'00000000-0000-4000-8000-000000000003'}));
+  expect(host.querySelector('.partner-scan-result[data-outcome=validated]')).toBe(document.activeElement);
+  expect(host.textContent).toContain('Ready to review');expect(host.textContent).not.toContain('Collection complete');
+  expect(host.querySelector('a[href="/dashboard/collections/00000000-0000-4000-8000-000000000003"]')).not.toBeNull();
+  expect(host.querySelector('form')).toBeNull();
 });

@@ -1,0 +1,58 @@
+{
+  "baseline": "791bdb3fc7389e80f13c1dbf70a15c542a775b3f",
+  "production": false,
+  "physicalDevices": false,
+  "unitTests": 185,
+  "testSuites": 35,
+  "typecheck": "pass",
+  "changedSourceLint": "pass",
+  "productionBuild": "pass; 37 pages; inert process-scoped HTTPS API origin",
+  "readFixture": "__tests__/fixtures/partner-mobile-read-models.json",
+  "mutationTransport": "rejects every mutation; no records written",
+  "desktopPixelComparisons": [
+    "Home",
+    "Scan",
+    "Rewards",
+    "Create reward",
+    "Edit reward",
+    "Inventory",
+    "Validated collection",
+    "Completed collection"
+  ],
+  "viewports": [
+    [
+      320,
+      740
+    ],
+    [
+      414,
+      896
+    ],
+    [
+      412,
+      915
+    ]
+  ],
+  "locales": [
+    "en",
+    "nl"
+  ],
+  "standard": {
+    "passedChecks": 127,
+    "errors": [],
+    "renders": 66
+  },
+  "populated": {
+    "passedChecks": 109,
+    "errors": []
+  },
+  "refinement": {
+    "passedChecks": 179,
+    "errors": []
+  },
+  "finalCaptureClarity": {
+    "passedChecks": 4,
+    "errors": []
+  },
+  "totalBrowserChecks": 419
+}

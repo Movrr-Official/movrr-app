@@ -1,3 +1,4 @@
+import { PartnerMobileForm } from "@/components/partner/PartnerMobileForm";
 import { RewardImageField } from "@/components/partner/RewardImageField";
 import { getPartnerLocale } from "@/lib/partnerLocaleServer";
 import { partnerText } from "@/lib/partnerLocale";
@@ -55,7 +56,7 @@ export default async function PartnerCreateRewardPage({
             <CardDescription>{t("Rewards start as drafts. MOVRR approves availability after voucher inventory and delivery details are ready.")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <form action={createRewardCatalogAction} className="grid gap-4 md:grid-cols-2">
+            <PartnerMobileForm locale={locale} action={createRewardCatalogAction} className="grid gap-4 md:grid-cols-2">
               <RewardImageField locale={locale} />
               <label className="partner-form-label md:col-span-2">{t("Title")}<Input name="title" placeholder={t("Title")} required className="md:col-span-2" /></label>
               <label className="partner-form-label md:col-span-2">{t("Description")}<Textarea
@@ -71,7 +72,7 @@ export default async function PartnerCreateRewardPage({
                 <SubmitButton type="submit" pendingLabel={t("Creating")}>{t("Create item")}</SubmitButton>
                 <Button asChild variant="outline"><Link href="/dashboard/rewards">{t("Cancel")}</Link></Button>
               </div>
-            </form>
+            </PartnerMobileForm>
           </CardContent>
         </Card>
       </div>

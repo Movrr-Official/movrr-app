@@ -2,7 +2,7 @@
 import { useActionState, useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Camera, Copy, ScanLine, Smartphone } from "lucide-react";
+import { Camera, CircleHelp, Copy, Loader2, ScanLine, ShieldCheck, Smartphone } from "lucide-react";
 import { validateTokenAction } from "@/app/actions/partner";
 import { voucherCopy, type VoucherValidationState } from "@/lib/partnerVoucher";
 import { useOnline } from "@/lib/useOnline";
@@ -123,9 +123,10 @@ export function ValidateTokenForm({ canValidate, initialLocale = "en", handoffUr
       </div> : <>
         {!online && <p role="alert" className="rounded-xl border border-border bg-muted p-4">{copy.offline}</p>}
         {!accepted && <>
-          <div className="partner-camera relative flex aspect-square max-h-96 items-center justify-center overflow-hidden rounded-2xl border border-border bg-movrr-bg-primary text-white">
+          <div className="partner-camera relative flex aspect-square max-h-96 items-center justify-center overflow-hidden rounded-2xl border border-border bg-movrr-bg-primary text-white" data-phase={pending ? "checking" : token ? "captured" : scanning ? "scanning" : "idle"} aria-busy={pending}>
             <video ref={video} muted playsInline aria-label={copy.scanning} className={scanning ? "h-full w-full object-cover" : "hidden"} />
             {!scanning && <div className="partner-camera-placeholder p-4 text-center"><div className="partner-camera-guidance flex flex-col items-center gap-4"><ScanLine className="h-14 w-14 shrink-0 text-movrr-accent" aria-hidden="true" /><p className="text-sm text-white/75">{token ? copy.review : copy.scanning}</p></div></div>}
+            {pending && <div className="partner-scan-checking" role="status"><Loader2 size={24} aria-hidden="true" /><span>{copy.pending}</span></div>}
           </div>
           <Button type="button" variant={scanning ? "outline" : "default"} className="min-h-12 w-full" disabled={!online || pending} onClick={() => { setCameraError(false); setScanning(value => !value); }}><Camera className="mr-2 h-4 w-4" aria-hidden="true" />{scanning ? copy.stop : copy.start}</Button>
           {cameraError && <p role="alert" className="text-sm">{copy.cameraError}</p>}
@@ -135,11 +136,12 @@ export function ValidateTokenForm({ canValidate, initialLocale = "en", handoffUr
               <label htmlFor="token" className="my-2 block text-sm">{copy.code}</label>
               <Input id="token" name="token" value={token} onChange={event => setCode(event.target.value)} autoComplete="off" spellCheck={false} minLength={32} maxLength={512} required disabled={pending} />
             </details>
-            {token && <p role="status" className="text-sm text-muted-foreground">{copy.ready}</p>}
+            {token && !pending && !state.outcome && <p role="status" className="partner-scan-ready text-sm text-muted-foreground"><ScanLine size={18} aria-hidden="true" />{copy.ready}</p>}
             {token && <Button className="min-h-12 w-full" disabled={!online || pending || !operation}>{pending ? copy.pending : copy.submit}</Button>}
           </form>
         </>}
-        {state.outcome && <div ref={feedback} tabIndex={-1} role={accepted ? "status" : "alert"} className="space-y-4 rounded-xl border border-border bg-muted p-4 outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        {state.outcome && <div ref={feedback} tabIndex={-1} role={accepted ? "status" : "alert"} data-outcome={state.outcome} className="partner-scan-result space-y-4 rounded-xl border border-border bg-muted p-4 outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          <div className="partner-scan-result-title">{accepted ? <ShieldCheck size={28} aria-hidden="true" /> : <CircleHelp size={28} aria-hidden="true" />}<h2>{locale === "nl" ? (accepted ? "Klaar voor controle" : state.outcome === "retry" ? "Controleer het resultaat" : "Niet overhandigen") : (accepted ? "Ready to review" : state.outcome === "retry" ? "Check the result" : "Do not hand over")}</h2></div>
           <p>{copy[state.outcome]}</p>
           {accepted && state.fulfilmentId && <Button asChild className="min-h-12 w-full"><Link href={`/dashboard/collections/${state.fulfilmentId}`}>{copy.next}</Link></Button>}
           <Button asChild variant="outline" className="min-h-12 w-full"><a href="/dashboard/validate">{copy.another}</a></Button>

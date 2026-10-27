@@ -1,0 +1,45 @@
+{
+  "standard": {
+    "passedChecks": 127,
+    "errors": [],
+    "renders": 66
+  },
+  "populated": {
+    "passedChecks": 109,
+    "errors": []
+  },
+  "headers": {
+    "passedChecks": 247,
+    "errors": [],
+    "renders": 78
+  },
+  "baseline": "c64b8a6ff8d282769080b887d6592d72c7166359",
+  "production": false,
+  "physicalDevices": false,
+  "readFixture": "__tests__/fixtures/partner-mobile-read-models.json",
+  "mutationsAllowed": false,
+  "unitTests": 180,
+  "testSuites": 34,
+  "typecheck": "pass",
+  "build": "pass; 37 pages; inert process-scoped HTTPS API origin",
+  "changedSourceLint": "pass",
+  "desktopComparison": "Home, Scan and Rewards pixel-identical to baseline",
+  "sizes": [
+    [
+      320,
+      740
+    ],
+    [
+      414,
+      896
+    ],
+    [
+      412,
+      915
+    ]
+  ],
+  "locales": [
+    "en",
+    "nl"
+  ]
+}

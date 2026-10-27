@@ -16,7 +16,7 @@ export function PartnerMobileShell({ session, children }: { session: AppSessionV
   const shell = useRef<HTMLDivElement>(null);
   const locale = session.partnerLocale ?? "en", t = (text: string) => partnerText(locale, text);
   const titles: Record<string, string> = { "/dashboard/resources": "Inventory", "/dashboard/staff": "Team", "/dashboard/settings": "Settings", "/dashboard/analytics": "Performance", "/dashboard/notifications": "Notifications" };
-  const title = parent ? (titles[pathname] ?? (pathname.includes("/rewards/") ? "Rewards" : "Reward collection")) : partnerMobileTabs.find(tab => tab.href === active)?.label ?? "Home";
+  const title = pathname === "/dashboard/rewards/create" ? "Create reward" : pathname.endsWith("/edit") && pathname.startsWith("/dashboard/rewards/") ? "Edit reward" : parent ? (titles[pathname] ?? (pathname.includes("/rewards/") ? "Rewards" : "Reward collection")) : partnerMobileTabs.find(tab => tab.href === active)?.label ?? "Home";
   useEffect(() => {
     if (previous.current !== pathname) { previous.current = pathname; content.current?.focus({ preventScroll: true }); }
   }, [pathname]);
@@ -42,8 +42,8 @@ export function PartnerMobileShell({ session, children }: { session: AppSessionV
   return <div ref={shell} className="partner-workspace partner-mobile-app" lang={locale} data-presentation="mobile" data-screen={active.split("/").at(-1) ?? "home"}>
     <a href="#partner-content" className="partner-skip">{t("Skip to content")}</a>
     <header className="partner-app-header">
-      <div className="partner-app-heading">{parent ? <><Link href={parent} className="partner-app-back" aria-label={t("Back")}><ArrowLeft aria-hidden="true" /></Link><p>{t(title)}</p></> : <Link href="/dashboard/more" className="partner-app-wordmark" aria-label={t("Your account")}><Image src="/pwa/partner/header-mark.png" width={36} height={36} alt="" /><span>MOVRR Partner</span></Link>}</div>
-      <div className="partner-app-tools"><PartnerAppStatus locale={locale} presentation="mobile-status" /><PartnerNotificationPreview key={session.authUserId} locale={locale} /></div>
+      <div className="partner-app-heading">{parent && <Link href={parent} className="partner-app-back" aria-label={t("Back")}><ArrowLeft aria-hidden="true" /></Link>}{pathname === "/dashboard" ? <><Link href="/dashboard/more" className="partner-app-brand" aria-label={t("Your account")}><Image src="/pwa/partner/header-mark.png" width={36} height={36} alt="" /></Link><h1 className="partner-app-home-title">MOVRR Partner</h1></> : <h1>{t(title)}</h1>}</div>
+      <div className="partner-app-tools"><PartnerAppStatus locale={locale} presentation="mobile-status" />{!parent && active !== "/dashboard/validate" && <PartnerNotificationPreview key={session.authUserId} locale={locale} />}</div>
     </header>
     <main ref={content} id="partner-content" tabIndex={-1} className="partner-content partner-app-content">{children}</main>
     <nav className="partner-mobile-tabs partner-app-tabs" aria-label={t("Main navigation")}>

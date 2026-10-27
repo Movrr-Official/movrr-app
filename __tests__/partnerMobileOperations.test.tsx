@@ -42,3 +42,18 @@ it("keeps history state and timestamps authoritative and localizes empty queues 
   const empty=renderToStaticMarkup(<PartnerMobileActivity items={[]} history={false} canScan={false} locale="nl"/>);
   expect(empty).toContain("Je wachtrij is leeg");expect(empty).not.toContain('href="/dashboard/validate"');
 });
+
+it("offers one labelled reward FAB only to managers of a populated catalog", () => {
+  const rewards = [{id:"reward",name:"Coffee"}];
+  for (const locale of ["en","nl"] as const) {
+    const html = renderToStaticMarkup(<PartnerMobileRewards rewards={rewards} canManage error={null} locale={locale}/>);
+    expect(html.match(/class="partner-reward-fab"/g)).toHaveLength(1);
+    expect(html).toContain(`aria-label="${locale === "nl" ? "Beloning toevoegen" : "Add reward"}"`);
+    expect(html).not.toContain("partner-square-action");
+    expect(html).not.toContain("<h1");
+    expect(renderToStaticMarkup(<PartnerMobileRewards rewards={rewards} canManage={false} error={null} locale={locale}/>)).not.toContain("partner-reward-fab");
+    const empty = renderToStaticMarkup(<PartnerMobileRewards rewards={[]} canManage error={null} locale={locale}/>);
+    expect(empty).not.toContain("partner-reward-fab");
+    expect(empty).toContain('href="/dashboard/rewards/create"');
+  }
+});

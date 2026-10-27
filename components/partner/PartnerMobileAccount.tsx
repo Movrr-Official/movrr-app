@@ -9,7 +9,6 @@ const icons = { Inventory: Package, Team: Users, Performance: ChartNoAxesCombine
 export function PartnerMobileAccount({ name, email, links, locale }: { name: string; email: string; links: { href: string; label: string }[]; locale: PartnerLocale }) {
   const t = (text: string) => partnerText(locale, text);
   return <div className="partner-account-screen partner-desk-screen">
-    <div className="partner-screen-title"><p>{t("Workspace and preferences")}</p><h1>{t("Account")}</h1></div>
     <section className="partner-account-person" aria-label={t("Your account")}><span aria-hidden="true">{name.slice(0, 1).toLocaleUpperCase(locale)}</span><div><h2>{name}</h2><p>{email}</p></div></section>
     <section><div className="partner-section-label"><h2>{t("Workspace management")}</h2></div><nav className="partner-settings-rows" aria-label={t("Your workspace")}>{links.map(({ href, label }) => {
       const Icon = icons[label as keyof typeof icons] ?? Settings;

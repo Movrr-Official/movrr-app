@@ -14,15 +14,18 @@
   --primary:#c8efd2; --primary-foreground:#10321c; --muted-foreground:#aebcaf;
   --accent:#263c2c; --accent-foreground:#a0e3b1;
 }
-.partner-mobile-app .partner-app-header { position:relative; z-index:30; display:flex; justify-content:space-between; align-items:center; gap:12px; min-height:76px; padding:calc(14px + env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) 12px max(24px,env(safe-area-inset-left)); background:var(--background); }
+.partner-mobile-app .partner-app-header { position:sticky; top:0; z-index:30; display:flex; justify-content:space-between; align-items:center; gap:12px; min-height:calc(80px + env(safe-area-inset-top)); padding:calc(18px + env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) 14px max(24px,env(safe-area-inset-left)); background:var(--background); }
 .partner-mobile-app .partner-app-heading { display:flex; align-items:center; min-width:0; gap:12px; }
-.partner-mobile-app .partner-app-heading p { font:600 15px/22px var(--font-sans); }
-.partner-mobile-app .partner-app-wordmark { display:flex; align-items:center; gap:10px; min-height:44px; font:600 18px/26px var(--font-display); letter-spacing:-.03em; }
-.partner-mobile-app .partner-app-wordmark img { flex:none; width:36px; height:36px; }
+.partner-mobile-app .partner-app-heading h1 { margin:0; font:600 28px/36px var(--font-display); letter-spacing:-.04em; overflow-wrap:anywhere; }
+.partner-mobile-app .partner-app-heading .partner-app-home-title { font-size:20px; line-height:28px; letter-spacing:-.03em; }
+.partner-mobile-app .partner-app-brand { display:grid; place-items:center; flex:none; width:44px; min-height:44px; }
+.partner-mobile-app .partner-app-brand img { width:36px; height:36px; }
+.partner-mobile-app .partner-app-heading:has(.partner-app-back) { gap:8px; margin-left:-10px; }
+.partner-mobile-app .partner-app-heading:has(.partner-app-back) h1 { font-size:22px; line-height:30px; }
 .partner-mobile-app .partner-app-tools { display:flex; align-items:center; flex:none; }
 .partner-mobile-app .partner-app-tools button,.partner-mobile-app .partner-app-back { display:grid; place-items:center; min-width:44px; min-height:44px; border-radius:16px; color:var(--foreground); }
 .partner-mobile-app .partner-app-tools button { border:0; background:transparent; }
-.partner-mobile-app .partner-app-back { background:var(--app-soft); }
+.partner-mobile-app .partner-app-back { background:transparent; flex:none; }
 .partner-mobile-app .partner-app-content { max-width:680px; padding:16px max(24px,env(safe-area-inset-right)) calc(110px + env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left)); }
 .partner-mobile-app .partner-desk-screen { display:grid; gap:32px; }
 .partner-mobile-app .partner-screen-title>p,.partner-mobile-app .partner-screen-title>div>p { margin-bottom:6px; color:var(--muted-foreground); font-size:.8125rem; line-height:20px; }
@@ -30,6 +33,15 @@
 .partner-mobile-app .partner-screen-title>span { display:block; margin-top:10px; color:var(--muted-foreground); font-size:.9375rem; line-height:24px; max-width:34ch; }
 .partner-mobile-app .partner-title-with-action { display:flex; justify-content:space-between; align-items:center; gap:16px; }
 .partner-mobile-app .partner-square-action { display:grid; place-items:center; flex:none; width:48px; height:48px; border-radius:16px; background:var(--primary); color:var(--primary-foreground); }
+/* One mobile header. Shared desktop PageHeader copy stays in the desktop DOM. */
+.partner-mobile-app .partner-app-content .page-canvas .mb-6:has(>div>h1)>div:first-child { display:none; }
+.partner-mobile-app .partner-app-content .page-canvas .mb-6:has(>div>h1) { display:contents; }
+.partner-mobile-app .partner-app-content .page-canvas .mb-6:has(>div>h1)>div:has(>a[href="/dashboard/collections"]) { display:none; }
+.partner-mobile-app .partner-reward-fab { position:fixed; z-index:35; right:max(24px,env(safe-area-inset-right)); bottom:calc(98px + env(safe-area-inset-bottom)); display:grid; place-items:center; width:56px; height:56px; border-radius:20px; background:var(--primary); color:var(--primary-foreground); box-shadow:0 4px 16px #082c2026; }
+.partner-mobile-app .partner-reward-fab:focus-visible { outline:3px solid var(--app-green); outline-offset:4px; }
+.partner-mobile-app .partner-reward-fab:active { filter:brightness(.9); }
+.partner-mobile-app .partner-catalog-screen:has(.partner-reward-fab) { padding-bottom:72px; }
+body[data-partner-keyboard] .partner-mobile-app .partner-reward-fab { display:none; }
 .partner-mobile-app .partner-desk-scan { display:flex; align-items:center; gap:14px; padding:19px 20px; border-radius:22px; background:var(--primary); color:var(--primary-foreground); }
 .partner-mobile-app .partner-desk-scan>svg { flex:none; }
 .partner-mobile-app .partner-desk-scan>span { min-width:0; flex:1; }

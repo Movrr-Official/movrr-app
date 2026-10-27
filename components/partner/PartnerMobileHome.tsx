@@ -9,7 +9,6 @@ export function PartnerMobileHome({ dashboard, locale }: { dashboard: PartnerDas
   const capabilities = capabilitiesForMembershipRole(dashboard.membershipRole);
   const number = (value: number) => value.toLocaleString(locale === "nl" ? "nl-NL" : "en-GB");
   return <div className="partner-mobile-home partner-desk-screen">
-    <div className="partner-screen-title"><p>{t("Home")}</p><h1>{t("Welcome back")}</h1><span>{t("A smooth handover starts with a scan.")}</span></div>
     {capabilities.includes("fulfilment.validate") && <Link href="/dashboard/validate" className="partner-desk-scan"><ScanLine size={24} aria-hidden="true" /><span><strong>{t("Scan a reward")}</strong><span>{t("Quick to check. Easy to hand over.")}</span></span><ArrowRight size={20} aria-hidden="true" /></Link>}
     <section className="partner-queue-summary" aria-labelledby="mobile-collections">
       <div className="partner-section-label"><h2 id="mobile-collections">{t("Collections")}</h2><Link href="/dashboard/collections">{t("View all")}<ArrowRight size={14} aria-hidden="true" /></Link></div>

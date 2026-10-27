@@ -29,7 +29,6 @@ export function PartnerMobileLoading({ screen, locale }: { screen: PartnerLoadin
   const copy = screens[screen], t = (text: string) => partnerText(locale, text);
   return <section className={`partner-desk-screen partner-mobile-loading is-${screen}`} role="status" aria-live="polite" aria-busy="true" data-loading-screen={screen}>
     <span className="sr-only">{t(copy.loading)}</span>
-    <div className="partner-screen-title" aria-hidden="true">{copy.eyebrow && <p>{t(copy.eyebrow)}</p>}<h1>{t(copy.title)}</h1>{copy.description && <span>{t(copy.description)}</span>}</div>
     <div className="partner-loading-body" aria-hidden="true">
       {screen === "home" && <><Skeleton className="partner-loading-primary" data-loading-part="scan-action" /><Panel><div className="partner-loading-section"><Line /><Line /></div><Rows count={2} /></Panel><Line /><div className="partner-desk-shortcuts">{[0, 1].map(index => <Panel key={index}><Skeleton className="partner-loading-symbol" /><Line /><Line /></Panel>)}</div></>}
       {screen === "activity" && <><div className="partner-loading-tabs" data-loading-part="tabs"><Line wide /><Line wide /></div><div className="partner-loading-section"><Line /><Skeleton className="partner-loading-count" /></div><Rows kind="activity" /></>}

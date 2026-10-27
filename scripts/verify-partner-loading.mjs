@@ -30,7 +30,7 @@ try {
     if(locale==="nl")check(`${size.width} nl ${screen}: localized announcement`,/laden|voorbereiden/.test(result.label));
     if(size.width===414&&locale==="en")await page.screenshot({path:path.join(out,`${screen}-loading.png`)});
     await loading.waitFor({state:"hidden",timeout:15000});
-    check(`${size.width} ${locale} ${screen}: real content replaces retrieval state`,await page.locator("[data-loading-screen]:visible").count()===0&&await page.locator("main h1:visible").count()===1);
+    check(`${size.width} ${locale} ${screen}: real content replaces retrieval state`,await page.locator("[data-loading-screen]:visible").count()===0&&await page.locator(".partner-app-header h1:visible").count()===1);
     if(size.width===414&&locale==="en")await page.screenshot({path:path.join(out,`${screen}-ready.png`)});
    }
    console.log(JSON.stringify({viewport:size.width,locale,completed:routes.length}));

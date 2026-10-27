@@ -22,10 +22,10 @@ try {
     if(size.width===414&&locale==='en')await page.screenshot({path:path.join(out,`${name}-populated.png`)});
    }
    await page.goto(origin+'/dashboard/rewards',{waitUntil:'networkidle'});
-   check(`${size.width} ${locale}: mobile type and rounded geometry`,await page.evaluate(()=>{
+   check(`${size.width} ${locale}: mobile type and rounded geometry`,await page.evaluate(locale=>{
     const style=selector=>getComputedStyle(document.querySelector(selector));
-    return parseFloat(style('.partner-app-wordmark').fontSize)>=18&&document.querySelector('.partner-app-wordmark img').getBoundingClientRect().width>=36&&parseFloat(style('.partner-catalog-item').borderTopLeftRadius)>=20&&parseFloat(style('.partner-catalog-search').borderTopLeftRadius)>=16&&parseFloat(style('.partner-square-action').borderTopLeftRadius)>=16&&parseFloat(style('.partner-catalog-copy dd').fontSize)>=15;
-   }));
+    return document.querySelectorAll('.partner-app-header h1').length===1&&document.querySelector('.partner-app-header h1').textContent===(locale==='nl'?'Beloningen':'Rewards')&&parseFloat(style('.partner-catalog-item').borderTopLeftRadius)>=20&&parseFloat(style('.partner-catalog-search').borderTopLeftRadius)>=16&&parseFloat(style('.partner-reward-fab').borderTopLeftRadius)>=16&&parseFloat(style('.partner-catalog-copy dd').fontSize)>=15;
+   },locale));
    const image=page.locator('.partner-catalog-image img');
    await image.evaluate(el=>el.decode());
    check(`${size.width} ${locale}: supplied image renders beside honest missing-image fallbacks`,await image.evaluate(el=>el.naturalWidth>0)&&await page.locator('.partner-catalog-image').count()===3&&await page.locator('.partner-catalog-image img').count()===1);

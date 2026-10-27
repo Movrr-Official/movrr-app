@@ -43,7 +43,8 @@ it("keeps tab roots and nested Back destinations predictable for deep links", ()
 it("uses only supplied operational counts, localizes mobile content and respects scan/inventory permissions", () => {
   const dashboard = { organisationId: "private-org", membershipRole: "viewer" as const, pendingCount: 4, validatedCount: 2, completedCount: 13 };
   const html = renderToStaticMarkup(<PartnerMobileHome dashboard={dashboard} locale="nl" />);
-  expect(html).toContain("Welkom terug");
+  expect(html).toContain("Nog op te halen");
+  expect(html).not.toContain("<h1");
   expect(html).toContain(">13<"); expect(html).not.toContain("private-org");
   expect(html).not.toContain('href="/dashboard/validate"'); expect(html).not.toContain('href="/dashboard/resources"');
   const manager = renderToStaticMarkup(<PartnerMobileHome dashboard={{ ...dashboard, membershipRole: "manager" }} locale="en" />);

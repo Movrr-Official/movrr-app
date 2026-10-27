@@ -5,7 +5,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import sharp from "sharp";
-vi.mock("next/navigation", () => ({ usePathname: () => "/dashboard", useRouter: () => ({ push: vi.fn() }) }));
+const routeState = vi.hoisted(() => ({ pathname: "/dashboard" }));
+vi.mock("next/navigation", () => ({ usePathname: () => routeState.pathname, useRouter: () => ({ push: vi.fn() }) }));
 vi.mock("@/app/actions/partner", () => ({ changePartnerLanguageAction: vi.fn(), getPartnerNotificationPreviewAction: vi.fn(async () => []) }));
 import { PartnerMobileShell } from "@/components/partner/PartnerMobileShell";
 import { PartnerAppStatus } from "@/components/partner/PartnerAppStatus";
@@ -21,6 +22,24 @@ it("keeps preferences out of the mobile header and links the partner context to 
   expect(header).not.toContain('aria-label="Language:');
   expect(header).not.toContain('aria-label="Install');
   expect(html.match(/aria-current="page"/g)).toHaveLength(1);
+});
+
+it("provides one localized screen header with contextual Back and minimal Scan chrome", () => {
+  const session = { authUserId: "test", role: "partner" as const, name: "Partner", email: "isolated@invalid.test", partnerLocale: "en" as const };
+  try {
+    for (const [path, title, back] of [["/dashboard/rewards", "Rewards", false], ["/dashboard/collections", "Activity", false], ["/dashboard/more", "Account", false], ["/dashboard/validate", "Scan", false], ["/dashboard/rewards/create", "Create reward", true], ["/dashboard/rewards/id/edit", "Edit reward", true], ["/dashboard/staff", "Team", true]]) {
+      routeState.pathname = path as string;
+      const html = renderToStaticMarkup(<PartnerMobileShell session={session}>Content</PartnerMobileShell>);
+      const header = html.slice(html.indexOf("<header"), html.indexOf("</header>"));
+      expect(header.match(/<h1/g)).toHaveLength(1);
+      expect(header).toContain(`>${title}</h1>`);
+      expect(header).not.toContain("MOVRR Partner");
+      expect(header.includes('aria-label="Back"')).toBe(back);
+      if (back || path === "/dashboard/validate") expect(header).not.toContain('aria-label="Notifications"');
+    }
+    routeState.pathname = "/dashboard/rewards";
+    expect(renderToStaticMarkup(<PartnerMobileShell session={{...session, partnerLocale:"nl"}}>Content</PartnerMobileShell>)).toContain(">Beloningen</h1>");
+  } finally { routeState.pathname = "/dashboard"; }
 });
 
 it("makes language an explicit Account preference in both languages while preserving desktop controls", () => {

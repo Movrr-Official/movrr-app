@@ -28,7 +28,7 @@ it("makes language an explicit Account preference in both languages while preser
     const account = renderToStaticMarkup(<PartnerAppStatus locale={locale} presentation="mobile-account" />);
     expect(account).toContain(`>${label}</span>`);
     expect(account).toContain(`>${value}</span>`);
-    expect(account).toContain(locale === "nl" ? "MOVRR Partner installeren" : "Install MOVRR Partner");
+    expect(account).not.toContain("partner-account-install"); // No install flash before display mode is resolved.
     const desktop = renderToStaticMarkup(<PartnerAppStatus locale={locale} />);
     expect(desktop).toContain(`aria-label="${label}: ${value}"`);
     expect(desktop).not.toContain("partner-account-language");
@@ -78,5 +78,33 @@ it("keeps mobile browser chrome through metadata replacement and restores web ch
   } finally {
     await act(async () => root.unmount()); host.remove(); style.remove();
     document.querySelector('meta[name="theme-color"]')?.remove(); document.documentElement.classList.remove("dark"); vi.unstubAllGlobals();
+  }
+});
+
+it("hides mobile installation in installed displays and after installation across Account remounts", async () => {
+  Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+  const host = document.createElement("div"); document.body.append(host);
+  let root = createRoot(host);
+  try {
+    for (const mode of ["standalone", "fullscreen", "minimal-ui", "ios"]) {
+      vi.stubGlobal("matchMedia", (query: string) => ({ matches: query === `(display-mode: ${mode})`, addEventListener() {}, removeEventListener() {} }));
+      Object.defineProperty(navigator, "standalone", { configurable: true, value: mode === "ios" });
+      await act(async () => root.render(<PartnerAppStatus presentation="mobile-account" />));
+      expect(host.querySelector(".partner-account-install")).toBeNull();
+      expect(host.querySelector(".partner-account-language")).not.toBeNull();
+      await act(async () => root.unmount()); root = createRoot(host);
+    }
+    Object.defineProperty(navigator, "standalone", { configurable: true, value: false });
+    vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener() {}, removeEventListener() {} }));
+    await act(async () => root.render(<PartnerAppStatus presentation="mobile-account" />));
+    expect(host.querySelector(".partner-account-install")).not.toBeNull();
+    await act(async () => window.dispatchEvent(new Event("appinstalled")));
+    expect(host.querySelector(".partner-account-install")).toBeNull();
+    await act(async () => root.unmount()); root = createRoot(host);
+    await act(async () => root.render(<PartnerAppStatus presentation="mobile-account" />));
+    expect(host.querySelector(".partner-account-install")).toBeNull();
+  } finally {
+    await act(async () => root.unmount()); host.remove();
+    Reflect.deleteProperty(navigator, "standalone"); vi.unstubAllGlobals();
   }
 });

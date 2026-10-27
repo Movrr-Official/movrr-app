@@ -1,7 +1,7 @@
-﻿{
+{
   "/partners/rewards": [
     {"id":"visual-coffee","title":"Coffee","description":"Local presentation fixture. Not a merchant record.","pointsPrice":0,"inventoryCount":0,"status":"draft","fulfilmentType":"physical_collection"},
-    {"id":"visual-pass","title":"Museum pass","description":"Local presentation fixture. Not a merchant record.","pointsPrice":50,"inventoryCount":12,"status":"active","fulfilmentType":"qr_barcode"},
+    {"id":"visual-pass","title":"Museum pass","thumbnailUrl":"https://partner-image.visual.invalid/catalog.svg","description":"Local presentation fixture. Not a merchant record.","pointsPrice":50,"inventoryCount":12,"status":"active","fulfilmentType":"qr_barcode"},
     {"id":"visual-long","title":"A reward with a deliberately long name for narrow-screen acceptance","pointsPrice":100,"inventoryCount":null,"status":"paused","fulfilmentType":"instant_digital"}
   ],
   "/partners/fulfilments/pending": [

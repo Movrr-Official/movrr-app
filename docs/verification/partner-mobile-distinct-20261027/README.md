@@ -1,17 +1,19 @@
 ﻿# MOVRR Partner mobile — distinct application design
 
 27 October 2026. **Local review candidate; not pushed or deployed.**
-Baseline: `e4c0ab9cc8d9ca70e36d40171de6fb22bab1178d`.
-This replaces that candidate's mobile presentation. Product design acceptance is
+Polish baseline: `e915a81590cb5d03f2f56c96161d29c9e9bf5883`.
+This refines that candidate's mobile presentation. Product design acceptance is
 still a visual review, separate from automated source verification.
 
 ![Five actual Partner mobile screens](mobile-app-review.png)
 
-These are actual local Next.js screens at 414×896. Home, Scan and Account use the
+These are actual local Next.js screens in simulated standalone display at 414×896. Home, Scan and Account use the
 isolated empty-read boundary. Activity and Rewards use labelled local fixtures,
 not merchant records. No production identity or data was copied into the harness.
-Product images come from the existing authorized catalog at runtime; test fixtures
-use the honest missing-image treatment.
+Product images come from the existing authorized catalog at runtime. The catalog
+preview includes one explicitly labelled IMAGE FIXTURE to verify image rendering,
+alongside missing-image fallbacks. It is intercepted locally by the browser harness
+and is never loaded by runtime code or written to merchant records.
 
 ## Mobbin research and implementation trace
 
@@ -37,7 +39,11 @@ The settings/stacked-list references informed their grouping and row ergonomics.
 MOVRR's mark, Lexend/Jakarta fonts, green accents and light/dark vocabulary remain
 shared brand assets. Partner has its own compositions and navigation treatment:
 
-- Quiet wordmark header; no Rider profile/points chip.
+- Larger 36px mark and 18px wordmark header; no Rider profile/points chip.
+- Softer 22-24px cards, 16px fields/buttons and larger section labels. Account
+  preference rows intentionally remain flat and align with other settings rows.
+- Activity states sit in the main text column at 13px, beneath 16px titles.
+  Reward titles precede status, and stock/points use separated readable values.
 - Unboxed bell icon, transparent background, no border, 44×44px touch target and
   retained keyboard focus treatment. Mobile notification preview uses a sheet.
 - A welcoming Home with compact collections and offering shortcuts. The interim
@@ -45,7 +51,14 @@ shared brand assets. Partner has its own compositions and navigation treatment:
 - A simple bottom bar with a restrained active marker and a clear Scan destination.
 - Image-led management cards in Rewards, an in-memory search and an explicit
   no-results state. Search reads only the already authorized catalog.
-- A task-specific camera composition; no Rider gradient/watermark card treatment.
+- A task-specific camera composition with four corner guides both before camera
+  access and while scanning; no Rider gradient/watermark card treatment.
+- Language uses a consistent settings icon, current value and chevron. Install is
+  hidden while mobile display mode is unresolved, in standalone/iOS standalone,
+  fullscreen/minimal-ui and after an observed installation event across Account
+  remounts. Installation observation stays in memory and holds no identity data.
+  Browsers cannot universally report an installation made in another browser or
+  an earlier browsing session; physical acceptance remains required.
 
 No unsupported torch/gallery controls, promotional records, new KPIs or fictional
 merchant content were added. All visible counts and status details use supplied
@@ -73,15 +86,16 @@ from the preceding local candidate are retained.
 
 Results are recorded in [verification.json](verification.json):
 
-- 174 unit tests across 33 suites passed; changed-source ESLint and TypeScript pass.
+- 175 unit tests across 33 suites passed; changed-source ESLint and TypeScript pass.
 - Production build passed with the existing Platform API binding. No config file
   or production environment was changed.
-- Empty/read-only browser matrix: 126 checks, 66 renders across 11 destinations,
+- Empty/read-only browser matrix: 127 checks, 66 renders across 11 destinations,
   English/Dutch and 320×740, iPhone XR 414×896, S23 Ultra 412×915.
-- Populated fixture matrix: 79 checks covering long names, catalog search/clear,
+- Populated fixture matrix: 109 checks covering long names, catalog search/clear,
   empty search results, actual status/date presentation, viewer capabilities,
   required physical handover acknowledgement and closed records with no mutation
-  form. No mutation command was executed.
+  form. Image success/failure, readable status text, rounded geometry and flat Account
+  rows are also checked. No mutation command was executed.
 - Desktop Home, Scan and Rewards screenshots remain pixel-identical to the
   baseline. Desktop retains its phone handoff and no camera capture UI.
 - Offline restrictions, PWA manifest, simulated standalone, browser Back, overlay

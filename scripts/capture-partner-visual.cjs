@@ -1,5 +1,7 @@
-const fs=require('node:fs'),path=require('node:path');
-const {chromium}=require(process.env.MOVRR_PLAYWRIGHT_MODULE);
+(async()=>{
+const fs=(await import('node:fs')).default,path=(await import('node:path')).default,crypto=(await import('node:crypto')).default;
+const {pathToFileURL}=await import('node:url');
+const {chromium}=(await import(pathToFileURL(require.resolve(process.env.MOVRR_PLAYWRIGHT_MODULE)).href)).default;
 const stage=process.argv[2]||'before',origin='http://127.0.0.1:'+ (stage==='before'?'3317':'3318');
 const root=path.join(process.cwd(),'.tmp/security-partner-20261025',stage+'-captures');fs.mkdirSync(root,{recursive:true});
 const routes=['/dashboard','/dashboard/rewards','/dashboard/rewards/create','/dashboard/resources','/dashboard/validate','/dashboard/collections','/dashboard/collections/00000000-0000-4000-8000-000000000003','/dashboard/staff','/dashboard/settings','/dashboard/analytics','/dashboard/notifications',...(stage==='after'?['/dashboard/collections?view=history']:[])];
@@ -8,7 +10,7 @@ const css=fs.readdirSync('.next/static/chunks').filter(f=>f.endsWith('.css')).ma
 const faces=[...css.matchAll(/@font-face\{[^}]*font-family:Manrope;[^}]*\}/g)].map(m=>m[0]);const face=faces.at(-1);if(!face)throw Error('Build Partner first to make the approved Manrope asset available');
 const fontFile=face.match(/src:url\(\.\.\/media\/([^)]*)\)/)[1],font=fs.readFileSync('.next/static/media/'+fontFile).toString('base64');
 const fontCSS=`@font-face{font-family:MOVRRVisualManrope;src:url(data:font/woff2;base64,${font}) format('woff2');font-weight:200 800;font-style:normal;font-display:block;}html{--font-manrope:MOVRRVisualManrope!important}nextjs-portal{display:none!important}`;
-(async()=>{const browser=await chromium.launch({headless:true});const results=[];
+const browser=await chromium.launch({headless:true});const results=[];
 for(const [size,width,height]of [['mobile',390,844],['tablet',820,1180],['desktop',1440,1000]]){
  const page=await browser.newPage({viewport:{width,height},reducedMotion:'reduce'});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',route=>{const u=new URL(route.request().url()); return ['127.0.0.1','localhost'].includes(u.hostname)||u.protocol==='data:'?route.continue():route.abort();});
@@ -16,4 +18,4 @@ for(const [size,width,height]of [['mobile',390,844],['tablet',820,1180],['deskto
  let accessibility;if(stage==='after'){await page.addScriptTag({path:process.env.MOVRR_AXE_SCRIPT});accessibility=await page.evaluate(async()=>{const r=await axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}});return {violations:r.violations.map(v=>({id:v.id,impact:v.impact,description:v.description,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))})),passes:r.passes.length,incomplete:r.incomplete.map(v=>v.id)};});}
  await page.screenshot({path:path.join(root,`${size}-${slug}.png`),fullPage:size!=="mobile"});results.push({route,size,status:response.status(),...metrics,errors:errors.splice(0),accessibility});console.log(size,route,response.status(),metrics.scrollWidth,accessibility?.violations.length??'baseline');}
  await page.close();}
- await browser.close();fs.writeFileSync(path.join(root,'matrix.json'),JSON.stringify({stage,production:false,session:'isolated fixture',data:'empty canonical read models; no merchant inventory or financial data fabricated',font:{source:'Exact cached production-build Manrope asset; Google fetch unavailable in isolated dev server',sha256:require('crypto').createHash('sha256').update(Buffer.from(font,'base64')).digest('hex')},physicalDevice:false,results},null,2));if(stage==='after'){const failures=results.filter(r=>r.status!==200||r.scrollWidth>r.width||r.privateIdVisible||r.errors.length||r.accessibility.violations.length);if(failures.length)throw Error('Partner route verification failed: '+failures.map(r=>r.size+' '+r.route).join(', '));}})().catch(error=>{console.error(error.message);process.exitCode=1;});
+ await browser.close();fs.writeFileSync(path.join(root,'matrix.json'),JSON.stringify({stage,production:false,session:'isolated fixture',data:'empty canonical read models; no merchant inventory or financial data fabricated',font:{source:'Exact cached production-build Manrope asset; Google fetch unavailable in isolated dev server',sha256:crypto.createHash('sha256').update(Buffer.from(font,'base64')).digest('hex')},physicalDevice:false,results},null,2));if(stage==='after'){const failures=results.filter(r=>r.status!==200||r.scrollWidth>r.width||r.privateIdVisible||r.errors.length||r.accessibility.violations.length);if(failures.length)throw Error('Partner route verification failed: '+failures.map(r=>r.size+' '+r.route).join(', '));}})().catch(error=>{console.error(error.message);process.exitCode=1;});

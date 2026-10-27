@@ -6,7 +6,7 @@ import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { isAccountDeletionReceipt } from "@/lib/accountDeletionContract";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const dynamic = "force-dynamic";
-export default async function DeletionReceiptPage() {
+async function loadReceiptStatus() {
   let status: string | undefined,
     requestId: string | undefined,
     message = "No saved deletion receipt is available.";
@@ -48,6 +48,11 @@ export default async function DeletionReceiptPage() {
   } catch (e) {
     message = e instanceof Error ? e.message : "Receipt unavailable";
   }
+  return { status, requestId, message };
+}
+
+export default async function DeletionReceiptPage() {
+  const { status, requestId, message } = await loadReceiptStatus();
   return (
     <main className="page-canvas max-w-2xl mx-auto">
       <Card>

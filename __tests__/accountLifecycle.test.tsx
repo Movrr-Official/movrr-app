@@ -141,6 +141,24 @@ it("refuses expired receipt credentials before transport", async () => {
   expect(html).toContain("expired");
   expect(state.invoke).not.toHaveBeenCalled();
 });
+it.each([0, 1])("checks receipt expiry at the request clock boundary (%i ms remaining)", async (remaining) => {
+  const now = Date.parse("2026-10-27T10:00:00Z");
+  const clock = vi.spyOn(Date, "now").mockReturnValue(now);
+  try {
+    state.cookie = JSON.stringify({ requestId, credential, expiresAt: new Date(now + remaining).toISOString() });
+    const html = renderToStaticMarkup(await ReceiptPage());
+    expect(html).not.toContain(credential);
+    if (remaining === 0) {
+      expect(html).toContain("expired");
+      expect(state.invoke).not.toHaveBeenCalled();
+    } else {
+      expect(html).toContain("obligations review");
+      expect(state.invoke).toHaveBeenCalledOnce();
+    }
+  } finally {
+    clock.mockRestore();
+  }
+});
 it("does not report completion when the authority is unavailable", async () => {
   state.cookie = JSON.stringify({ requestId, credential });
   state.invoke.mockResolvedValue({ data: null, error: { message: "offline" } });

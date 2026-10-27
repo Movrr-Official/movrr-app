@@ -1,8 +1,11 @@
-const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-const {chromium}=require(process.env.MOVRR_PLAYWRIGHT_MODULE),origin='http://127.0.0.1:3318';
-const output='.tmp/security-partner-20261025/interactions';fs.mkdirSync(output,{recursive:true});
 let browser;
-(async()=>{browser=await chromium.launch({headless:true});const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});const page=await context.newPage(),errors=[],checks=[],accessibility=[];page.on('pageerror',e=>errors.push(e.message));
+(async()=>{
+const fs=(await import('node:fs')).default,path=(await import('node:path')).default,assert=(await import('node:assert/strict')).default;
+const {pathToFileURL}=await import('node:url');
+const {chromium}=(await import(pathToFileURL(require.resolve(process.env.MOVRR_PLAYWRIGHT_MODULE)).href)).default,origin='http://127.0.0.1:3318';
+const output='.tmp/security-partner-20261025/interactions';fs.mkdirSync(output,{recursive:true});
+
+browser=await chromium.launch({headless:true});const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});const page=await context.newPage(),errors=[],checks=[],accessibility=[];page.on('pageerror',e=>errors.push(e.message));
 await context.addInitScript(()=>{Object.defineProperty(navigator,'mediaDevices',{configurable:true,value:{getUserMedia:()=>Promise.reject(new DOMException('isolated permission denial','NotAllowedError'))}});});
 await context.route('**/*',r=>['127.0.0.1','localhost'].includes(new URL(r.request().url()).hostname)?r.continue():r.abort());
 const check=(label,value)=>{assert(value,label);checks.push(label);};

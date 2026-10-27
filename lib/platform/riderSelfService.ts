@@ -33,6 +33,19 @@ export const rideSummarySchema = z.object({
     })
     .passthrough(),
   committedPoints: z.number().nullable(),
+  rewardLifecycle: z
+    .object({
+      version: z.literal(3),
+      estimatedReward: z.unknown().optional(),
+      processingState: z.string(),
+      eligibilityState: z.string(),
+      evidenceCompleteness: z.string(),
+      reasonCode: z.string().nullable().optional(),
+      nextActionAt: z.string().nullable().optional(),
+      correlationId: z.string(),
+      adjustmentReason: z.string().nullable().optional(),
+    })
+    .optional(),
   totalPoints: z.number().nullable(),
   transactions: z.array(
     z
@@ -49,7 +62,9 @@ export async function listRideSummaries(cursor?: string, routeId?: string) {
   return z
     .object({
       summaries: z.array(rideSummarySchema),
-      nextCursor: z.object({ at: z.string(), id: z.string().uuid() }).nullable(),
+      nextCursor: z
+        .object({ at: z.string(), id: z.string().uuid() })
+        .nullable(),
     })
     .parse(
       await platformFetch(

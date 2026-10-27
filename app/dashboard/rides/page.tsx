@@ -3,12 +3,13 @@ import { listRideSummaries } from "@/lib/platform/riderSelfService";
 import { requireProductSession } from "@/lib/appUser";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { RideRewardStatus } from "@/components/rider/RideRewardStatus";
 export default async function RidesPage({
   searchParams,
 }: {
   searchParams: Promise<{ cursor?: string }>;
 }) {
-  await requireProductSession(["rider"]);
+  const session = await requireProductSession(["rider"]);
   const page = await listRideSummaries((await searchParams).cursor);
   return (
     <div className="page-canvas space-y-6">
@@ -31,20 +32,20 @@ export default async function RidesPage({
           <CardContent className="space-y-2">
             <p>
               {s.session.status} /{" "}
-              {s.session.verification_result?.status ?? "Verification unavailable"}
+              {s.session.verification_result?.status ??
+                "Verification unavailable"}
             </p>
             <p>
               {s.session.total_distance_meters == null
                 ? "Distance unavailable"
                 : `${(s.session.total_distance_meters / 1000).toFixed(1)} km`}
             </p>
-            <p>
-              {s.committedPoints == null
-                ? "Committed points unavailable"
-                : `${s.committedPoints} committed pts`}{" "}
-              / Settlement {s.settlement.status}
-            </p>
-            <p>{s.settlement.reason_code?.replaceAll("_", " ")}</p>
+            <RideRewardStatus
+              summary={s}
+              locale={
+                session.appUser.languagePreference === "nl-NL" ? "nl" : "en"
+              }
+            />
           </CardContent>
         </Card>
       ))}

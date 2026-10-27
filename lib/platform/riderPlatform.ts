@@ -3,6 +3,24 @@ import { requireProductSession } from "@/lib/appUser";
 import { platformFetch } from "@/lib/platform/client";
 import { PlatformApiError } from "@/lib/platform/types";
 export const walletBalanceSchema = z.object({
+  financialTotals: z
+    .object({
+      version: z.literal(3),
+      riderId: z.string().uuid(),
+      lifetimeSemantics: z.literal("gross_positive_earnings"),
+      grossEarned: z.number().int().nonnegative(),
+      netLedger: z.number().int(),
+      redeemed: z.number().int().nonnegative(),
+      reserved: z.number().int().nonnegative(),
+      adjusted: z.number().int(),
+      refunded: z.number().int(),
+      reversed: z.number().int(),
+      available: z.number().int().nonnegative(),
+      snapshotAvailable: z.number().int().nullable(),
+      legacyLifetime: z.number().int().nullable(),
+      availableReconciled: z.boolean().nullable(),
+    })
+    .optional(),
   riderId: z.string().uuid(),
   pointsBalance: z.number().int(),
   lifetimePointsEarned: z.number().int().nonnegative(),
@@ -14,7 +32,14 @@ export const walletTransactionSchema = z.object({
   riderId: z.string().uuid(),
   points: z.number().int(),
   source: z.string(),
-  category: z.enum(["campaign", "route", "adjustment", "redemption", "refund", "other"]),
+  category: z.enum([
+    "campaign",
+    "route",
+    "adjustment",
+    "redemption",
+    "refund",
+    "other",
+  ]),
   description: z.string(),
   createdAt: z.string().datetime({ offset: true }),
 });
@@ -29,7 +54,9 @@ export async function getWalletBalance(): Promise<WalletBalance> {
   await requireProductSession(["rider"]);
   return walletBalanceSchema.parse(await platformFetch("/wallet/balance"));
 }
-export async function listWalletTransactions(asOf: string): Promise<WalletTransaction[]> {
+export async function listWalletTransactions(
+  asOf: string,
+): Promise<WalletTransaction[]> {
   await requireProductSession(["rider"]);
   const entries: WalletTransaction[] = [];
   const seen = new Set<string>();
@@ -41,10 +68,12 @@ export async function listWalletTransactions(asOf: string): Promise<WalletTransa
           new URLSearchParams({ asOf, ...(cursor ? { cursor } : {}) }),
       ),
     );
-    if (page.asOf !== asOf) throw new Error("Wallet statement snapshot changed");
+    if (page.asOf !== asOf)
+      throw new Error("Wallet statement snapshot changed");
     entries.push(...page.entries);
     cursor = page.nextCursor;
-    if (cursor && seen.has(cursor)) throw new Error("Invalid Wallet pagination");
+    if (cursor && seen.has(cursor))
+      throw new Error("Invalid Wallet pagination");
     if (cursor) seen.add(cursor);
   } while (cursor);
   return entries;
@@ -52,18 +81,33 @@ export async function listWalletTransactions(asOf: string): Promise<WalletTransa
 /** Backend owns snapshot preparation and bounded concurrent-append retries. */
 export async function getWalletStatement() {
   const session = await requireProductSession(["rider"]);
-  const statement = z.object({
-    balance: walletBalanceSchema,
-    entries: z.array(walletTransactionSchema),
-  }).parse(await platformFetch("/wallet/statement"));
-  if (statement.balance.riderId !== session.riderProfile?.id || statement.entries.some(entry => entry.riderId !== statement.balance.riderId))
+  const statement = z
+    .object({
+      balance: walletBalanceSchema,
+      entries: z.array(walletTransactionSchema),
+    })
+    .parse(await platformFetch("/wallet/statement"));
+  if (
+    statement.balance.riderId !== session.riderProfile?.id ||
+    statement.entries.some(
+      (entry) => entry.riderId !== statement.balance.riderId,
+    )
+  )
     throw new Error("Account changed during Wallet read");
   if (statement.entries.length !== statement.balance.transactionCount)
     throw new Error("Wallet statement incomplete");
   return statement;
 }
 const financialSchema = z.object({
- originalPointsCharged:z.number().int().nonnegative().nullable(),pointsRefunded:z.number().int().nonnegative().nullable(),reservationReleased:z.number().int().nonnegative(),outstandingRefund:z.number().int().nonnegative().nullable(),netPointsSpent:z.number().int().nullable(),cancellationActor:z.enum(["admin","merchant","system"]).nullable(),cancellationReason:z.string().nullable(),reconciliationRequired:z.boolean(),state:z.string()
+  originalPointsCharged: z.number().int().nonnegative().nullable(),
+  pointsRefunded: z.number().int().nonnegative().nullable(),
+  reservationReleased: z.number().int().nonnegative(),
+  outstandingRefund: z.number().int().nonnegative().nullable(),
+  netPointsSpent: z.number().int().nullable(),
+  cancellationActor: z.enum(["admin", "merchant", "system"]).nullable(),
+  cancellationReason: z.string().nullable(),
+  reconciliationRequired: z.boolean(),
+  state: z.string(),
 });
 const redemptionSchema = z.object({
   financial: financialSchema.optional(),
@@ -78,13 +122,17 @@ const redemptionSchema = z.object({
 });
 export async function listRedemptions() {
   await requireProductSession(["rider"]);
-  return z.array(redemptionSchema).parse(await platformFetch("/rewards/redemptions"));
+  return z
+    .array(redemptionSchema)
+    .parse(await platformFetch("/rewards/redemptions"));
 }
 export async function getRedemption(id: string) {
   await requireProductSession(["rider"]);
   z.string().uuid().parse(id);
   try {
-    return redemptionSchema.parse(await platformFetch(`/rewards/redemptions/${id}`));
+    return redemptionSchema.parse(
+      await platformFetch(`/rewards/redemptions/${id}`),
+    );
   } catch (error) {
     if (error instanceof PlatformApiError && error.status === 404) return null;
     throw error;

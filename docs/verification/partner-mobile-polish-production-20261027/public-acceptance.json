@@ -1,0 +1,155 @@
+{
+  "at": "2026-10-27T11:45:27.820Z",
+  "sha": "3fb2906519f7a4c021cc16a654936d17e8fc2cc3",
+  "origin": "https://app.movrr.nl",
+  "production": true,
+  "physicalDevices": false,
+  "checks": [
+    {
+      "route": "/dashboard",
+      "status": 307,
+      "protected": true
+    },
+    {
+      "route": "/dashboard/collections",
+      "status": 307,
+      "protected": true
+    },
+    {
+      "route": "/dashboard/validate",
+      "status": 307,
+      "protected": true
+    },
+    {
+      "route": "/dashboard/rewards",
+      "status": 307,
+      "protected": true
+    },
+    {
+      "route": "/dashboard/more",
+      "status": 307,
+      "protected": true
+    },
+    {
+      "route": "/dashboard/resources",
+      "status": 307,
+      "protected": true
+    },
+    {
+      "route": "/dashboard/staff",
+      "status": 307,
+      "protected": true
+    },
+    {
+      "route": "/dashboard/settings",
+      "status": 307,
+      "protected": true
+    },
+    {
+      "route": "/workspaces",
+      "status": 307,
+      "protected": true
+    },
+    {
+      "route": "/partner/manifest.webmanifest",
+      "status": 200,
+      "identity": {
+        "id": "/",
+        "name": "MOVRR Partner",
+        "short_name": "MOVRR Partner",
+        "description": "Scan rewards and manage your MOVRR partner workspace.",
+        "start_url": "/dashboard",
+        "scope": "/",
+        "display": "standalone",
+        "background_color": "#f5f5f3",
+        "theme_color": "#f5f5f3",
+        "icons": [
+          {
+            "src": "/pwa/partner/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+          },
+          {
+            "src": "/pwa/partner/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+          },
+          {
+            "src": "/pwa/partner/maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+          }
+        ]
+      }
+    },
+    {
+      "route": "/pwa/partner/icon-192.png",
+      "status": 200,
+      "sourceBytesMatch": true,
+      "sha256": "69456ece8faa0cf90be0b823104656fe534db7d56da12b9e1bb45cf65cb3e13c"
+    },
+    {
+      "route": "/pwa/partner/icon-512.png",
+      "status": 200,
+      "sourceBytesMatch": true,
+      "sha256": "18848d47296b7002f1bb9a8a00aad6b0965c9b4a2be98d55e8ca6587e25e7124"
+    },
+    {
+      "route": "/pwa/partner/maskable-512.png",
+      "status": 200,
+      "sourceBytesMatch": true,
+      "sha256": "dca3528602183d280b80bd2b52e9140b0cf91e5ebbcc3240c47b4a6b379835a2"
+    },
+    {
+      "route": "/pwa/partner/apple-touch-icon.png",
+      "status": 200,
+      "sourceBytesMatch": true,
+      "sha256": "88fee8c1939350bd02674f6f46487b2c35698f77b6b90985c3fb4eb4834d94e8"
+    },
+    {
+      "route": "/sw.js",
+      "status": 200,
+      "sourceBytesMatch": true,
+      "sha256": "c40599ba46534b7ca548721076bb429e7c5b654fb73c2c47d2bd8647b02cd64f"
+    },
+    {
+      "route": "/offline.html",
+      "status": 200,
+      "sourceBytesMatch": true,
+      "sha256": "9acdec0e8989b3e3012a6f2b839812ffd6e27e28155703edbb7a69e1f90c71e9"
+    },
+    {
+      "route": "/flags/gb.svg",
+      "status": 200,
+      "sourceBytesMatch": true,
+      "sha256": "c8be1e7208798a4ae692ee1e937065d498bb29e741943f6172b29118b8ed8066"
+    },
+    {
+      "route": "/flags/nl.svg",
+      "status": 200,
+      "sourceBytesMatch": true,
+      "sha256": "8f691f17fe70894537af8e92f2ca47761d353639b0defc15cbe561eb503ab010"
+    },
+    {
+      "origin": "https://admin.movrr.nl",
+      "route": "/api/v1/partners/me",
+      "status": 401,
+      "unauthorizedDenied": true
+    },
+    {
+      "origin": "https://admin.movrr.nl",
+      "route": "/api/v1/partners/rewards",
+      "status": 401,
+      "unauthorizedDenied": true
+    },
+    {
+      "origin": "https://admin.movrr.nl",
+      "route": "/api/v1/partners/fulfilments/pending",
+      "status": 401,
+      "unauthorizedDenied": true
+    }
+  ]
+}

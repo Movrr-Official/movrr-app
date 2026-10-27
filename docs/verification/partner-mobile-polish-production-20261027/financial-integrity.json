@@ -1,0 +1,28 @@
+{
+  "before": "2026-10-27T11:43:32.459Z",
+  "after": "2026-10-27T11:45:25.259Z",
+  "shop": {
+    "state": "disabled",
+    "version": "0",
+    "redemption_enabled": false
+  },
+  "migration": {
+    "version": "20261025150000",
+    "name": "085_canonical_debit_refund_compatibility",
+    "checksum": "c45e511cc771382b34dec6d3306343e17a9e66a22f33c415299ccb961896fb24"
+  },
+  "health": {
+    "wallet_mismatches": 0,
+    "unpaired_paid_claims": 0,
+    "pending_delivery": 0,
+    "delivery_failures": 0
+  },
+  "financialTablesVerified": 14,
+  "financialCatalogInventoryFingerprintsUnchanged": true,
+  "functionsUnchanged": true,
+  "authorizationRlsGrantsUnchanged": true,
+  "migrationJournalUnchanged": true,
+  "functionsHash": "d64f18addff25db2baccaed0414263b801f958e7050411d8e6b9c46d0bd88f31",
+  "policiesRlsGrantsHash": "9c4ca403fd3ce38fca6db9a4f085f88368a6b4bb9fbc133ed88e5cd5520f3be3",
+  "journalHash": "7fa4e13c8e967b6463ae8fd7bcf5e75d9d85faf133226d192f392f12905341f4"
+}

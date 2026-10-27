@@ -1,0 +1,36 @@
+{
+  "status": "DEPLOYED; public production acceptance passed",
+  "sha": "3fb2906519f7a4c021cc16a654936d17e8fc2cc3",
+  "id": "dpl_3Jvidhzu4WvdZiZJ9UWd6RAnrUqN",
+  "state": "READY",
+  "target": "production",
+  "domain": "https://app.movrr.nl",
+  "domainVerified": true,
+  "immutableUrl": "https://movrr-rm0npyznu-movrrops-projects.vercel.app",
+  "verification": "Vercel deployment detail shows Ready, Current, app.movrr.nl and exact Git commit; public asset hashes match source",
+  "deploymentAccount": "ops@movrr.nl",
+  "mechanism": "Explicit Git-source Deploy to Production in the existing signed-in Vercel project; main resolved to the exact candidate SHA",
+  "credentialsCreated": false,
+  "permissionsChanged": false,
+  "projectConfigurationChanged": false,
+  "gitAutoDeploymentChanged": false,
+  "sqlScriptsExecuted": false,
+  "adminRedeployed": false,
+  "financialMutations": false,
+  "rollback": {
+    "id": "dpl_B7zLyuPVEtABToomS2Ygb6tJ2xLX",
+    "sha": "9f1660c24ad8d03fceef40d3f4a67f0dfa0857e6",
+    "state": "READY",
+    "url": "https://movrr-ocfjv8ysr-movrrops-projects.vercel.app"
+  },
+  "failedAttempt": {
+    "id": "dpl_D6AumC5oNGdwb6FDi1J93tzjVERt",
+    "sha": "e5dc71ece41016cb2fd153584d1a965fc82f73d3",
+    "reason": "TypeScript could not resolve undeclared sharp test import under pnpm",
+    "fix": "Explicit existing sharp 0.35.5 devDependency; no runtime behavior changed"
+  },
+  "remainingAcceptance": [
+    "Fresh authenticated production mobile/desktop walkthrough",
+    "Physical iOS/Android installation and camera acceptance"
+  ]
+}

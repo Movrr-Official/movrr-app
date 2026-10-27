@@ -94,10 +94,14 @@ try {
   await installPage.getByRole('link',{name:'Account',exact:true}).click();await installPage.waitForURL('**/dashboard/more');
   await installPage.getByRole('button',{name:'Install MOVRR Partner',exact:true}).click();
   check('installation prompt received on Home remains available in Account',await installPage.evaluate(()=>window.partnerTestInstallCalls)===1);
+  await installPage.evaluate(()=>window.dispatchEvent(new Event('appinstalled')));
+  await installPage.getByRole('link',{name:'Home',exact:true}).click();await installPage.waitForURL('**/dashboard');
+  await installPage.getByRole('link',{name:'Account',exact:true}).click();await installPage.waitForURL('**/dashboard/more');
+  check('appinstalled event suppresses install after Account remount',await installPage.getByRole('button',{name:'Install MOVRR Partner',exact:true}).count()===0);
   await installationBrowser.close();
   const installed = await browser.newContext({viewport:{width:414,height:896},isMobile:true,hasTouch:true});
   await installed.addInitScript(()=>{const original=window.matchMedia.bind(window);window.matchMedia=query=>{const media=original(query);return query==='(display-mode: standalone)'?new Proxy(media,{get(target,key){if(key==='matches')return true;const value=Reflect.get(target,key,target);return typeof value==='function'?value.bind(target):value;}}):media;};});
-  const app = await installed.newPage();await go(app,afterOrigin,'/dashboard');
+  const app = await installed.newPage();await go(app,afterOrigin,'/dashboard/more');
   check('simulated standalone retains mobile app and hides install control',await app.locator('[data-presentation=mobile]').count()===1&&await app.getByRole('button',{name:'Install MOVRR Partner',exact:true}).count()===0);
   await app.evaluate(()=>localStorage.setItem('theme','dark'));
   for(const [name,route] of routes.filter(([name])=>['home','scan','account'].includes(name))) {

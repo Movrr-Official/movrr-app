@@ -15,7 +15,7 @@ export function PartnerMobileActivity({ items, history, canScan, locale }: { ite
       <ul className="partner-activity-list">{items.map(item => {
         const rawDate = history ? item.updatedAt ?? item.createdAt : item.createdAt;
         const date = rawDate ? new Date(rawDate) : null;
-        return <li key={item.id}><Link href={`/dashboard/collections/${item.id}`}><span className="partner-activity-symbol"><ScanLine size={20} aria-hidden="true" /></span><span className="partner-activity-copy"><strong>{item.rewardTitle ?? t("Reward collection")}</strong><span>{partnerLabel(item.fulfilmentType, locale)}</span>{date && !Number.isNaN(date.getTime()) && <time dateTime={rawDate!}>{formatter.format(date)}</time>}</span><span className="partner-activity-outcome">{item.state && <span data-state={item.state}>{partnerLabel(item.state, locale)}</span>}<ChevronRight size={16} aria-hidden="true" /></span></Link></li>;
+        return <li key={item.id}><Link href={`/dashboard/collections/${item.id}`}><span className="partner-activity-symbol"><ScanLine size={20} aria-hidden="true" /></span><span className="partner-activity-copy"><strong>{item.rewardTitle ?? t("Reward collection")}</strong>{item.state && <span className="partner-activity-status" data-state={item.state}>{partnerLabel(item.state, locale)}</span>}<span className="partner-activity-meta"><span>{partnerLabel(item.fulfilmentType, locale)}</span>{date && !Number.isNaN(date.getTime()) && <time dateTime={rawDate!}>{formatter.format(date)}</time>}</span></span><ChevronRight className="partner-activity-chevron" size={18} aria-hidden="true" /></Link></li>;
       })}</ul>
     </>}
   </div>;

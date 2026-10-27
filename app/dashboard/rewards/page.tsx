@@ -1,3 +1,5 @@
+import { PartnerPresentation } from "@/components/partner/PartnerPresentation";
+import { PartnerMobileRewards } from "@/components/partner/PartnerMobileRewards";
 import { getPartnerLocale } from "@/lib/partnerLocaleServer";
 import { partnerText } from "@/lib/partnerLocale";
 import { partnerLabel } from "@/lib/partnerPresentation";
@@ -35,10 +37,10 @@ async function PartnerRewardsView() {
   if (!canRead) return <div className="page-canvas"><EmptyState title={t("Rewards catalog unavailable")} description={t("Your membership role cannot read partner-scoped rewards.")} iconName="rewards" /></div>;
   let rewards: Awaited<ReturnType<typeof listPartnerRewards>> = [], listError: string | null = null;
   try { rewards = await listPartnerRewards(); } catch { listError = "Rewards are temporarily unavailable. Please try again."; }
-  return <div className="page-canvas"><div className="space-y-6">
+  return <PartnerPresentation mobile={<PartnerMobileRewards rewards={rewards} canManage={canManage} error={listError} locale={locale} />}><div className="page-canvas"><div className="space-y-6">
     <PageHeader title={t("Rewards")} description={t("Choose a reward to manage its details and availability.")} actions={canManage && rewards.length > 0 ? [{ label: t("Add reward"), href: "/dashboard/rewards/create" }] : []} />
     {listError ? <p role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-5 text-sm text-destructive">{t(listError)}</p> : rewards.length ? <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{rewards.map(reward => <Card key={reward.id} className="partner-reward-card flex flex-col overflow-hidden pt-0"><div className="relative"><PartnerCatalogImage src={reward.thumbnailUrl} banner />{reward.status && <Badge variant="secondary" className="absolute right-3 top-3">{partnerLabel(reward.status, locale)}</Badge>}</div><CardHeader><CardTitle>{reward.name ?? t("Reward")}</CardTitle>{reward.description && <CardDescription className="line-clamp-2">{reward.description}</CardDescription>}</CardHeader><CardContent className="mt-auto space-y-5">{reward.fulfilmentType && <p className="text-xs text-muted-foreground">{partnerLabel(reward.fulfilmentType, locale)}</p>}<dl className="flex items-end justify-between border-t border-border pt-4"><div><dt className="text-xs text-muted-foreground">{t("Points cost")}</dt><dd className="mt-1 text-lg font-semibold">{reward.pointsCost === 0 ? t("Free") : reward.pointsCost?.toLocaleString(locale === "nl" ? "nl-NL" : "en-GB") ?? t("Unavailable")}</dd></div>{reward.stockAvailable != null && <div className="text-right"><dt className="text-xs text-muted-foreground">{t("Stock")}</dt><dd className="mt-1 text-lg font-semibold">{reward.stockAvailable.toLocaleString(locale === "nl" ? "nl-NL" : "en-GB")}</dd></div>}</dl>{canManage && <Button asChild variant="outline" className="w-full"><Link href={`/dashboard/rewards/${reward.id}/edit`}>{t("Manage")}</Link></Button>}</CardContent></Card>)}</div> : <Card><CardContent className="py-10 text-center"><EmptyState title={t("No rewards yet")} description={t("Create a draft, add your voucher codes, and prepare it with MOVRR.")} iconName="rewards" />{canManage && <Button asChild><Link href="/dashboard/rewards/create">{t("Create your first reward")}</Link></Button>}</CardContent></Card>}
-  </div></div>;
+  </div></div></PartnerPresentation>;
 }
 
 export default async function DashboardRewardsPage({ searchParams }: {

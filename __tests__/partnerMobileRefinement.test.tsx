@@ -58,7 +58,7 @@ it("separates Partner installation identity/assets from the existing web workspa
 it("keeps mobile browser chrome through metadata replacement and restores web chrome on exit", async () => {
   Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
   vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener() {}, removeEventListener() {} }));
-  const style = document.createElement("style"); style.textContent = ".partner-mobile-app{--background:#f5f5f3}.dark .partner-mobile-app{--background:#081b10}";
+  const style = document.createElement("style"); style.textContent = ".partner-mobile-app{--background:#f5f5f3}.dark .partner-mobile-app{--background:#081b10}.partner-mobile-app[data-screen=validate]{--background:#101611}";
   const meta = document.createElement("meta"); meta.name = "theme-color"; meta.content = "#123c2c";
   document.head.append(style, meta);
   const host = document.createElement("div"); document.body.append(host); const root = createRoot(host);
@@ -67,6 +67,10 @@ it("keeps mobile browser chrome through metadata replacement and restores web ch
     expect(meta.content).toBe("#f5f5f3");
     const nextViewport = document.createElement("meta"); nextViewport.name = "theme-color"; nextViewport.content = "#123c2c";
     await act(async () => { meta.replaceWith(nextViewport); await Promise.resolve(); });
+    expect(nextViewport.content).toBe("#f5f5f3");
+    await act(async () => { host.querySelector("[data-screen]")!.setAttribute("data-screen", "validate"); await Promise.resolve(); });
+    expect(nextViewport.content).toBe("#101611");
+    await act(async () => { host.querySelector("[data-screen]")!.setAttribute("data-screen", "dashboard"); await Promise.resolve(); });
     expect(nextViewport.content).toBe("#f5f5f3");
     await act(async () => { document.documentElement.classList.add("dark"); await Promise.resolve(); });
     expect(nextViewport.content).toBe("#081b10");

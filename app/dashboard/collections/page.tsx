@@ -1,3 +1,5 @@
+import { PartnerPresentation } from "@/components/partner/PartnerPresentation";
+import { PartnerMobileActivity } from "@/components/partner/PartnerMobileActivity";
 import { getPartnerLocale } from "@/lib/partnerLocaleServer";
 import { partnerText } from "@/lib/partnerLocale";
 import { CollectionsTable } from "@/components/partner/CollectionsTable";
@@ -14,7 +16,7 @@ export default async function PartnerCollectionsPage({
 }) {
   const locale = await getPartnerLocale();
   const t = (text: string) => partnerText(locale, text);
-  await requirePartnerSession();
+  const session = await requirePartnerSession();
   const params = await searchParams;
   const success = typeof params.success === "string" ? params.success : null;
   const error = typeof params.error === "string" ? params.error : null;
@@ -22,9 +24,11 @@ export default async function PartnerCollectionsPage({
   const items = history ? await listPartnerFulfilmentHistory() : await listPartnerPendingFulfilments();
 
   return (
+    <>
+    <StatusToast success={success ? t(success) : null} error={error ? t(error) : null} />
+    <PartnerPresentation mobile={<PartnerMobileActivity items={items} history={history} canScan={session.partnerContext!.capabilities.includes("fulfilment.validate")} locale={locale} />}>
     <div className="page-canvas">
       <div className="space-y-6 md:space-y-8">
-        <StatusToast success={success ? t(success) : null} error={error ? t(error) : null} />
         <PageHeader
           title={t("Collections")}
           description={t("Manage reward collections for your organisation.")}
@@ -36,5 +40,7 @@ export default async function PartnerCollectionsPage({
         <CollectionsTable items={items} history={history} />
       </div>
     </div>
+    </PartnerPresentation>
+    </>
   );
 }

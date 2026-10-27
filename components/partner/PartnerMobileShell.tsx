@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useRef, type ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, ClipboardList, Gift, House, ScanLine, UserRound, ChevronDown } from "lucide-react";
+import { ArrowLeft, ClipboardList, Gift, House, ScanLine, UserRound } from "lucide-react";
 import { PartnerAppStatus } from "./PartnerAppStatus";
 import { PartnerNotificationPreview } from "./PartnerNotificationPreview";
 import { partnerText } from "@/lib/partnerLocale";
@@ -33,14 +34,15 @@ export function PartnerMobileShell({ session, children }: { session: AppSessionV
     sync();
     const observer = new MutationObserver(sync);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    observer.observe(shell.current, { attributes: true, attributeFilter: ["data-screen"] });
     // Next can replace viewport metadata during client navigation.
     observer.observe(document.head, { childList: true, subtree: true, attributes: true, attributeFilter: ["content"] });
     return () => { observer.disconnect(); const current = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]'); if (current) current.content = original; };
   }, []);
-  return <div ref={shell} className="partner-workspace partner-mobile-app" lang={locale} data-presentation="mobile">
+  return <div ref={shell} className="partner-workspace partner-mobile-app" lang={locale} data-presentation="mobile" data-screen={active.split("/").at(-1) ?? "home"}>
     <a href="#partner-content" className="partner-skip">{t("Skip to content")}</a>
     <header className="partner-app-header">
-      <div className="partner-app-heading">{parent ? <><Link href={parent} className="partner-app-back" aria-label={t("Back")}><ArrowLeft aria-hidden="true" /></Link><p>{t(title)}</p></> : <Link href="/dashboard/more" className="partner-context-chip" aria-label={t("Your account")}><span className="partner-context-avatar" aria-hidden="true">{session.name.slice(0, 1).toLocaleUpperCase(locale)}</span><span><strong>MOVRR Partner</strong><span>{session.name}</span></span><ChevronDown size={14} aria-hidden="true" /></Link>}</div>
+      <div className="partner-app-heading">{parent ? <><Link href={parent} className="partner-app-back" aria-label={t("Back")}><ArrowLeft aria-hidden="true" /></Link><p>{t(title)}</p></> : <Link href="/dashboard/more" className="partner-app-wordmark" aria-label={t("Your account")}><Image src="/pwa/partner/icon-192.png" width={28} height={28} alt="" /><span>MOVRR Partner</span></Link>}</div>
       <div className="partner-app-tools"><PartnerAppStatus locale={locale} presentation="mobile-status" /><PartnerNotificationPreview key={session.authUserId} locale={locale} /></div>
     </header>
     <main ref={content} id="partner-content" tabIndex={-1} className="partner-content partner-app-content">{children}</main>

@@ -36,6 +36,8 @@ try {
     }
     await context.clearCookies();
     await go(page,afterOrigin,'/dashboard');
+    const bellPresentation = await page.locator('header').getByRole('button',{name:'Notifications',exact:true}).evaluate(button=>{const style=getComputedStyle(button),rect=button.getBoundingClientRect();return {background:style.backgroundColor,border:style.borderTopWidth,width:rect.width,height:rect.height}});
+    check(`${size.name}: unboxed bell retains a 44px touch target`,bellPresentation.background==='rgba(0, 0, 0, 0)'&&bellPresentation.border==='0px'&&bellPresentation.width>=44&&bellPresentation.height>=44);
     await page.getByRole('link',{name:'Account',exact:true}).click(); await page.waitForURL('**/dashboard/more');
     check(`${size.name}: route transition focuses main content`,await page.locator('main').evaluate(el=>el===document.activeElement));
     await page.goBack(); await page.waitForURL('**/dashboard'); check(`${size.name}: browser Back restores Home`,true);

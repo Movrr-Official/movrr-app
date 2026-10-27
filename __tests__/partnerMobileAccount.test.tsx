@@ -6,6 +6,7 @@ vi.mock("@/lib/appUser", () => ({ requirePartnerSession: mocks.guard }));
 vi.mock("@/lib/partnerLocaleServer", () => ({ getPartnerLocale: async () => "nl" }));
 vi.mock("@/components/partner/PartnerMobilePreferences", () => ({ PartnerMobilePreferences: () => <div>Mobile language preference</div> }));
 vi.mock("@/components/ThemeToggle", () => ({ ThemeToggle: () => <button>Theme</button> }));
+vi.mock("@/components/partner/PartnerPresentation", () => ({ PartnerPresentation: ({mobile}: {mobile: React.ReactNode}) => mobile }));
 import Account from "@/app/dashboard/more/page";
 beforeEach(() => vi.clearAllMocks());
 it("guards the mobile Account route and hides management links without capabilities", async () => {

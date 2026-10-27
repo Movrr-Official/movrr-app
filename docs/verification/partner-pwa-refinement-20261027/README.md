@@ -1,5 +1,6 @@
-# Partner PWA presentation refinement — 27 October 2026
+# Partner PWA presentation refinement â€” 27 October 2026
 
+Visual design superseded by the [distinct Partner application review](../partner-mobile-distinct-20261027/README.md). Historical verification is retained below.
 Implemented locally; **not deployed**. This supersedes the visual design of the
 25 October Partner mobile candidate, not its financial or authorization model.
 The comparison baseline is `0f3e1f339f6d6b439b404e6e62438c31287612fb`
@@ -79,12 +80,12 @@ has not been accepted in this task.
   blocked existing Google font downloads; the normal network-enabled build used
   the established `PLATFORM_API_URL=https://admin.movrr.nl/api` binding. No
   environment file or production setting was changed.
-- **123 browser checks / 66 mobile renders passed**: 320×740, iPhone XR 414×896,
-  S23 Ultra 412×915; English/Dutch; 11 application destinations; 44px minimum tab
+- **123 browser checks / 66 mobile renders passed**: 320Ã—740, iPhone XR 414Ã—896,
+  S23 Ultra 412Ã—915; English/Dutch; 11 application destinations; 44px minimum tab
   targets; reduced motion; nested routes; Back; camera-denial fallback; public-only
   offline recovery; simulated standalone; text scaling; keyboard/tab handling.
 - Desktop Home, Scan and Rewards screenshots are **pixel-identical** to the
-  baseline at 1440×1000. Desktop scanner retains the phone QR handoff and no camera.
+  baseline at 1440Ã—1000. Desktop scanner retains the phone QR handoff and no camera.
 - Supplemental checks verify the language bottom sheet, Close and Back dismissal,
   canonical Dutch preference action, singular Partner install metadata, retained
   install capability, and mobile theme-color/desktop restoration.
